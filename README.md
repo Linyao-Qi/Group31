@@ -3,3 +3,4 @@
 |----------|------|
 |231220194|LQmc-7(Lead/Member)|
 |190898878|qrsikno2(TA)|
+|231220921|Linyao-Qi(Member)|
