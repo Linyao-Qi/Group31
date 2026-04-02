@@ -1,0 +1,7 @@
+jobId,title,subject,workType,department,description,requirements,openPositions,deadline,hoursPerWeek,compensation,open
+J001,Lab Assistant for CS101,CS101,Lab,Computer Science,Assist in programming labs,Java and Communication,3,2026-04-15,8-10,$18/hour,true
+J002,Tutorial Leader for CS201,CS201,Tutorial,Computer Science,Lead tutorial sessions,Data Structures and Teaching,2,2026-04-10,6-8,$16/hour,true
+J003,Grading Assistant for MATH301,MATH301,Grading,Mathematics,Help grade assignments,Linear Algebra and Carefulness,4,2026-04-20,5-6,$15/hour,true
+J004,Lab Assistant for PHYS101,PHYS101,Lab,Physics,Support physics lab sessions,Physics Lab Skills,2,2026-04-08,6-8,$17/hour,true
+J005,Tutorial Leader for ECON201,ECON201,Tutorial,Economics,Lead economics tutorials,Economics Basics and Presentation,3,2026-04-25,6-8,$16/hour,true
+J006,Lab Assistant for CS301,CS301,Lab,Computer Science,Assist advanced programming labs,Algorithms and Java,2,2026-04-18,8-10,$18/hour,true
