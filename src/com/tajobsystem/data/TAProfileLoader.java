@@ -22,14 +22,13 @@ public class TAProfileLoader {
 
                 // Handle quoted fields (e.g. "Java, Python, ...")
                 String[] parts = splitCSVLine(line);
-                if (parts.length < 5) continue;
+                if (parts.length < 4) continue;
 
                 profiles.add(new TAProfile(
                         parts[0].trim(),
                         parts[1].trim(),
                         parts[2].trim(),
-                        parts[3].trim(),
-                        parts[4].trim()
+                        parts[3].trim()
                 ));
             }
         } catch (IOException e) {
