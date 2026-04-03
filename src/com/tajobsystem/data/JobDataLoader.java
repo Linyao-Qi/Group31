@@ -44,6 +44,11 @@ public class JobDataLoader {
                         Boolean.parseBoolean(parts[11])
                 );
 
+                // Optional moId column (index 12)
+                if (parts.length >= 13 && !parts[12].isBlank()) {
+                    job.setMoId(parts[12].trim());
+                }
+
                 jobs.add(job);
             }
         } catch (IOException e) {
@@ -51,5 +56,10 @@ public class JobDataLoader {
         }
 
         return jobs;
+    }
+
+    /** Loads MO-published jobs from the binary dat file. */
+    public static List<Job> loadJobsFromDat(String filePath) {
+        return FileUtil.read(filePath);
     }
 }
