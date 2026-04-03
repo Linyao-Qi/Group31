@@ -1,0 +1,5 @@
+taId,name,email,skills,cvSummary
+TA001,Alice Chen,alice@uni.edu,"Java, Data Structures, Python","3rd-year CS student. Experienced in Java OOP and tutoring peers."
+TA002,Bob Li,bob@uni.edu,"Linear Algebra, MATLAB, C++","Math major with strong analytical skills. TA experience in MATH201."
+TA003,Carol Wang,carol@uni.edu,"Physics Lab, Python, Report Writing","Physics sophomore. Familiar with lab equipment and safety protocols."
+TA004,David Zhang,david@uni.edu,"Economics, Excel, Presentation","Economics junior with strong data analysis and public speaking skills."
