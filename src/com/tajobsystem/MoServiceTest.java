@@ -1,6 +1,6 @@
 package com.tajobsystem;
 
-import com.tajobsystem.data.FileUtil;
+import com.tajobsystem.data.ApplicationLoader;
 import com.tajobsystem.model.Application;
 import com.tajobsystem.model.Job;
 import com.tajobsystem.service.MoService;
@@ -20,7 +20,7 @@ public class MoServiceTest {
         Application app = new Application(appId, job.getJobId(), "TA001", "Submitted");
         List<Application> apps = new ArrayList<>();
         apps.add(app);
-        FileUtil.write("./data/app.dat", apps);
+        ApplicationLoader.writeApplicationsToCSV("./data/app.csv", apps);
         System.out.println("已创建测试申请：" + app);
 
         System.out.println("=== 开始录用 ===");

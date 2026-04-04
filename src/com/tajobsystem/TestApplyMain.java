@@ -9,7 +9,6 @@ import com.tajobsystem.ui.ApplyFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +21,7 @@ public class TestApplyMain {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             List<TAProfile> profiles = TAProfileLoader.loadProfilesFromCSV("data/ta_profiles.csv");
-            List<Job> jobs = new ArrayList<>(JobDataLoader.loadJobsFromCSV("data/jobs.csv"));
-            jobs.addAll(JobDataLoader.loadJobsFromDat("data/job.dat"));
+            List<Job> jobs = JobDataLoader.loadJobsFromCSV("data/jobs.csv");
 
             if (profiles.isEmpty() || jobs.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Could not load data. Check data/ folder.");
