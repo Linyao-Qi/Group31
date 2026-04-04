@@ -1,6 +1,9 @@
 package com.tajobsystem.model;
 
-public class Job {
+import java.io.Serializable;
+
+public class Job implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String jobId;
     private String title;
     private String subject;
@@ -13,6 +16,8 @@ public class Job {
     private String hoursPerWeek;
     private String compensation;
     private boolean open;
+    private String moId;
+    private String jobStatus;
 
     public Job(String jobId, String title, String subject, String workType,
                String department, String description, String requirements,
@@ -79,6 +84,11 @@ public class Job {
     public boolean isOpen() {
         return open;
     }
+
+    public String getMoId() { return moId; }
+    public void setMoId(String moId) { this.moId = moId; }
+    public String getJobStatus() { return jobStatus; }
+    public void setJobStatus(String jobStatus) { this.jobStatus = jobStatus; }
 
     @Override
     public String toString() {
