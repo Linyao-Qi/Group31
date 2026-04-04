@@ -1,6 +1,7 @@
 package com.tajobsystem.service;
 
-import com.tajobsystem.data.FileUtil;
+import com.tajobsystem.data.ApplicationLoader;
+import com.tajobsystem.data.TAProfileLoader;
 import com.tajobsystem.model.Application;
 import com.tajobsystem.model.Job;
 import com.tajobsystem.model.TAProfile;
@@ -11,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class ApplicationService {
 
-    private static final String APP_FILE  = "./data/app.dat";
-    private static final String PROF_FILE = "./data/profile.dat";
+    private static final String APP_FILE  = "./data/app.csv";
+    private static final String PROF_FILE = "./data/profile.csv";
 
     // ------------------------------------------------------------------ //
     //  Feature 1 – Apply for Job                                          //
@@ -37,7 +38,7 @@ public class ApplicationService {
             return ApplyResult.error("This position is no longer open.");
         }
 
-        List<Application> apps = FileUtil.read(APP_FILE);
+        List<Application> apps = ApplicationLoader.loadApplicationsFromCSV(APP_FILE);
 
         // Requirement 3: same TA cannot apply to the same job more than once
         boolean alreadyApplied = apps.stream().anyMatch(a ->
@@ -55,7 +56,7 @@ public class ApplicationService {
 
         saveProfileIfAbsent(ta);
         apps.add(app);
-        FileUtil.write(APP_FILE, apps);
+        ApplicationLoader.writeApplicationsToCSV(APP_FILE, apps);
 
         return ApplyResult.success(app);
     }
@@ -72,7 +73,7 @@ public class ApplicationService {
             return ApplyResult.error("This position is no longer open.");
         }
 
-        List<Application> apps = FileUtil.read(APP_FILE);
+        List<Application> apps = ApplicationLoader.loadApplicationsFromCSV(APP_FILE);
 
         Application existing = apps.stream()
                 .filter(a -> a.getTaId().equals(ta.getTaId())
@@ -97,7 +98,7 @@ public class ApplicationService {
         apps.add(newApp);
 
         // Single write — no intermediate file state
-        FileUtil.write(APP_FILE, apps);
+        ApplicationLoader.writeApplicationsToCSV(APP_FILE, apps);
         saveProfileIfAbsent(ta);
 
         return ApplyResult.success(newApp);
@@ -115,7 +116,7 @@ public class ApplicationService {
         if (taId == null || jobId == null) {
             return WithdrawResult.error("Invalid parameters.");
         }
-        List<Application> apps = FileUtil.read(APP_FILE);
+        List<Application> apps = ApplicationLoader.loadApplicationsFromCSV(APP_FILE);
         Application target = apps.stream()
                 .filter(a -> a.getTaId().equals(taId)
                         && a.getJobId().equals(jobId)
@@ -129,7 +130,7 @@ public class ApplicationService {
                 "Cannot withdraw: application status is \"" + target.getAppStatus() + "\".");
         }
         target.setAppStatus("Withdrawn");
-        FileUtil.write(APP_FILE, apps);
+        ApplicationLoader.writeApplicationsToCSV(APP_FILE, apps);
         return WithdrawResult.success(target);
     }
 
@@ -142,7 +143,7 @@ public class ApplicationService {
             return WithdrawResult.error("Invalid parameters.");
         }
 
-        List<Application> apps = FileUtil.read(APP_FILE);
+        List<Application> apps = ApplicationLoader.loadApplicationsFromCSV(APP_FILE);
 
         Application target = apps.stream()
                 .filter(a -> a.getAppId().equals(appId))
@@ -162,7 +163,7 @@ public class ApplicationService {
 
         // Requirement 3: keep record with status "Withdrawn"
         target.setAppStatus("Withdrawn");
-        FileUtil.write(APP_FILE, apps);
+        ApplicationLoader.writeApplicationsToCSV(APP_FILE, apps);
 
         return WithdrawResult.success(target);
     }
@@ -175,7 +176,7 @@ public class ApplicationService {
      * Returns all applications (including history) for the given TA.
      */
     public List<Application> getApplicationsByTA(String taId) {
-        List<Application> all = FileUtil.read(APP_FILE);
+        List<Application> all = ApplicationLoader.loadApplicationsFromCSV(APP_FILE);
         return all.stream()
                 .filter(a -> a.getTaId().equals(taId))
                 .collect(Collectors.toList());
@@ -186,12 +187,12 @@ public class ApplicationService {
     // ------------------------------------------------------------------ //
 
     private void saveProfileIfAbsent(TAProfile ta) {
-        List<TAProfile> profiles = FileUtil.read(PROF_FILE);
+        List<TAProfile> profiles = TAProfileLoader.loadProfilesFromCSV(PROF_FILE);
         boolean exists = profiles.stream()
                 .anyMatch(p -> p.getTaId().equals(ta.getTaId()));
         if (!exists) {
             profiles.add(ta);
-            FileUtil.write(PROF_FILE, profiles);
+            TAProfileLoader.writeProfilesToCSV(PROF_FILE, profiles);
         }
     }
 

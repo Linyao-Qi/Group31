@@ -1,18 +1,16 @@
 package com.tajobsystem.service;
 
-import com.tajobsystem.data.FileUtil;
+import com.tajobsystem.data.ApplicationLoader;
 import com.tajobsystem.data.JobDataLoader;
 import com.tajobsystem.model.Application;
 import com.tajobsystem.model.Job;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class MoService {
-    private static final String JOB_FILE  = "./data/job.dat";
-    private static final String APP_FILE  = "./data/app.dat";
-    private static final String JOB_CSV   = "./data/jobs.csv";
+    private static final String JOB_FILE  = "./data/jobs.csv";
+    private static final String APP_FILE  = "./data/app.csv";
 
     public Job publishJob(String moId, String jobName, String jobRequirements) {
         if (moId == null || moId.isBlank() || jobName == null || jobName.isBlank() || jobRequirements == null || jobRequirements.isBlank()) {
@@ -25,9 +23,9 @@ public class MoService {
         job.setMoId(moId);
         job.setJobStatus("OPEN");
 
-        List<Job> jobs = FileUtil.read(JOB_FILE);
+        List<Job> jobs = JobDataLoader.loadJobsFromCSV(JOB_FILE);
         jobs.add(job);
-        FileUtil.write(JOB_FILE, jobs);
+        JobDataLoader.writeJobsToCSV(JOB_FILE, jobs);
 
         System.out.println("岗位发布成功：" + job);
         return job;
@@ -39,7 +37,7 @@ public class MoService {
             return null;
         }
 
-        List<Application> apps = FileUtil.read(APP_FILE);
+        List<Application> apps = ApplicationLoader.loadApplicationsFromCSV(APP_FILE);
 
         Application target = null;
         for (Application a : apps) {
@@ -53,9 +51,7 @@ public class MoService {
             return null;
         }
 
-        // Search job.dat (MO-published) first, then fall back to jobs.csv (pre-loaded)
-        List<Job> allJobs = new ArrayList<>(FileUtil.read(JOB_FILE));
-        allJobs.addAll(JobDataLoader.loadJobsFromCSV(JOB_CSV));
+        List<Job> allJobs = JobDataLoader.loadJobsFromCSV(JOB_FILE);
 
         Job job = null;
         for (Job j : allJobs) {
@@ -80,7 +76,7 @@ public class MoService {
         }
 
         target.setAppStatus("Accepted");
-        FileUtil.write(APP_FILE, apps);
+        ApplicationLoader.writeApplicationsToCSV(APP_FILE, apps);
         System.out.println("录用成功：" + target);
         return target;
     }
