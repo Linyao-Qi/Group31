@@ -2,64 +2,68 @@ package com.tajobsystem.data;
 
 import com.tajobsystem.model.Job;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JobDataLoader {
 
+    private static final String HEADER =
+            "jobId,title,subject,workType,department,description,requirements," +
+            "openPositions,deadline,hoursPerWeek,compensation,open,moId,jobStatus";
+
     public static List<Job> loadJobsFromCSV(String filePath) {
         List<Job> jobs = new ArrayList<>();
+        for (String line : CsvUtil.readAllLines(filePath)) {
+            String[] parts = CsvUtil.splitLine(line);
+            if (parts.length < 12) continue;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean firstLine = true;
+            Job job = new Job(
+                    parts[0].trim(),
+                    parts[1].trim(),
+                    parts[2].trim(),
+                    parts[3].trim(),
+                    parts[4].trim(),
+                    parts[5].trim(),
+                    parts[6].trim(),
+                    Integer.parseInt(parts[7].trim()),
+                    parts[8].trim(),
+                    parts[9].trim(),
+                    parts[10].trim(),
+                    Boolean.parseBoolean(parts[11].trim())
+            );
 
-            while ((line = br.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
-
-                String[] parts = line.split(",");
-
-                if (parts.length < 12) {
-                    continue;
-                }
-
-                Job job = new Job(
-                        parts[0],
-                        parts[1],
-                        parts[2],
-                        parts[3],
-                        parts[4],
-                        parts[5],
-                        parts[6],
-                        Integer.parseInt(parts[7]),
-                        parts[8],
-                        parts[9],
-                        parts[10],
-                        Boolean.parseBoolean(parts[11])
-                );
-
-                // Optional moId column (index 12)
-                if (parts.length >= 13 && !parts[12].isBlank()) {
-                    job.setMoId(parts[12].trim());
-                }
-
-                jobs.add(job);
+            if (parts.length >= 13 && !parts[12].isBlank()) {
+                job.setMoId(parts[12].trim());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            if (parts.length >= 14 && !parts[13].isBlank()) {
+                job.setJobStatus(parts[13].trim());
+            }
 
+            jobs.add(job);
+        }
         return jobs;
     }
 
-    /** Loads MO-published jobs from the binary dat file. */
-    public static List<Job> loadJobsFromDat(String filePath) {
-        return FileUtil.read(filePath);
+    public static void writeJobsToCSV(String path, List<Job> jobs) {
+        List<String> lines = new ArrayList<>();
+        for (Job j : jobs) {
+            lines.add(
+                    j.getJobId() + "," +
+                    CsvUtil.quoteField(j.getTitle()) + "," +
+                    CsvUtil.quoteField(j.getSubject()) + "," +
+                    CsvUtil.quoteField(j.getWorkType()) + "," +
+                    CsvUtil.quoteField(j.getDepartment()) + "," +
+                    CsvUtil.quoteField(j.getDescription()) + "," +
+                    CsvUtil.quoteField(j.getRequirements()) + "," +
+                    j.getOpenPositions() + "," +
+                    CsvUtil.quoteField(j.getDeadline()) + "," +
+                    CsvUtil.quoteField(j.getHoursPerWeek()) + "," +
+                    CsvUtil.quoteField(j.getCompensation()) + "," +
+                    j.isOpen() + "," +
+                    CsvUtil.quoteField(j.getMoId()) + "," +
+                    CsvUtil.quoteField(j.getJobStatus())
+            );
+        }
+        CsvUtil.writeAllLines(path, HEADER, lines);
     }
 }
