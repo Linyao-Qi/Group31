@@ -15,7 +15,7 @@ public class MoService {
     private static final String JOB_CSV   = "./data/jobs.csv";
 
     public Job publishJob(String moId, String jobName, String jobRequirements) {
-        if (moId == null || moId.isBlank() || jobName == null || jobName.isBlank() || jobRequirements == null || jobRequirements.isBlank()) {
+        if (moId == null || moId.trim().isEmpty() || jobName == null || jobName.trim().isEmpty() || jobRequirements == null || jobRequirements.trim().isEmpty()) {
             System.err.println("参数不能为空");
             return null;
         }
@@ -34,7 +34,7 @@ public class MoService {
     }
 
     public Application acceptApplicant(String moId, String appId) {
-        if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) {
+        if (moId == null || moId.trim().isEmpty() || appId == null || appId.trim().isEmpty()) {
             System.err.println("参数不能为空");
             return null;
         }

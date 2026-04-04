@@ -45,7 +45,7 @@ public class JobDataLoader {
                 );
 
                 // Optional moId column (index 12)
-                if (parts.length >= 13 && !parts[12].isBlank()) {
+                if (parts.length >= 13 && !parts[12].trim().isEmpty()) {
                     job.setMoId(parts[12].trim());
                 }
 
