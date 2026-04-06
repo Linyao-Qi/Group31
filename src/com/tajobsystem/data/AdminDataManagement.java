@@ -17,11 +17,11 @@ public class AdminDataManagement {
         if (file.exists()) {
             return;
         }
-
         File parent = file.getParentFile();
         if (parent != null && !parent.exists()) {
             parent.mkdirs();
         }
+
 
         List<Admin> defaults = new ArrayList<>();
         defaults.add(new Admin(

@@ -38,7 +38,6 @@ public class AdminFrame extends JFrame {
         setSize(1280, 580);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         openPostsLabel = new JLabel("Open Posts: 0");
 
         String[] columns = {

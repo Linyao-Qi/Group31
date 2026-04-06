@@ -1,6 +1,6 @@
 package com.tajobsystem;
 
-import ui.AdminFrame;
+import com.tajobsystem.ui.AdminFrame;
 
 import javax.swing.SwingUtilities;
 
@@ -9,6 +9,7 @@ public class AdminTest {
         SwingUtilities.invokeLater(() -> {
             AdminFrame frame = new AdminFrame();
             frame.setVisible(true);
+
         });
     }
 }

@@ -15,6 +15,7 @@ public class Admin {
     private boolean open;
     private String moId;
 
+
     public Admin(
             String jobId,
             String title,
