@@ -1,4 +1,4 @@
-package ui;
+package com.tajobsystem.ui;
 
 import com.tajobsystem.model.Admin;
 import com.tajobsystem.service.AdminService;
@@ -276,12 +276,6 @@ public class AdminFrame extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            AdminFrame frame = new AdminFrame();
-            frame.setVisible(true);
-        });
-    }
 }
 
 
