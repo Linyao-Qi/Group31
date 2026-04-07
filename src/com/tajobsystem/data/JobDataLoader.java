@@ -32,17 +32,13 @@ public class JobDataLoader {
                     Boolean.parseBoolean(parts[11].trim())
             );
 
-// Optional moId column (index 12)
-if (parts.length >= 13 && !parts[12].trim().isEmpty()) {
-    job.setMoId(parts[12].trim());
-}
-// Optional jobStatus column (index 13)
-if (parts.length >= 14 && !parts[13].trim().isEmpty()) {
-    job.setJobStatus(parts[13].trim());
-}
-
-jobs.add(job);
-main
+            // Optional moId column (index 12)
+            if (parts.length >= 13 && !parts[12].trim().isEmpty()) {
+                job.setMoId(parts[12].trim());
+            }
+            // Optional jobStatus column (index 13)
+            if (parts.length >= 14 && !parts[13].trim().isEmpty()) {
+                job.setJobStatus(parts[13].trim());
             }
 
             jobs.add(job);
