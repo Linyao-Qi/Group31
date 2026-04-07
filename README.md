@@ -1,10 +1,10 @@
-###### **Project Introduction**
+## **Project Introduction**
 
 A lightweight TA (Teaching Assistant) recruitment management system, developed based on JSP + JavaBean + CSV. No database required, supporting core functions such as MO publishing jobs and hiring/canceling hiring applicants.
 
-###### 
+##
 
-###### **Core Functions**
+## **Core Functions**
 
 \- MO login authentication and job publishing
 
@@ -16,9 +16,9 @@ A lightweight TA (Teaching Assistant) recruitment management system, developed b
 
 \- Admin views global jobs and application records
 
-###### 
+## 
 
-###### **Deployment Instructions (Important)**
+## **Deployment Instructions (Important)**
 
 1\. Deploy the project to Tomcat server (Tomcat 9+/10+, JDK 8+)
 
@@ -30,7 +30,7 @@ A lightweight TA (Teaching Assistant) recruitment management system, developed b
 
 3\. Access entry: http://localhost:8080/project-name/hireApplicant.jsp
 
-###### 
+##
 
 ###### **Default Accounts**
 
