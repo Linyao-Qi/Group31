@@ -1,0 +1,4 @@
+appId,jobId,taId,intro,status
+APP001,JOB001,TA001,熟悉Java编程，有助教经验,PENDING
+APP002,JOB001,TA002,擅长数据结构，耐心负责,PENDING
+APP003,JOB002,TA003,有课程辅导经验，认真细致,PENDING
