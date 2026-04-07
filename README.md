@@ -32,7 +32,7 @@ A lightweight TA (Teaching Assistant) recruitment management system, developed b
 
 ##
 
-###### **Default Accounts**
+## **Default Accounts**
 
 MO: mo001 / 123456; Admin: admin / 123456 (can be modified in user.csv)
 
