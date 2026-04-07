@@ -1,6 +1,6 @@
 package com.tajobsystem.model;
 
-public class Admin {
+public class AdminRecruitment {
     private final String jobId;
     private final String title;
     private final String subject;
@@ -15,9 +15,9 @@ public class Admin {
     private boolean open;
     private final String moId;
 
-    public Admin(String jobId, String title, String subject, String workType, String department,
-                 String description, String requirements, int openPositions, String deadline,
-                 double hoursPerWeek, String compensation, boolean open, String moId) {
+    public AdminRecruitment(String jobId, String title, String subject, String workType, String department,
+                            String description, String requirements, int openPositions, String deadline,
+                            double hoursPerWeek, String compensation, boolean open, String moId) {
         this.jobId = jobId;
         this.title = title;
         this.subject = subject;

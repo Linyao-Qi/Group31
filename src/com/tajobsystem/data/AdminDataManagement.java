@@ -1,6 +1,7 @@
 package com.tajobsystem.data;
 
-import com.tajobsystem.model.Admin;
+import com.tajobsystem.model.AdminRecruitment;
+import com.tajobsystem.model.AdminWorkload;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 
 public class AdminDataManagement {
     private static final String DEFAULT_FILE_PATH = "data/jobs.csv";
+    private static final String WORKLOAD_FILE_PATH = "data/workloads.csv";
     private static final String HEADER =
             "jobId,title,subject,workType,department,description,requirements," +
             "openPositions,deadline,hoursPerWeek,compensation,open,moId";
@@ -38,9 +40,9 @@ public class AdminDataManagement {
         }
     }
 
-    public List<Admin> loadPosts() throws IOException {
+    public List<AdminRecruitment> loadPosts() throws IOException {
         ensureCsvExists();
-        List<Admin> posts = new ArrayList<>();
+        List<AdminRecruitment> posts = new ArrayList<>();
         List<String> lines = CsvUtil.readAllLines(DEFAULT_FILE_PATH);
         for (String line : lines) {
             String[] parts = CsvUtil.splitLine(line);
@@ -53,7 +55,7 @@ public class AdminDataManagement {
                 continue;
             }
 
-            posts.add(new Admin(
+            posts.add(new AdminRecruitment(
                     jobId,
                     normalize(parts[1]),
                     normalize(parts[2]),
@@ -72,9 +74,9 @@ public class AdminDataManagement {
         return posts;
     }
 
-    public void savePosts(List<Admin> posts) throws IOException {
+    public void savePosts(List<AdminRecruitment> posts) throws IOException {
         List<String> lines = new ArrayList<>();
-        for (Admin post : posts) {
+        for (AdminRecruitment post : posts) {
             lines.add(
                     CsvUtil.quoteField(post.getJobId()) + "," +
                     CsvUtil.quoteField(post.getTitle()) + "," +
@@ -92,6 +94,95 @@ public class AdminDataManagement {
             );
         }
         CsvUtil.writeAllLines(DEFAULT_FILE_PATH, HEADER, lines);
+    }
+
+    public List<AdminWorkload> loadWorkloads() throws IOException {
+        ensureWorkloadCsvExists();
+        List<AdminWorkload> workloads = new ArrayList<>();
+
+        for (String line : CsvUtil.readAllLines(WORKLOAD_FILE_PATH)) {
+            String[] parts = CsvUtil.splitLine(line);
+            if (parts.length < 8) {
+                continue;
+            }
+
+            AdminWorkload workload = new AdminWorkload(
+                    parts[0].trim(),
+                    parts[1].trim(),
+                    parts[2].trim(),
+                    parts[3].trim(),
+                    parts[4].trim(),
+                    parts[5].trim(),
+                    Double.parseDouble(parts[6].trim()),
+                    Double.parseDouble(parts[7].trim())
+            );
+            String status = parts.length >= 9 ? parts[8].trim() : "Normal";
+            workload.setStatus(status.isEmpty() ? "Normal" : status);
+            workloads.add(workload);
+        }
+
+        return workloads;
+    }
+
+    public void saveWorkloads(List<AdminWorkload> workloads) throws IOException {
+        List<String> lines = new ArrayList<>();
+        for (AdminWorkload workload : workloads) {
+            lines.add(
+                    CsvUtil.quoteField(workload.getMoName()) + "," +
+                    CsvUtil.quoteField(workload.getMoId()) + "," +
+                    CsvUtil.quoteField(workload.getTaId()) + "," +
+                    CsvUtil.quoteField(workload.getTaName()) + "," +
+                    CsvUtil.quoteField(workload.getModuleName()) + "," +
+                    CsvUtil.quoteField(workload.getModuleCode()) + "," +
+                    workload.getCourseWorkHour() + "," +
+                    workload.getTaTotalWorkHour() + "," +
+                    CsvUtil.quoteField(workload.getStatus())
+            );
+        }
+        CsvUtil.writeAllLines(
+                WORKLOAD_FILE_PATH,
+                "moName,moId,taId,taName,moduleName,moduleCode,courseWorkHour,taTotalWorkHour,status",
+                lines
+        );
+    }
+
+    private void ensureWorkloadCsvExists() throws IOException {
+        File file = new File(WORKLOAD_FILE_PATH);
+        if (file.exists()) {
+            return;
+        }
+        createParentFolder(file);
+        saveWorkloads(defaultWorkloads());
+    }
+
+    private void createParentFolder(File file) {
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+    }
+
+    private List<AdminWorkload> defaultWorkloads() {
+        List<AdminWorkload> defaults = new ArrayList<>();
+        defaults.add(new AdminWorkload("Amy", "MO001", "TA001", "Alice", "Data Structures", "CS101", 6, 20));
+        defaults.add(new AdminWorkload("Amy", "MO001", "TA001", "Alice", "Programming Basics", "CS100", 8, 20));
+        defaults.add(new AdminWorkload("Amy", "MO001", "TA001", "Alice", "Programming Basics", "CS100", 6, 20));
+        defaults.add(new AdminWorkload("Amy", "MO001", "TA002", "Bob", "Algorithms", "CS102", 9, 22));
+        defaults.add(new AdminWorkload("Amy", "MO001", "TA002", "Bob", "Algorithms", "CS102", 7, 22));
+        defaults.add(new AdminWorkload("Amy", "MO001", "TA002", "Bob", "Data Structures", "CS101", 6, 22));
+        defaults.add(new AdminWorkload("Brian", "MO002", "TA003", "Cindy", "Databases", "CS103", 5, 11));
+        defaults.add(new AdminWorkload("Brian", "MO002", "TA003", "Cindy", "Software Testing", "CS205", 6, 11));
+        defaults.add(new AdminWorkload("Brian", "MO002", "TA004", "David", "Networks", "CS104", 10, 19));
+        defaults.add(new AdminWorkload("Brian", "MO002", "TA004", "David", "Operating Systems", "CS204", 9, 19));
+        defaults.add(new AdminWorkload("Iris", "MO003", "TA005", "Eva", "Computer Architecture", "CS202", 8, 18));
+        defaults.add(new AdminWorkload("Iris", "MO003", "TA005", "Eva", "Computer Architecture", "CS202", 10, 18));
+        defaults.add(new AdminWorkload("Iris", "MO003", "TA006", "Frank", "Machine Learning", "CS301", 7, 12));
+        defaults.add(new AdminWorkload("Iris", "MO003", "TA006", "Frank", "Data Mining", "CS302", 5, 12));
+        defaults.add(new AdminWorkload("Liam", "MO004", "TA007", "Grace", "Capstone Project", "CS401", 12, 23));
+        defaults.add(new AdminWorkload("Liam", "MO004", "TA007", "Grace", "Capstone Project", "CS401", 11, 23));
+        defaults.add(new AdminWorkload("Liam", "MO004", "TA008", "Henry", "Cloud Computing", "CS303", 8, 16));
+        defaults.add(new AdminWorkload("Liam", "MO004", "TA008", "Henry", "Software Engineering", "CS206", 8, 16));
+        return defaults;
     }
 
     private int parseOpenPositions(String value) {

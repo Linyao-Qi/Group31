@@ -42,7 +42,7 @@ public class TAJobsFrame extends JFrame {
         allJobs = JobDataLoader.loadJobsFromCSV("data/jobs.csv");
 
         // 2. 然后，加载成员4动态发布的 job.dat 文件
-        List<Job> publishedJobs = JobDataLoader.loadJobsFromCSV("data/job.csv");
+        List<Job> publishedJobs = JobDataLoader.loadJobsFromCSV("data/job.dat");
 
         // 3. 把动态发布的工作合并到总列表里
         if (publishedJobs != null) {
