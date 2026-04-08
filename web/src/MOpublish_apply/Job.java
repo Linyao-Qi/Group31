@@ -8,18 +8,20 @@ public class Job implements Serializable {
     private String jobName;
     private String jobRequirements;
     private String jobStatus;
+    private String skillRequirement; 
 
     public Job() {}
 
-    public Job(String jobId, String moId, String jobName, String jobRequirements, String jobStatus) {
+    public Job(String jobId, String moId, String jobName, String jobRequirements, String jobStatus,String skillRequirement) {
         this.jobId = jobId;
         this.moId = moId;
         this.jobName = jobName;
         this.jobRequirements = jobRequirements;
         this.jobStatus = jobStatus;
+        this.skillRequirement=skillRequirement;
     }
 
-    // ÂÖ®ÈáèGetter&Setter
+    // »´¡øGetter&Setter
     public String getJobId() { return jobId; }
     public void setJobId(String jobId) { this.jobId = jobId; }
     public String getMoId() { return moId; }
@@ -30,4 +32,6 @@ public class Job implements Serializable {
     public void setJobRequirements(String jobRequirements) { this.jobRequirements = jobRequirements; }
     public String getJobStatus() { return jobStatus; }
     public void setJobStatus(String jobStatus) { this.jobStatus = jobStatus; }
+    public String getSkillRequirement() { return skillRequirement; }
+    public void setSkillRequirement(String skillRequirement) { this.skillRequirement = skillRequirement; }
 }

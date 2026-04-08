@@ -1,68 +1,44 @@
 package com;
 
-import jakarta.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoService {
 
-    public static String JOB_FILE_PATH;
-    public static String APP_FILE_PATH;
+    // CSV ÎÄ¼şÂ·¾¶ÅäÖÃ 
+    private static final String PROJECT_PATH = System.getProperty("user.dir");
+    private static final String JOB_FILE_PATH = PROJECT_PATH + "/data/job.csv";
+    private static final String APP_FILE_PATH = PROJECT_PATH + "/data/application.csv";
 
-    // ========== åˆå§‹åŒ–è·¯å¾„ ==========
-    public static void init(ServletContext context) {
-        JOB_FILE_PATH = context.getRealPath("data/job.csv");
-        APP_FILE_PATH = context.getRealPath("data/application.csv");
-    }
-
-    // ========== å‘å¸ƒå²—ä½ï¼ˆå¸¦å®‰å…¨æµ‹è¯•ç‚¹ï¼Œä¸å½±å“é€»è¾‘ï¼‰ ==========
-    public Job publishJob(String moId, String password, String jobName, String jobRequirements) {
-
-        // ==========================
-        // ã€æµ‹è¯•ç‚¹ 1ï¼šæ£€æŸ¥è·¯å¾„æ˜¯å¦ä¸º nullã€‘
-        // ==========================
-        if (JOB_FILE_PATH == null) {
-            System.out.println("ã€é”™è¯¯ã€‘JOB_FILE_PATH è·¯å¾„ä¸º null");
-            return null;
-        }
-        System.out.println("ã€æµ‹è¯•ã€‘JOB_FILE_PATH = " + JOB_FILE_PATH);
-
-        // MO èº«ä»½è®¤è¯
+    // ========== ·¢²¼¸ÚÎ»£¨Ğè MO Éí·İÈÏÖ¤£© ==========
+    public Job publishJob(String moId, String password, String jobName, String jobRequirements,String skillRequirement) {
+        // MO Éí·İÈÏÖ¤
         if (!AuthUtil.authenticateMO(moId, password)) {
-            System.out.println("ã€æµ‹è¯•ã€‘MO è®¤è¯å¤±è´¥");
             return null;
         }
 
-        // å‚æ•°éç©ºæ ¡éªŒ
+        // ²ÎÊı·Ç¿ÕĞ£Ñé
         if (moId == null || moId.isBlank()
                 || jobName == null || jobName.isBlank()
                 || jobRequirements == null || jobRequirements.isBlank()) {
-            System.out.println("ã€æµ‹è¯•ã€‘å‚æ•°ä¸ºç©º");
             return null;
         }
 
-        // ç”Ÿæˆ 6 ä½éšæœºç 
+        // Éú³É 6 Î»Ëæ»úÂë
         String randomCode = generateRandomCode(6);
         String jobId = moId + randomCode;
 
-        Job newJob = new Job(jobId, moId, jobName, jobRequirements, "OPEN");
-
-        // ==========================
-        // ã€æµ‹è¯•ç‚¹ 2ï¼šè¯»å–æ–‡ä»¶å‰æµ‹è¯•ã€‘
-        // ==========================
-        System.out.println("ã€æµ‹è¯•ã€‘å¼€å§‹è¯»å–æ–‡ä»¶ï¼š" + JOB_FILE_PATH);
-
+        Job newJob = new Job(jobId, moId, jobName, jobRequirements, "OPEN",skillRequirement);
         List<Job> jobList = CsvFileUtil.readJobListFromCsv(JOB_FILE_PATH);
 
         List<Job> newJobList = new ArrayList<>(jobList);
         newJobList.add(newJob);
         CsvFileUtil.writeJobListToCsv(JOB_FILE_PATH, newJobList);
 
-        System.out.println("ã€æµ‹è¯•ã€‘å‘å¸ƒæˆåŠŸï¼");
         return newJob;
     }
 
-    // ========= å½•ç”¨ç”³è¯·è€… =========
+    // ========= Â¼ÓÃÉêÇëÕß =========
     public Application acceptApplicant(String moId, String appId) {
         if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) {
             return null;
@@ -71,6 +47,7 @@ public class MoService {
         List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
         List<Job> jobList = CsvFileUtil.readJobListFromCsv(JOB_FILE_PATH);
 
+        // ²éÕÒÄ¿±êÉêÇë
         Application targetApp = null;
         for (Application app : appList) {
             if (appId.equals(app.getAppId())) {
@@ -82,6 +59,7 @@ public class MoService {
             return null;
         }
 
+        // ²éÕÒ¶ÔÓ¦¸ÚÎ»²¢Ğ£ÑéÈ¨ÏŞ
         Job targetJob = null;
         for (Job job : jobList) {
             if (targetApp.getJobId().equals(job.getJobId())) {
@@ -93,10 +71,12 @@ public class MoService {
             return null;
         }
 
+        // Ğ£Ñé×´Ì¬
         if (!"PENDING".equals(targetApp.getAppStatus())) {
             return null;
         }
 
+        // =======ĞŞ¸ÄÉêÇëÕß×´Ì¬Îª ACCEPTED ==============
         List<Application> newAppList = new ArrayList<>(appList);
         for (Application app : newAppList) {
             if (appId.equals(app.getAppId())) {
@@ -107,6 +87,7 @@ public class MoService {
         }
         CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, newAppList);
 
+        // ======= ½«¸ÚÎ»×´Ì¬¸ÄÎª FILLED£¨ÒÑÕĞÂú£© =============
         List<Job> newJobList = new ArrayList<>(jobList);
         for (Job job : newJobList) {
             if (targetJob.getJobId().equals(job.getJobId())) {
@@ -120,7 +101,7 @@ public class MoService {
     }
 
     // ======================
-    // å–æ¶ˆå½•ç”¨
+    // È¡ÏûÂ¼ÓÃ
     // ======================
     public boolean cancelApplicant(String moId, String appId) {
         if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) {
@@ -141,6 +122,7 @@ public class MoService {
             return false;
         }
 
+        // Ğ£Ñé¸ÚÎ»È¨ÏŞ
         Job targetJob = null;
         for (Job job : jobList) {
             if (targetApp.getJobId().equals(job.getJobId())) {
@@ -152,6 +134,7 @@ public class MoService {
             return false;
         }
 
+        // »Ö¸´ÉêÇë×´Ì¬Îª PENDING
         for (Application app : appList) {
             if (appId.equals(app.getAppId())) {
                 app.setAppStatus("PENDING");
@@ -160,6 +143,7 @@ public class MoService {
         }
         CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
 
+        // »Ö¸´¸ÚÎ»Îª OPEN
         for (Job job : jobList) {
             if (targetJob.getJobId().equals(job.getJobId())) {
                 job.setJobStatus("OPEN");
@@ -171,20 +155,21 @@ public class MoService {
         return true;
     }
 
-    // ========== è·å–æ‰€æœ‰å²—ä½ ==========
+    // ========== »ñÈ¡ËùÓĞ¸ÚÎ» ==========
     public List<Job> getAllJobs() {
         return CsvFileUtil.readJobListFromCsv(JOB_FILE_PATH);
     }
 
-    // ========== æŸ¥çœ‹æ‰€æœ‰ç”³è¯· ==========
+    // ========== ²é¿´ËùÓĞÉêÇë£¨Ğè MO / Admin ÈÏÖ¤£© ==========
     public List<Application> getAllApps(String userId, String password, boolean isAdmin) {
+        // Éí·İÈÏÖ¤
         if (!AuthUtil.authenticate(userId, password, isAdmin)) {
             return null;
         }
         return CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
     }
 
-    // ========== ç”Ÿæˆéšæœºç  ==========
+    // ========== Éú³ÉÖ¸¶¨Î»ÊıËæ»ú×ÖÄ¸ + Êı×Ö ==========
     private String generateRandomCode(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();

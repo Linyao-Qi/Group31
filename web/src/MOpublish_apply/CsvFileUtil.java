@@ -7,27 +7,28 @@ import java.util.List;
 
 public class CsvFileUtil {
 
-    // CSVæ–‡ä»¶åˆ†éš”ç¬¦
+    // CSVÎÄ¼ş·Ö¸ô·û
     private static final String SEPARATOR = ",";
-    // æ¢è¡Œç¬¦
+    // »»ĞĞ·û
     private static final String NEW_LINE = "\n";
 
     /**
-     * å†™å…¥Jobåˆ—è¡¨åˆ°CSVæ–‡ä»¶
+     * Ğ´ÈëJobÁĞ±íµ½CSVÎÄ¼ş
      */
     public static void writeJobListToCsv(String filePath, List<Job> jobList) {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
-            // å†™å…¥è¡¨å¤´
-            writer.write("jobId,moId,jobName,jobRequirements,jobStatus");
+            // Ğ´Èë±íÍ·
+            writer.write("jobId,moId,jobName,jobRequirements,jobStatus,skillRequirement");
             writer.write(NEW_LINE);
-            // å†™å…¥æ•°æ®è¡Œ
+            // Ğ´ÈëÊı¾İĞĞ
             for (Job job : jobList) {
                 writer.write(String.join(SEPARATOR,
                         job.getJobId(),
                         job.getMoId(),
                         escapeCsvField(job.getJobName()),
                         escapeCsvField(job.getJobRequirements()),
-                        job.getJobStatus()));
+                        job.getJobStatus(),
+                        escapeCsvField(job.getSkillRequirement())));
                 writer.write(NEW_LINE);
             }
         } catch (IOException e) {
@@ -36,12 +37,12 @@ public class CsvFileUtil {
     }
 
     /**
-     * ä»CSVæ–‡ä»¶è¯»å–Jobåˆ—è¡¨
+     * ´ÓCSVÎÄ¼ş¶ÁÈ¡JobÁĞ±í
      */
     public static List<Job> readJobListFromCsv(String filePath) {
         List<Job> jobList = new ArrayList<>();
         File file = new File(filePath);
-        // æ–‡ä»¶ä¸å­˜åœ¨åˆ™åˆ›å»ºç©ºæ–‡ä»¶å¹¶è¿”å›ç©ºåˆ—è¡¨
+        // ÎÄ¼ş²»´æÔÚÔò´´½¨¿ÕÎÄ¼ş²¢·µ»Ø¿ÕÁĞ±í
         if (!file.exists()) {
             createFileIfNotExists(file);
             return jobList;
@@ -49,22 +50,23 @@ public class CsvFileUtil {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
-            boolean isFirstLine = true; // è·³è¿‡è¡¨å¤´
+            boolean isFirstLine = true; // Ìø¹ı±íÍ·
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 if (line.isBlank()) continue;
-                // è§£æCSVè¡Œ
+                // ½âÎöCSVĞĞ
                 String[] fields = parseCsvLine(line);
-                if (fields.length < 5) continue; // å­—æ®µä¸å…¨åˆ™è·³è¿‡
+                if (fields.length < 5) continue; // ×Ö¶Î²»È«ÔòÌø¹ı
                 Job job = new Job();
                 job.setJobId(fields[0]);
                 job.setMoId(fields[1]);
                 job.setJobName(unescapeCsvField(fields[2]));
                 job.setJobRequirements(unescapeCsvField(fields[3]));
                 job.setJobStatus(fields[4]);
+                job.setSkillRequirement(unescapeCsvField(fields[5]));
                 jobList.add(job);
             }
         } catch (IOException e) {
@@ -74,14 +76,14 @@ public class CsvFileUtil {
     }
 
     /**
-     * å†™å…¥Applicationåˆ—è¡¨åˆ°CSVæ–‡ä»¶
+     * Ğ´ÈëApplicationÁĞ±íµ½CSVÎÄ¼ş
      */
     public static void writeAppListToCsv(String filePath, List<Application> appList) {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
-            // å†™å…¥è¡¨å¤´
+            // Ğ´Èë±íÍ·
             writer.write("appId,jobId,taId,intro,appStatus");
             writer.write(NEW_LINE);
-            // å†™å…¥æ•°æ®è¡Œ
+            // Ğ´ÈëÊı¾İĞĞ
             for (Application app : appList) {
                 writer.write(String.join(SEPARATOR,
                         app.getAppId(),
@@ -97,12 +99,12 @@ public class CsvFileUtil {
     }
 
     /**
-     * ä»CSVæ–‡ä»¶è¯»å–Applicationåˆ—è¡¨
+     * ´ÓCSVÎÄ¼ş¶ÁÈ¡ApplicationÁĞ±í
      */
     public static List<Application> readAppListFromCsv(String filePath) {
         List<Application> appList = new ArrayList<>();
         File file = new File(filePath);
-        // æ–‡ä»¶ä¸å­˜åœ¨åˆ™åˆ›å»ºç©ºæ–‡ä»¶å¹¶è¿”å›ç©ºåˆ—è¡¨
+        // ÎÄ¼ş²»´æÔÚÔò´´½¨¿ÕÎÄ¼ş²¢·µ»Ø¿ÕÁĞ±í
         if (!file.exists()) {
             createFileIfNotExists(file);
             return appList;
@@ -110,14 +112,14 @@ public class CsvFileUtil {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
-            boolean isFirstLine = true; // è·³è¿‡è¡¨å¤´
+            boolean isFirstLine = true; // Ìø¹ı±íÍ·
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 if (line.isBlank()) continue;
-                // è§£æCSVè¡Œ
+                // ½âÎöCSVĞĞ
                 String[] fields = parseCsvLine(line);
                 if (fields.length < 5) continue; //
                 Application app = new Application();
@@ -134,20 +136,20 @@ public class CsvFileUtil {
         return appList;
     }
 
-    // è¾…åŠ©æ–¹æ³•ï¼šå¤„ç†CSVå­—æ®µä¸­çš„åˆ†éš”ç¬¦/æ¢è¡Œç¬¦ï¼ˆè½¬ä¹‰ï¼‰
+    // ¸¨Öú·½·¨£º´¦ÀíCSV×Ö¶ÎÖĞµÄ·Ö¸ô·û/»»ĞĞ·û£¨×ªÒå£©
     private static String escapeCsvField(String field) {
         if (field == null) return "";
-        // å¦‚æœå­—æ®µåŒ…å«åˆ†éš”ç¬¦ã€æ¢è¡Œç¬¦æˆ–åŒå¼•å·ï¼Œéœ€è¦ç”¨åŒå¼•å·åŒ…è£¹ï¼Œå¹¶è½¬ä¹‰å†…éƒ¨çš„åŒå¼•å·
+        // Èç¹û×Ö¶Î°üº¬·Ö¸ô·û¡¢»»ĞĞ·û»òË«ÒıºÅ£¬ĞèÒªÓÃË«ÒıºÅ°ü¹ü£¬²¢×ªÒåÄÚ²¿µÄË«ÒıºÅ
         if (field.contains(SEPARATOR) || field.contains(NEW_LINE) || field.contains("\"")) {
             return "\"" + field.replace("\"", "\"\"") + "\"";
         }
         return field;
     }
 
-    // è¾…åŠ©æ–¹æ³•ï¼šè¿˜åŸè½¬ä¹‰çš„CSVå­—æ®µ
+    // ¸¨Öú·½·¨£º»¹Ô­×ªÒåµÄCSV×Ö¶Î
     private static String unescapeCsvField(String field) {
         if (field == null) return "";
-        // ç§»é™¤åŒå¼•å·åŒ…è£¹ï¼Œå¹¶è¿˜åŸå†…éƒ¨çš„åŒå¼•å·
+        // ÒÆ³ıË«ÒıºÅ°ü¹ü£¬²¢»¹Ô­ÄÚ²¿µÄË«ÒıºÅ
         if (field.startsWith("\"") && field.endsWith("\"")) {
             field = field.substring(1, field.length() - 1);
             return field.replace("\"\"", "\"");
@@ -155,7 +157,7 @@ public class CsvFileUtil {
         return field;
     }
 
-    // è¾…åŠ©æ–¹æ³•ï¼šè§£æCSVè¡Œï¼ˆå¤„ç†å¸¦åŒå¼•å·çš„å­—æ®µï¼‰
+    // ¸¨Öú·½·¨£º½âÎöCSVĞĞ£¨´¦Àí´øË«ÒıºÅµÄ×Ö¶Î£©
     private static String[] parseCsvLine(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder currentField = new StringBuilder();
@@ -163,56 +165,56 @@ public class CsvFileUtil {
 
         for (char c : line.toCharArray()) {
             if (c == '"') {
-                inQuotes = !inQuotes; // åˆ‡æ¢å¼•å·çŠ¶æ€
+                inQuotes = !inQuotes; // ÇĞ»»ÒıºÅ×´Ì¬
             } else if (c == SEPARATOR.charAt(0) && !inQuotes) {
-                // åˆ†éš”ç¬¦ä¸”ä¸åœ¨å¼•å·å†…ï¼Œç»“æŸå½“å‰å­—æ®µ
+                // ·Ö¸ô·ûÇÒ²»ÔÚÒıºÅÄÚ£¬½áÊøµ±Ç°×Ö¶Î
                 fields.add(currentField.toString());
                 currentField.setLength(0);
             } else {
                 currentField.append(c);
             }
         }
-        // æ·»åŠ æœ€åä¸€ä¸ªå­—æ®µ
+        // Ìí¼Ó×îºóÒ»¸ö×Ö¶Î
         fields.add(currentField.toString());
         return fields.toArray(new String[0]);
     }
 
-    // è¾…åŠ©æ–¹æ³•ï¼šåˆ›å»ºæ–‡ä»¶ï¼ˆå«çˆ¶ç›®å½•ï¼‰
+    // ¸¨Öú·½·¨£º´´½¨ÎÄ¼ş£¨º¬¸¸Ä¿Â¼£©
     private static void createFileIfNotExists(File file) {
         try {
             if (file.getParentFile() != null) {
-                file.getParentFile().mkdirs(); // åˆ›å»ºçˆ¶ç›®å½•
+                file.getParentFile().mkdirs(); // ´´½¨¸¸Ä¿Â¼
             }
-            file.createNewFile(); // åˆ›å»ºæ–‡ä»¶
+            file.createNewFile(); // ´´½¨ÎÄ¼ş
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * ä»CSVæ–‡ä»¶è¯»å–è®¤è¯ä¿¡æ¯åˆ—è¡¨ï¼ˆé€‚é…auth.csvï¼‰
+     * ´ÓCSVÎÄ¼ş¶ÁÈ¡ÈÏÖ¤ĞÅÏ¢ÁĞ±í£¨ÊÊÅäauth.csv£©
      */
     public static List<AuthUtil.Auth> readAuthListFromCsv(String filePath) {
         List<AuthUtil.Auth> authList = new ArrayList<>();
         File file = new File(filePath);
-        // æ–‡ä»¶ä¸å­˜åœ¨åˆ™åˆ›å»ºç©ºæ–‡ä»¶å¹¶è¿”å›ç©ºåˆ—è¡¨
+        // ÎÄ¼ş²»´æÔÚÔò´´½¨¿ÕÎÄ¼ş²¢·µ»Ø¿ÕÁĞ±í
         if (!file.exists()) {
             createFileIfNotExists(file);
             return authList;
         }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
-            boolean isFirstLine = true; // è·³è¿‡è¡¨å¤´ï¼ˆuserType,userId,passwordï¼‰
+            boolean isFirstLine = true; // Ìø¹ı±íÍ·£¨userType,userId,password£©
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
-                if (line.isBlank()) continue; // è·³è¿‡ç©ºè¡Œ
-                // è§£æCSVè¡Œï¼ˆå¤ç”¨åŸæœ‰è§£ææ–¹æ³•ï¼Œæ”¯æŒç‰¹æ®Šå­—ç¬¦ï¼‰
+                if (line.isBlank()) continue; // Ìø¹ı¿ÕĞĞ
+                // ½âÎöCSVĞĞ£¨¸´ÓÃÔ­ÓĞ½âÎö·½·¨£¬Ö§³ÖÌØÊâ×Ö·û£©
                 String[] fields = parseCsvLine(line);
-                if (fields.length < 3) continue; // å­—æ®µä¸å…¨åˆ™è·³è¿‡ï¼ˆè‡³å°‘3ä¸ªå­—æ®µï¼‰
-                // å°è£…Authå¯¹è±¡
+                if (fields.length < 3) continue; // ×Ö¶Î²»È«ÔòÌø¹ı£¨ÖÁÉÙ3¸ö×Ö¶Î£©
+                // ·â×°Auth¶ÔÏó
                 AuthUtil.Auth auth = new AuthUtil.Auth();
                 auth.setUserType(fields[0]);
                 auth.setUserId(fields[1]);
