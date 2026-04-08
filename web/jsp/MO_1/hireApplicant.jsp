@@ -21,6 +21,7 @@
         <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">查看申请及匹配分</a>
     </div>
     <h2 align="center">MO身份验证</h2>
     
