@@ -33,4 +33,14 @@
         <servlet-name>moApplicantReviewJsp</servlet-name>
         <url-pattern>/moApplicantReview</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ProfileServlet</servlet-name>
+        <servlet-class>servlet.ProfileServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ProfileServlet</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
 </web-app>
