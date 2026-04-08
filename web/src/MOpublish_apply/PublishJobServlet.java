@@ -27,9 +27,10 @@ public class PublishJobServlet extends HttpServlet {
         String password = request.getParameter("password");
         String jobName = request.getParameter("jobName");
         String jobRequirements = request.getParameter("jobRequirements");
+        String skillRequirement = request.getParameter("skillRequirement");
 
         MoService moService = new MoService();
-        Job job = moService.publishJob(moId, password, jobName, jobRequirements);
+        Job job = moService.publishJob(moId, password, jobName, jobRequirements,skillRequirement);
 
         if (job != null) {
             request.setAttribute("msg", "发布成功！");
