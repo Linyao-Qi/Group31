@@ -26,7 +26,7 @@
     </div>
     <h2 align="center">MO发布TA岗位</h2>
 
-    <form action="publishJob" method="post">
+    <form action="${pageContext.request.contextPath}/publishJob" method="post">
         <div class="form-item">
             <label>MO ID（如mo001）：</label>
             <input type="text" name="moId" required placeholder="请输入MO唯一ID">
