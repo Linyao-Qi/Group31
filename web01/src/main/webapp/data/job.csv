@@ -1,0 +1,5 @@
+jobId,moId,jobName,jobRequirements,jobStatus,skillRequirement
+mo0010SwJIm,mo001,JAVA  TA1,can use JAVA,OPEN,"java,python,excel,MATLAB"
+mo001C58yMw,mo001,JAVA TA2,can use Java,OPEN,"Java,Data Structures,Python"
+mo001kp2Kwi,mo001,python TA1,can use python,OPEN,"java"
+mo001AioCN1,mo001,pythonTA2,can use python,OPEN,"java,python,excel"
