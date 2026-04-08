@@ -5,7 +5,6 @@
 <head>
     <title>All Applications</title>
     <style>
-        /* 完全和 appList.jsp 样式统一 */
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
@@ -53,7 +52,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        /* 只新增这两个提示样式 */
         .success { color: green; font-weight: bold; text-align: center; }
         .error { color: red; font-weight: bold; text-align: center; }
     </style>
@@ -61,38 +59,34 @@
 <body>
 
     <div class="nav">
-        <a href="publishJob.jsp">发布岗位</a>
-        <a href="hireApplicant.jsp">录用申请者</a>
-        <a href="jobList.jsp">查看所有岗位</a>
-        <a href="appList.jsp">查看所有申请</a>
-        <a href="applicantReview.jsp">查看申请及匹配分</a>
+        <!-- ✅ 所有链接全部改成绝对路径 -->
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp" style="color: #1d4ed8;">MO审核申请（带匹配分）</a>
     </div>
 
     <h2>All Applications</h2>
 
     <%
-        // 只新增：获取登录提示（不影响原有任何代码）
         String msg = (String) request.getAttribute("msg");
         String msgType = (String) request.getAttribute("msgType");
     %>
 
-    <!-- 只新增：提示信息区域 -->
     <% if (msg != null) { %>
         <div class="<%= msgType %>"><%= msg %></div>
     <% } %>
 
-    <!-- ======================= -->
-    <!-- 你原来的登录表单（完全没动） -->
-    <!-- ======================= -->
+    <!-- ✅ 表单 action 必须改成绝对路径（这是 404 核心原因！） -->
     <div class="login-form">
-        <form action="moApplicantReview" method="post">
+        <form action="${pageContext.request.contextPath}/moApplicantReview" method="post">
             <input type="text" name="moId" placeholder="MO ID" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
     </div>
 
-    <!-- 申请列表（你原来的代码，完全没动） -->
     <table>
         <tr>
             <th>Application ID</th>
