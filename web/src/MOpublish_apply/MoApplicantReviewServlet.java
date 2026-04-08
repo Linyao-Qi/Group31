@@ -1,7 +1,7 @@
 package com;
-import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.*;
 
@@ -35,7 +35,7 @@ public class MoApplicantReviewServlet extends HttpServlet {
             request.setAttribute("msgType", "error");
             
             // 转发回JSP显示提示
-            request.getRequestDispatcher("/applicantReview.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/MO_1/applicantReview.jsp").forward(request, response);
             return;
         }
 
@@ -58,7 +58,7 @@ public class MoApplicantReviewServlet extends HttpServlet {
         // 转发数据到JSP
         request.setAttribute("apps", apps);
         request.setAttribute("scores", scores);
-        request.getRequestDispatcher("/applicantReview.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/MO_1/applicantReview.jsp").forward(request, response);
     }
  
 }

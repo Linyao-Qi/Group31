@@ -1,4 +1,4 @@
-package com;
+package MOpublish_apply;
 import java.io.Serializable;
 
 public class Job implements Serializable {
@@ -21,7 +21,7 @@ public class Job implements Serializable {
         this.skillRequirement=skillRequirement;
     }
 
-    // È«Á¿Getter&Setter
+    // È«ï¿½ï¿½Getter&Setter
     public String getJobId() { return jobId; }
     public void setJobId(String jobId) { this.jobId = jobId; }
     public String getMoId() { return moId; }
