@@ -18,19 +18,21 @@
 </head>
 <body>
     <div class="nav">
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
+        <a href="publishJob.jsp">发布岗位</a>
+        <a href="hireApplicant.jsp">录用申请者</a>
+        <a href="jobList.jsp">查看所有岗位</a>
+        <a href="appList.jsp">查看所有申请</a>
+        <a href="applicantReview.jsp">MO审核申请（含匹配分）</a>
     </div>
     <h2 align="center">MO发布TA岗位</h2>
 
-    <form action="${pageContext.request.contextPath}/publishJob" method="post">
+    <form action="publishJob" method="post">
         <div class="form-item">
             <label>MO ID（如mo001）：</label>
             <input type="text" name="moId" required placeholder="请输入MO唯一ID">
         </div>
 
+        <!-- 新增：MO密码输入框（完全融合格式） -->
         <div class="form-item">
             <label>MO密码：</label>
             <input type="password" name="password" required placeholder="请输入MO密码">
@@ -45,6 +47,11 @@
             <label>岗位要求：</label>
             <textarea name="jobRequirements" rows="4" required placeholder="如熟悉Java基础、有教学辅助经验"></textarea>
         </div>
+        
+        <div class="form-item">
+    		<label>技能要求（英文逗号分隔）：</label>
+    		<input type="text" name="skillRequirement" required placeholder="例如：Java,python,excel">
+		</div>
 
         <button type="submit">发布岗位</button>
     </form>
