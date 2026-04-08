@@ -65,7 +65,7 @@
         <a href="hireApplicant.jsp">录用申请者</a>
         <a href="jobList.jsp">查看所有岗位</a>
         <a href="appList.jsp">查看所有申请</a>
-        <a href="applicantReview.jsp" style="color: #1d4ed8;">MO审核申请（带匹配分）</a>
+        <a href="applicantReview.jsp">查看申请及匹配分</a>
     </div>
 
     <h2>All Applications</h2>
