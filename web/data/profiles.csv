@@ -1,0 +1,5 @@
+taId,name,email,skills,major,cvPath
+TA001,Alice Chen,alice@uni.edu,"Java,Data Structures,Python",Computer Science,
+TA002,Bob Li,bob@uni.edu,"Linear Algebra,MATLAB,C++",Mathematics,
+TA003,,,,,
+TA004,,,,,
