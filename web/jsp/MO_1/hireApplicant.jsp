@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>MO录用TA申请者-身份认证</title>
+    <title>MO Authentication - Hire Applicant</title>
     <style>
         body {font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 0 20px;}
         .form-item {margin: 15px 0;}
@@ -17,34 +17,31 @@
 </head>
 <body>
     <div class="nav">
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">查看申请及匹配分</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">Job List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
     </div>
-    <h2 align="center">MO身份验证</h2>
-    
-    <!-- 这里修复了表单提交地址 -->
+    <h2 align="center">MO Authentication</h2>
+
     <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post">
         <div class="form-item">
-            <label>MO ID：</label>
-            <input type="text" name="moId" required placeholder="请输入您的MO ID">
+            <label>MO ID:</label>
+            <input type="text" name="moId" required placeholder="Enter your MO ID">
         </div>
         <div class="form-item">
-            <label>MO 密码：</label>
-            <input type="password" name="password" required placeholder="请输入密码">
+            <label>MO Password:</label>
+            <input type="password" name="password" required placeholder="Enter your password">
         </div>
-        <button type="submit">验证并查看我的申请者</button>
+        <button type="submit">Authenticate & View My Applicants</button>
     </form>
 
-    <%-- ========== 错误提示：放在页面最底部 ========== --%>
     <%
         String error = request.getParameter("error");
         if (error != null && error.equals("1")) {
     %>
         <div class="msg fail">
-            MO 账号或密码错误，请重新输入！
+            Invalid MO ID or password, please try again!
         </div>
     <%
         }

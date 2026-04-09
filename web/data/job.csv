@@ -1,5 +1,5 @@
-jobId,moId,jobName,jobRequirements,jobStatus,skillRequirement
-mo0010SwJIm,mo001,JAVA  TA1,can use JAVA,OPEN,"java,python,excel,MATLAB"
-mo001C58yMw,mo001,JAVA TA2,can use Java,OPEN,"Java,Data Structures,Python"
-mo001kp2Kwi,mo001,python TA1,can use python,OPEN,"java"
-mo001AioCN1,mo001,pythonTA2,can use python,OPEN,"java,python,excel"
+jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status
+mo001tFUjgE,mo001,Java,Lab,Assist in Java programming experiments and answer student questions,"java,python,excel,MATLAB",8,$18/hour,OPEN
+mo001JNC3JH,mo001,Java,Lab,Help teach Java basics and check programming assignments,"Java,Data Structures,Python",8,$18/hour,OPEN
+mo0016bmMLX,mo001,Software Engineering,Lab,Guide software engineering lab and assist project guidance,"java,springboot,git",6,$16/hour,OPEN
+mo001q0t4xb,mo001,Microprocessor,Lab,Assist microprocessor car experiments and equipment debugging,"microprocessor,c language,arduino",6,$17/hour,OPEN
