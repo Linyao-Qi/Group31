@@ -1,2 +1,20 @@
-package servlet;public class DeleteServlet {
+package servlet;
+
+import service.ProfileService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet("/delete")
+public class DeleteServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String id = request.getParameter("id");
+        ProfileService.deleteById(id);
+        response.sendRedirect("list"); // 删除后跳回页面
+    }
 }
