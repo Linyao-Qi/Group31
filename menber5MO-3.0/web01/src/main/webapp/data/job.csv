@@ -1,0 +1,5 @@
+jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status
+mo001tFUjgE,mo001,Java,Lab,Assist in Java programming experiments and answer student questions,"java,python,excel,MATLAB",8,$18/hour,OPEN
+mo001JNC3JH,mo001,Java,Lab,Help teach Java basics and check programming assignments,"Java,Data Structures,Python",8,$18/hour,OPEN
+mo0016bmMLX,mo001,Software Engineering,Lab,Guide software engineering lab and assist project guidance,"java,springboot,git",6,$16/hour,OPEN
+mo001q0t4xb,mo001,Microprocessor,Lab,Assist microprocessor car experiments and equipment debugging,"microprocessor,c language,arduino",6,$17/hour,OPEN
