@@ -75,4 +75,24 @@ public class ProfileService {
         }
         return list;
     }
+
+    public static void deleteById(String id) throws IOException {
+        List<Profile> list = getAllProfiles();
+        list.removeIf(p -> p.getId().equals(id)); // 直接移除对应ID
+
+        // 重新写入文件
+        File file = new File(FILE_PATH);
+        file.getParentFile().mkdirs();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            writer.write("taId,name,email,skills,major,cvPath");
+            writer.newLine();
+            for (Profile p : list) {
+                writer.write(p.getId() + "," + p.getName() + "," + p.getEmail() + "," +
+                        p.getSkills() + "," + p.getMajor() + "," + p.getCvPath());
+                writer.newLine();
+            }
+        }
+    }
+
 }
