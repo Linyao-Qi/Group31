@@ -14,14 +14,14 @@ public class MoApplicantReviewServlet extends HttpServlet {
 
     private MoApplicantReviewService service = new MoApplicantReviewService();
 
-    // ✅ 新增init方法，统一初始化所有Service
+    
     @Override
     public void init() throws ServletException {
         super.init();
-        // 按顺序初始化，保证路径正确
+        
         AuthUtil.init(getServletContext());
         MoService.init(getServletContext());
-        MoApplicantReviewService.init(getServletContext()); // 关键：调用MoApplicantReviewService的init
+        MoApplicantReviewService.init(getServletContext()); 
     }
 
     @Override
