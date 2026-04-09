@@ -5,7 +5,7 @@
 <%@ page import="com.CsvFileUtil" %>
 <html>
 <head>
-    <title>All TA Applications</title>
+    <title>所有TA申请列表</title>
     <style>
         body {font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px;}
         table {width: 100%; border-collapse: collapse; margin-top: 20px;}
@@ -42,15 +42,16 @@
 </head>
 <body>
     <div class="nav">
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">Job List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
     </div>
 
-    <h2 align="center">TA Application List</h2>
+    <h2 align="center">TA申请列表</h2>
 
     <%
+        // 获取表单提交的认证参数
         request.setCharacterEncoding("UTF-8");
         String userId = request.getParameter("userId");
         String password = request.getParameter("password");
@@ -62,34 +63,36 @@
         boolean needLogin = true;
         String errorMsg = "";
 
+        // 如果提交了账号密码，就进行认证
         if (userId != null && password != null) {
             appList = moService.getAllApps(userId, password, isAdmin);
             if (appList != null) {
-                needLogin = false;
+                needLogin = false; // 认证成功，不需要登录
             } else {
-                errorMsg = "Authentication failed! Invalid ID or password.";
+                errorMsg = "身份认证失败！账号或密码错误";
             }
         }
     %>
 
     <% if (needLogin) { %>
+        <!-- 认证失败 / 未登录 → 显示登录表单 -->
         <div class="auth-box">
             <form action="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp" method="post">
                 <div>
-                    <label>User ID (MO/Admin):</label>
+                    <label>用户ID（MO/Admin）：</label>
                     <input type="text" name="userId" required>
                 </div>
                 <div>
-                    <label>Password:</label>
+                    <label>密码：</label>
                     <input type="password" name="password" required>
                 </div>
                 <div>
-                    <label>Role:</label>
+                    <label>身份：</label>
                     <input type="radio" name="isAdmin" value="false" checked> MO
                     <input type="radio" name="isAdmin" value="true"> Admin
                 </div>
                 <div style="text-align:center; margin-top:15px;">
-                    <button type="submit">Authenticate & View</button>
+                    <button type="submit">验证身份并查看</button>
                 </div>
             </form>
         </div>
@@ -97,17 +100,18 @@
             <div class="error"><%= errorMsg %></div>
         <% } %>
     <% } else { %>
+        <!-- 认证成功 → 显示申请列表 -->
         <%
             if (appList == null || appList.size() == 0) {
-                out.print("<div class='empty'>No application records yet.</div>");
+                out.print("<div class='empty'>暂无申请数据，请先添加申请</div>");
             } else {
         %>
         <table>
             <tr>
-                <th>App ID</th>
-                <th>Job ID</th>
-                <th>TA ID</th>
-                <th>Status</th>
+                <th>申请ID</th>
+                <th>关联岗位ID</th>
+                <th>申请者TA ID</th>
+                <th>申请状态</th>
             </tr>
             <%
                 for (Application app : appList) {

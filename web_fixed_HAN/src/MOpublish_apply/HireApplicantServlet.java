@@ -1,4 +1,5 @@
 package com;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,9 +21,9 @@ public class HireApplicantServlet extends HttpServlet {
         Application result = moService.acceptApplicant(moId, appId);
 
         if (result != null) {
-            request.setAttribute("msg", "Hired successfully! Status updated.");
+            request.setAttribute("msg", "录用成功！申请者状态已更新");
         } else {
-            request.setAttribute("msg", "Hire failed: No permission / Not exists / Already processed.");
+            request.setAttribute("msg", "录用失败：无权限/申请不存在/已处理");
         }
 
         request.getRequestDispatcher("/jsp/MO_1/moApplicantList.jsp").forward(request, response);

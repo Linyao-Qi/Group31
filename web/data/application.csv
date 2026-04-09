@@ -1,5 +1,0 @@
-appId,name,jobId,moId,taId,major,intro,skills,email,CVpath,appStatus
-APP001,Alice Chen,mo001tFUjgE,mo001,TA001,Computer Science,Experienced in Java teaching,"Java,Data Structures,Python",alice@uni.edu,,ACCEPTED
-APP002,Bob Li,mo001JNC3JH,mo001,TA002,Mathematics,Good at explaining math concepts,"Linear Algebra,MATLAB,C++",bob@uni.edu,,PENDING
-APP003,Carol Wang,mo0016bmMLX,mo001,TA003,Physics,Familiar with lab operations,"Physics Lab,Python,Report Writing",carol@uni.edu,,PENDING
-APP004,David Zhang,mo001q04xb,mo001,TA004,Economics,Skilled in data analysis,"Economics,Excel,Presentation",david@uni.edu,,PENDING

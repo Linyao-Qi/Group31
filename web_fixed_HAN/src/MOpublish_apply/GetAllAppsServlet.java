@@ -21,20 +21,21 @@ public class GetAllAppsServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        String userId = request.getParameter("userId");
+        // 获取认证参数
+        String userId = request.getParameter("userId"); // moId/adminId
         String password = request.getParameter("password");
-        String isAdminStr = request.getParameter("isAdmin");
+        String isAdminStr = request.getParameter("isAdmin"); // "true"/"false"
         boolean isAdmin = "true".equals(isAdminStr);
 
+        // 调用认证后的getAllApps方法
         List<Application> appList = moService.getAllApps(userId, password, isAdmin);
 
         if (appList != null) {
             request.setAttribute("appList", appList);
-            request.setAttribute("msg", "Authentication success. Total applications: " + appList.size());
+            request.setAttribute("msg", "认证成功！共查询到 " + appList.size() + " 条申请记录");
         } else {
-            request.setAttribute("msg", "Failed: Invalid ID or password!");
+            request.setAttribute("msg", "查看失败！身份认证失败（账号/密码错误）");
         }
-
         request.getRequestDispatcher("/jsp/MO_1/allApps.jsp").forward(request, response);
     }
 

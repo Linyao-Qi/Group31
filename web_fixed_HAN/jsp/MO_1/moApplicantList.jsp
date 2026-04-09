@@ -10,16 +10,16 @@
 <head>
     <title>Applicant Management</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 1400px; margin: 50px auto; padding: 0 20px;}
+        body {font-family: Arial, sans-serif; max-width: 1000px; margin: 50px auto; padding: 0 20px;}
         .nav {margin-bottom: 30px; text-align: center;}
         .nav a {margin: 0 10px; color: #2563eb; text-decoration: none; font-size: 16px;}
         .nav a:hover {text-decoration: underline;}
-        table {width:100%; border-collapse:collapse; margin:20px 0; font-size: 14px;}
-        th,td {border:1px solid #ddd; padding:10px; text-align:center;}
-        th {background:#f8fafc; font-size: 14px;}
-        .intro {text-align: left; max-width: 180px; word-break: break-word;}
-        .btn-hire {padding:6px 12px; background:#16a34a; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
-        .btn-cancel {padding:6px 12px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
+        table {width:100%; border-collapse:collapse; margin:20px 0; font-size: 16px;}
+        th,td {border:1px solid #ddd; padding:15px; text-align:center;}
+        th {background:#f8fafc; font-size: 17px;}
+        .intro, .req {text-align: left; max-width: 220px; word-break: break-word;}
+        .btn-hire {padding:8px 16px; background:#16a34a; color:white; border:none; border-radius:4px; cursor:pointer; font-size: 14px;}
+        .btn-cancel {padding:8px 16px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size: 14px;}
         .btn-hire:hover {background:#15803d;}
         .btn-cancel:hover {background:#dc2626;}
         .msg {
@@ -28,22 +28,22 @@
             border-radius: 6px;
             text-align:center;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 18px;
         }
         .success {background:#dcfce7; color:#166534;}
         .fail {background:#fee2e2; color:#991b1b;}
-        .empty {text-align:center; margin-top: 30px; color: #666; font-size: 16px;}
+        .empty {text-align:center; margin-top: 30px; color: #666; font-size: 18px;}
         .pending {color: #f59e0b; font-weight: bold;}
         .accepted {color: #16a34a; font-weight: bold;}
         .return-btn {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             background: #2563eb;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             margin-top: 20px;
         }
         .return-btn:hover {background: #1d4ed8;}
@@ -85,10 +85,6 @@
     </div>
 
 <%
-    // 初始化路径，避免空指针
-    MoService.init(getServletContext());
-    AuthUtil.init(getServletContext());
-
     request.setCharacterEncoding("UTF-8");
     String moId = request.getParameter("moId");
     String password = request.getParameter("password");
@@ -155,35 +151,28 @@
         <% } else { %>
         <table>
             <tr>
-                <th>App ID</th>
-                <th>Name</th>
-                <th>Job ID</th>
-                <th>TA ID</th>
-                <th>Major</th>
-                <th>Intro</th>
-                <th>Skills</th>
-                <th>Email</th>
-                <th>CV</th>
+                <th>Application ID</th>
+                <th>Subject</th>
+                <th>Skill Requirement</th>
+                <th>TA Intro</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
             <%
                 for (Application app : appList) {
                     Job job = jobMap.get(app.getJobId());
+                    String subject = (job == null) ? "Unknown" : job.getSubject();
+                    String skillReq = (job == null) ? "N/A" : job.getSkillRequirement();
                     String status = app.getAppStatus();
                     String statusClass = "ACCEPTED".equals(status) ? "accepted" : "pending";
+                    String statusText = "ACCEPTED".equals(status) ? "Accepted" : "Pending";
             %>
             <tr>
                 <td><%= app.getAppId() %></td>
-                <td><%= app.getName() %></td>
-                <td><%= app.getJobId() %></td>
-                <td><%= app.getTaId() %></td>
-                <td><%= app.getMajor() %></td>
+                <td><%= subject %></td>
+                <td class="req"><%= skillReq %></td>
                 <td class="intro"><%= app.getIntro() %></td>
-                <td><%= app.getSkills() %></td>
-                <td><%= app.getEmail() %></td>
-                <td><%= app.getCVpath() == null ? "-" : app.getCVpath() %></td>
-                <td class="<%= statusClass %>"><%= status %></td>
+                <td class="<%= statusClass %>"><%= statusText %></td>
                 <td>
                     <% if ("ACCEPTED".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
