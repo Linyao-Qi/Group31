@@ -118,11 +118,53 @@ public class MoService {
         List<Application> allApps = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
         List<Application> result = new ArrayList<>();
         for (Application app : allApps) {
-            if (moId.equals(app.getMoId())) {
+            if (moId.equals(app.getMoId()) && !"WITHDRAWN".equals(app.getAppStatus())) {
                 result.add(app);
             }
         }
         return result;
+    }
+
+    // 拒绝申请（仅限 PENDING 状态）
+    public boolean rejectApplicant(String moId, String rejectAppId) {
+        if (moId == null || moId.isBlank() || rejectAppId == null || rejectAppId.isBlank()) return false;
+
+        List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
+
+        Application targetApp = null;
+        for (Application app : appList) {
+            if (rejectAppId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
+                targetApp = app;
+                break;
+            }
+        }
+        if (targetApp == null) return false;
+        if (!"PENDING".equals(targetApp.getAppStatus())) return false;
+
+        targetApp.setAppStatus("REJECTED");
+        CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
+        return true;
+    }
+
+    // 撤回拒绝（REJECTED → PENDING）
+    public boolean unrejectApplicant(String moId, String unrejectAppId) {
+        if (moId == null || moId.isBlank() || unrejectAppId == null || unrejectAppId.isBlank()) return false;
+
+        List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
+
+        Application targetApp = null;
+        for (Application app : appList) {
+            if (unrejectAppId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
+                targetApp = app;
+                break;
+            }
+        }
+        if (targetApp == null) return false;
+        if (!"REJECTED".equals(targetApp.getAppStatus())) return false;
+
+        targetApp.setAppStatus("PENDING");
+        CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
+        return true;
     }
 
     private String generateRandomCode(int length) {
