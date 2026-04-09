@@ -8,6 +8,8 @@ import java.net.URL;
 public final class DataFileLocator {
     private static final String DATA_DIR_PROPERTY = "tajobsystem.data.dir";
     private static final String DATA_DIR_ENV = "TAJOBSYSTEM_DATA_DIR";
+    private static final String WEBAPP_NAME_PROPERTY = "tajobsystem.webapp.name";
+    private static final String DEFAULT_WEBAPP_NAME = "group31-web";
 
     private DataFileLocator() {
     }
@@ -28,6 +30,13 @@ public final class DataFileLocator {
             return ensureDirectory(new File(configuredByEnv.trim()));
         }
 
+        // In Tomcat runtime, force Admin to use the same webapp data directory as MO:
+        // <catalina.base>/webapps/<webapp-name>/data
+        File tomcatDataDir = resolveTomcatWebappDataDir();
+        if (tomcatDataDir != null && tomcatDataDir.exists()) {
+            return ensureDirectory(tomcatDataDir);
+        }
+
         // In web runtime, prefer WEB-INF/classes-near webapp data directory (same location as MO data).
         File classpathDataDir = resolveDataDirNearClasspath(anchorClass);
         if (classpathDataDir != null && classpathDataDir.exists()) {
@@ -40,6 +49,18 @@ public final class DataFileLocator {
         }
 
         return ensureDirectory(projectDataDir);
+    }
+
+    private static File resolveTomcatWebappDataDir() {
+        String catalinaBase = System.getProperty("catalina.base");
+        if (catalinaBase == null || catalinaBase.trim().isEmpty()) {
+            return null;
+        }
+        String webappName = System.getProperty(WEBAPP_NAME_PROPERTY, DEFAULT_WEBAPP_NAME).trim();
+        if (webappName.isEmpty()) {
+            webappName = DEFAULT_WEBAPP_NAME;
+        }
+        return new File(new File(new File(catalinaBase), "webapps"), webappName + File.separator + "data");
     }
 
     private static File resolveDataDirNearClasspath(Class<?> anchorClass) {

@@ -45,10 +45,13 @@
     <thead>
     <tr>
         <th>Job ID</th>
-        <th>Title</th>
+        <th>MO ID</th>
+        <th>Subject</th>
+        <th>Work Type</th>
         <th>Description</th>
-        <th>Requirements</th>
+        <th>Skill Requirement</th>
         <th>Hours/Week</th>
+        <th>Compensation</th>
         <th>Status</th>
         <th>Action</th>
     </tr>
@@ -57,10 +60,13 @@
     <% for (AdminRecruitment p : posts) { %>
     <tr>
         <td><%= p.getJobId() %></td>
-        <td><%= p.getTitle() %></td>
+        <td><%= p.getMoId() %></td>
+        <td><%= p.getSubject() %></td>
+        <td><%= p.getWorkType() %></td>
         <td><%= p.getDescription() %></td>
         <td><%= p.getRequirements() %></td>
         <td><%= p.getHoursPerWeek() %></td>
+        <td><%= p.getCompensation() %></td>
         <td><%= p.getDisplayStatus() %></td>
         <td>
             <form method="post" action="${pageContext.request.contextPath}/admin/posts">

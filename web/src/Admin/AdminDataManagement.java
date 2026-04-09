@@ -94,29 +94,32 @@ public class AdminDataManagement {
                 }
 
                 String[] parts = parseCsvLine(line);
-                if (parts.length < 5) {
+                if (parts.length < 9) {
                     continue;
                 }
 
                 String jobId = parts[0].trim();
                 String moId = parts.length >= 2 ? parts[1].trim() : "";
-                String jobName = parts.length >= 3 ? unescapeCsvField(parts[2].trim()) : "";
-                String jobRequirements = parts.length >= 4 ? unescapeCsvField(parts[3].trim()) : "";
-                String jobStatus = parts[4].trim();
-                String skillRequirement = parts.length >= 6 ? unescapeCsvField(parts[5].trim()) : "";
+                String subject = unescapeCsvField(parts[2].trim());
+                String workType = unescapeCsvField(parts[3].trim());
+                String description = unescapeCsvField(parts[4].trim());
+                String skillRequirement = unescapeCsvField(parts[5].trim());
+                double hoursPerWeek = safeParseDouble(parts[6].trim(), 0.0);
+                String compensation = unescapeCsvField(parts[7].trim());
+                String jobStatus = unescapeCsvField(parts[8].trim());
 
                 posts.add(new AdminRecruitment(
                         jobId,
-                        jobName,
+                        subject,
+                        subject,
+                        workType,
                         "",
-                        "",
-                        "",
-                        jobRequirements,
+                        description,
                         skillRequirement,
-                        1,
+                        0,
                         "",
-                        0.0,
-                        "",
+                        hoursPerWeek,
+                        compensation,
                         "OPEN".equalsIgnoreCase(jobStatus),
                         moId
                 ));
@@ -129,17 +132,20 @@ public class AdminDataManagement {
 
     public void savePosts(List<AdminRecruitment> posts) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(JOB_FILE, false))) {
-            writer.write("jobId,moId,jobName,jobRequirements,jobStatus,skillRequirement");
+            writer.write("job ID, MO ID, Subject, Work Type, Description, Skill Requirement, Hours/Week, Compensation, Status");
             writer.newLine();
 
             for (AdminRecruitment post : posts) {
                 String jobStatus = post.isOpen() ? "OPEN" : "CLOSED";
                 writer.write(post.getJobId() + ","
                         + post.getMoId() + ","
-                        + escapeCsvField(post.getTitle()) + ","
+                        + escapeCsvField(post.getSubject()) + ","
+                        + escapeCsvField(post.getWorkType()) + ","
                         + escapeCsvField(post.getDescription()) + ","
-                        + jobStatus + ","
-                        + escapeCsvField(post.getRequirements()));
+                        + escapeCsvField(post.getRequirements()) + ","
+                        + post.getHoursPerWeek() + ","
+                        + escapeCsvField(post.getCompensation()) + ","
+                        + jobStatus);
                 writer.newLine();
             }
         }
@@ -194,21 +200,32 @@ public class AdminDataManagement {
     private List<AdminRecruitment> defaultPosts() {
         List<AdminRecruitment> defaults = new ArrayList<>();
         defaults.add(new AdminRecruitment(
-                "J001", "TA - Lab Support", "CS101", "On-site", "Computer Science",
+                "J001", "Programming Fundamentals", "Programming Fundamentals", "On-site", "Computer Science",
                 "Support weekly lab sessions", "Java and basic debugging", 3,
                 "2026-05-01", 8, "18/hour", true, "MO001"
         ));
         defaults.add(new AdminRecruitment(
-                "J002", "TA - Tutorial Support", "CS102", "Hybrid", "Computer Science",
+                "J002", "Algorithms", "Algorithms", "Hybrid", "Computer Science",
                 "Run tutorial Q&A", "Algorithms foundation", 2,
                 "2026-05-05", 6, "20/hour", true, "MO001"
         ));
         defaults.add(new AdminRecruitment(
-                "J003", "TA - Assignment Marking", "CS201", "Remote", "Computer Science",
+                "J003", "Data Management", "Data Management", "Remote", "Computer Science",
                 "Mark assignments weekly", "Fair grading experience", 4,
                 "2026-04-25", 10, "22/hour", false, "MO002"
         ));
         return defaults;
+    }
+
+    private double safeParseDouble(String value, double defaultValue) {
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException ignored) {
+            return defaultValue;
+        }
     }
 
     private String[] parseCsvLine(String line) {
