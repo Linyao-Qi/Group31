@@ -10,14 +10,14 @@ public class MoApplicantReviewService {
 
     
     private static String JOB_FILE_PATH = "data/job.csv";
-    private static String TA_CSV_PATH = "data/ta_profiles.csv";
+    private static String TA_CSV_PATH = "data/profiles.csv";
     private static Map<String, String> TA_SKILL_MAP;
     private static List<String> ALL_TA_IDS;
 
     
     public static void init(ServletContext context) {
         JOB_FILE_PATH = context.getRealPath("data/job.csv");
-        TA_CSV_PATH = context.getRealPath("data/ta_profiles.csv");
+        TA_CSV_PATH = context.getRealPath("data/profiles.csv");
         
         
         TA_SKILL_MAP = TaCsvUtil.loadTaSkills(TA_CSV_PATH);
