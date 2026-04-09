@@ -59,12 +59,11 @@
 <body>
 
     <div class="nav">
-        <!-- ✅ 所有链接全部改成绝对路径 -->
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">查看申请及匹配分</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">Job List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
     </div>
 
     <h2>All Applications</h2>
@@ -78,7 +77,6 @@
         <div class="<%= msgType %>"><%= msg %></div>
     <% } %>
 
-    <!-- ✅ 表单 action 必须改成绝对路径（这是 404 核心原因！） -->
     <div class="login-form">
         <form action="${pageContext.request.contextPath}/moApplicantReview" method="post">
             <input type="text" name="moId" placeholder="MO ID" required>
