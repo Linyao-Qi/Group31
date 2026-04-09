@@ -4,54 +4,67 @@ import model.Profile;
 import service.ProfileService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
+@WebServlet("/profile")
 @MultipartConfig
 public class ProfileServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String id = request.getParameter("id");
+        if (id != null) {
+            for (Profile p : ProfileService.getAllProfiles()) {
+                if (p.getId().equals(id)) {
+                    request.setAttribute("profile", p);
+                    break;
+                }
+            }
+        }
+        request.getRequestDispatcher("profile.jsp").forward(request, response);
+    }
 
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
 
-        // 获取表单数据
         String name = request.getParameter("name");
         String id = request.getParameter("id");
         String email = request.getParameter("email");
         String skills = request.getParameter("skills");
         String major = request.getParameter("major");
 
-        // 获取上传文件
         Part filePart = request.getPart("cv");
-        String fileName = filePart.getSubmittedFileName();
+        String fileName = null;
 
-        // 设置上传路径（不会被Tomcat清掉）
-        String uploadPath = System.getProperty("user.home") + "/Group31/liqimochu/data/profile_uploads";
-        java.io.File uploadDir = new java.io.File(uploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
+        String targetDir = System.getProperty("user.home") + "/Group31/liqimochu/web/profile_uploads";
+        File dir = new File(targetDir);
+        if (!dir.exists()) dir.mkdirs();
 
-        String filePath = uploadPath + "/" + fileName;
-        filePart.write(filePath);
+        if (filePart != null && filePart.getSize() > 0) {
+            fileName = new File(filePart.getSubmittedFileName()).getName();
 
-        // 构建对象
-        Profile profile = new Profile(name, id, email, skills, major, filePath);
+            File targetFile = new File(dir, fileName);
 
-        // 保存
-        ProfileService.saveProfile(profile);
+            try (InputStream in = filePart.getInputStream()) {
+                Files.copy(in, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } else {
+            fileName = request.getParameter("existingCv");
+            if (fileName == null) fileName = "";
+        }
 
-        response.sendRedirect(request.getContextPath() + "/profile");
-    }
+        Profile profile = new Profile(name, id, email, skills, major, fileName);
+        ProfileService.saveOrUpdate(profile);
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        Profile profile = ProfileService.loadProfile();
-
-        request.setAttribute("profile", profile);
-
-        request.getRequestDispatcher("/profile.jsp").forward(request, response);
+        response.sendRedirect("list");
     }
 }
