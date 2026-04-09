@@ -4,35 +4,92 @@
 <head>
     <title>Applicant List</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #ffffff;
+            padding: 40px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #000000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 18px;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* 按钮样式 */
         .edit-btn {
-            padding: 4px 10px;
-            background: #4CAF50;
+            padding: 8px 16px;
+            background: #28a745;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-right: 4px;
+        }
+        .delete-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
         }
         .back-btn {
-            margin-top: 20px;
-            padding: 8px 16px;
-            background: #2196F3;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+            padding: 18px;
+            background: #2563eb;
             color: white;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
             text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
+
 <h2>All Applicants</h2>
 
-<table border="1" cellpadding="6" cellspacing="0">
+<table>
     <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Email</th>
         <th>Skills</th>
         <th>CV</th>
-        <th>Operation</th> <!-- 改为操作列 -->
+        <th>Operation</th>
     </tr>
 
     <%
@@ -47,12 +104,16 @@
         <td><%= p.getSkills() %></td>
 
         <td>
-            <a href="profile_uploads/<%= p.getCvPath() %>" target="_blank">View PDF</a>
+            <a href="profile_uploads/<%= p.getCvPath() %>" target="_blank" style="color:#0d6efd">View PDF</a>
         </td>
 
-        <!-- 独立的 Edit 按钮 -->
         <td>
             <a href="profile?id=<%= p.getId() %>" class="edit-btn">Edit</a>
+            <a href="delete?id=<%= p.getId() %>"
+               class="delete-btn"
+               onclick="return confirm('Are you sure you want to delete this profile?');">
+                Delete
+            </a>
         </td>
     </tr>
     <%
@@ -61,8 +122,7 @@
     %>
 </table>
 
-<!-- 返回首页按钮 -->
-<a href="index.jsp" class="back-btn">Return to Home</a>
+<a href="index.jsp" class="back-btn">Back</a>
 
 </body>
 </html>
