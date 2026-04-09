@@ -30,7 +30,7 @@
     </style>
 </head>
 <body>
-<h2>CheckWorkload (Web)</h2>
+<h2>CheckWorkload</h2>
 <div class="top">
     <div>Total Active TAs: <strong><%= request.getAttribute("totalActiveTAs") %></strong></div>
     <div>Total Assigned Modules: <strong><%= request.getAttribute("totalAssignedModules") %></strong></div>

@@ -20,6 +20,10 @@ public class AdminWorkloadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
+            return;
+        }
+
         HttpSession session = req.getSession();
         if ("1".equals(req.getParameter("refresh"))) {
             reloadFromRepository(session);
@@ -58,6 +62,10 @@ public class AdminWorkloadServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
+            return;
+        }
+
         HttpSession session = req.getSession();
         List<AdminWorkload> drafts = AdminWebSessionState.getWorkloadDraft(session);
         if (drafts == null) {

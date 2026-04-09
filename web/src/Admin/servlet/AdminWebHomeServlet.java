@@ -11,6 +11,9 @@ import java.io.IOException;
 public class AdminWebHomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
+            return;
+        }
 
         req.getRequestDispatcher("/jsp/Admin/home.jsp").forward(req, resp);
     }

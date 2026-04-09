@@ -20,22 +20,23 @@ public class AdminClosePostServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
+            return;
+        }
 
 
         HttpSession session = req.getSession();
-        if ("1".equals(req.getParameter("refresh"))) {
-            reloadFromRepository(session);
-        }
-
         List<AdminRecruitment> drafts = AdminWebSessionState.getPostDraft(session);
-        if (drafts == null) {
+        boolean hasUnsavedChanges = AdminWebSessionState.hasUnsavedPostChanges(session);
+        if ("1".equals(req.getParameter("refresh")) || drafts == null || !hasUnsavedChanges) {
             reloadFromRepository(session);
             drafts = AdminWebSessionState.getPostDraft(session);
+            hasUnsavedChanges = AdminWebSessionState.hasUnsavedPostChanges(session);
         }
 
         req.setAttribute("posts", drafts);
         req.setAttribute("openPostsCount", adminService.countOpenPosts(drafts));
-        req.setAttribute("hasUnsavedChanges", AdminWebSessionState.hasUnsavedPostChanges(session));
+        req.setAttribute("hasUnsavedChanges", hasUnsavedChanges);
         Object message = session.getAttribute("admin.post.message");
         if (message != null) {
             req.setAttribute("message", String.valueOf(message));
@@ -46,6 +47,9 @@ public class AdminClosePostServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
+            return;
+        }
 
 
         HttpSession session = req.getSession();
