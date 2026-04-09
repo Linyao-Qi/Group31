@@ -7,10 +7,14 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-  <head>
-    <title>$Title$</title>
-  </head>
-  <body>
-  $END$
-  </body>
+<head>
+    <title>Title</title>
+</head>
+<body>
+<h2>Welcome</h2>
+
+<a href="profile">Fill Form</a >
+<br><br>
+<a href="list">View Submitted Data</a >
+</body>
 </html>
