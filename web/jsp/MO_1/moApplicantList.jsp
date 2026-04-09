@@ -8,42 +8,42 @@
 <%@ page import="java.util.HashMap" %>
 <html>
 <head>
-    <title>我的待审核申请者</title>
+    <title>Applicant Management</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 1000px; margin: 50px auto; padding: 0 20px;}
+        body {font-family: Arial, sans-serif; max-width: 1400px; margin: 50px auto; padding: 0 20px;}
         .nav {margin-bottom: 30px; text-align: center;}
         .nav a {margin: 0 10px; color: #2563eb; text-decoration: none; font-size: 16px;}
         .nav a:hover {text-decoration: underline;}
-        table {width:100%; border-collapse:collapse; margin:20px 0; font-size: 16px;}
-        th,td {border:1px solid #ddd; padding:15px; text-align:center;}
-        th {background:#f8fafc; font-size: 17px;}
-        .intro, .req {text-align: left; max-width: 220px; word-break: break-word;}
-        .btn-hire {padding:8px 16px; background:#16a34a; color:white; border:none; border-radius:4px; cursor:pointer; font-size: 14px;}
-        .btn-cancel {padding:8px 16px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size: 14px;}
+        table {width:100%; border-collapse:collapse; margin:20px 0; font-size: 14px;}
+        th,td {border:1px solid #ddd; padding:10px; text-align:center;}
+        th {background:#f8fafc; font-size: 14px;}
+        .intro {text-align: left; max-width: 180px; word-break: break-word;}
+        .btn-hire {padding:6px 12px; background:#16a34a; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
+        .btn-cancel {padding:6px 12px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
         .btn-hire:hover {background:#15803d;}
         .btn-cancel:hover {background:#dc2626;}
         .msg {
-            margin:20px 0; 
-            padding:15px; 
-            border-radius: 6px; 
-            text-align:center; 
+            margin:20px 0;
+            padding:15px;
+            border-radius: 6px;
+            text-align:center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
         }
         .success {background:#dcfce7; color:#166534;}
         .fail {background:#fee2e2; color:#991b1b;}
-        .empty {text-align:center; margin-top: 30px; color: #666; font-size: 18px;}
+        .empty {text-align:center; margin-top: 30px; color: #666; font-size: 16px;}
         .pending {color: #f59e0b; font-weight: bold;}
         .accepted {color: #16a34a; font-weight: bold;}
         .return-btn {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: #2563eb;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             margin-top: 20px;
         }
         .return-btn:hover {background: #1d4ed8;}
@@ -56,7 +56,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .auth-box div {margin: 15px 0;}
-        .auth-box label {display: inline-block; width: 80px; font-size: 16px;}
+        .auth-box label {display: inline-block; width: 90px; font-size: 16px;}
         .auth-box input {
             width: 250px;
             padding: 8px;
@@ -78,13 +78,17 @@
 </head>
 <body>
     <div class="nav">
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">Job List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
     </div>
 
 <%
+    // 初始化路径，避免空指针
+    MoService.init(getServletContext());
+    AuthUtil.init(getServletContext());
+
     request.setCharacterEncoding("UTF-8");
     String moId = request.getParameter("moId");
     String password = request.getParameter("password");
@@ -103,12 +107,12 @@
 
             if (appId != null) {
                 Application result = moService.acceptApplicant(moId, appId);
-                msg = (result != null) ? "录用成功！" : "录用失败！";
+                msg = (result != null) ? "Hired successfully!" : "Hire failed!";
             }
 
             if (cancelAppId != null) {
                 boolean result = moService.cancelApplicant(moId, cancelAppId);
-                msg = result ? "取消录用成功！" : "取消录用失败！";
+                msg = result ? "Cancel hire successfully!" : "Cancel hire failed!";
             }
 
             appList = moService.getAllApps(moId, password, false);
@@ -117,14 +121,13 @@
                 jobMap.put(j.getJobId(), j);
             }
         } else {
-            // 认证失败，跳回登录页并携带错误参数
             response.sendRedirect("${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp?error=1");
             return;
         }
     }
 %>
 
-    <h2 align="center">MO【<%=moId != null ? moId : ""%>】- 申请者管理</h2>
+    <h2 align="center">Applicant Management - MO: <%=moId != null ? moId : ""%></h2>
     
     <% if (msg != null) { %>
         <div class="msg success"><%= msg %></div>
@@ -134,61 +137,67 @@
         <div class="auth-box">
             <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post">
                 <div>
-                    <label>MO ID：</label>
-                    <input type="text" name="moId" required placeholder="请输入MO ID">
+                    <label>MO ID:</label>
+                    <input type="text" name="moId" required placeholder="Enter MO ID">
                 </div>
                 <div>
-                    <label>密码：</label>
-                    <input type="password" name="password" required placeholder="请输入密码">
+                    <label>Password:</label>
+                    <input type="password" name="password" required placeholder="Enter password">
                 </div>
                 <div style="text-align:center; margin-top:15px;">
-                    <button type="submit">验证身份并查看</button>
+                    <button type="submit">Authenticate & View</button>
                 </div>
             </form>
         </div>
     <% } else { %>
         <% if (appList == null || appList.isEmpty()) { %>
-            <div class="empty">暂无申请者数据</div>
+            <div class="empty">No applicants yet</div>
         <% } else { %>
         <table>
             <tr>
-                <th>申请ID</th>
-                <th>岗位名称</th>
-                <th>岗位需求</th>
-                <th>TA介绍</th>
-                <th>申请状态</th>
-                <th>操作</th>
+                <th>App ID</th>
+                <th>Name</th>
+                <th>Job ID</th>
+                <th>TA ID</th>
+                <th>Major</th>
+                <th>Intro</th>
+                <th>Skills</th>
+                <th>Email</th>
+                <th>CV</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
             <%
                 for (Application app : appList) {
                     Job job = jobMap.get(app.getJobId());
-                    String jobName = (job == null) ? "未知岗位" : job.getJobName();
-                    String jobReq = (job == null) ? "无" : job.getJobRequirements();
                     String status = app.getAppStatus();
                     String statusClass = "ACCEPTED".equals(status) ? "accepted" : "pending";
             %>
             <tr>
                 <td><%= app.getAppId() %></td>
-                <td><%= jobName %></td>
-                <td class="req"><%= jobReq %></td>
+                <td><%= app.getName() %></td>
+                <td><%= app.getJobId() %></td>
+                <td><%= app.getTaId() %></td>
+                <td><%= app.getMajor() %></td>
                 <td class="intro"><%= app.getIntro() %></td>
-                <td class="<%= statusClass %>">
-                    <%= "ACCEPTED".equals(status) ? "已录用" : "未录用" %>
-                </td>
+                <td><%= app.getSkills() %></td>
+                <td><%= app.getEmail() %></td>
+                <td><%= app.getCVpath() == null ? "-" : app.getCVpath() %></td>
+                <td class="<%= statusClass %>"><%= status %></td>
                 <td>
                     <% if ("ACCEPTED".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
                             <input type="hidden" name="cancelAppId" value="<%= app.getAppId() %>">
                             <input type="hidden" name="moId" value="<%= moId %>">
                             <input type="hidden" name="password" value="<%= password %>">
-                            <button type="submit" class="btn-cancel" onclick="return confirm('确定要取消该申请者的录用吗？');">取消录用</button>
+                            <button type="submit" class="btn-cancel" onclick="return confirm('Cancel this hire?');">Cancel Hire</button>
                         </form>
                     <% } else { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
                             <input type="hidden" name="appId" value="<%= app.getAppId() %>">
                             <input type="hidden" name="moId" value="<%= moId %>">
                             <input type="hidden" name="password" value="<%= password %>">
-                            <button type="submit" class="btn-hire" onclick="return confirm('确定要录用该申请者吗？');">录用</button>
+                            <button type="submit" class="btn-hire" onclick="return confirm('Hire this applicant?');">Hire</button>
                         </form>
                     <% } %>
                 </td>
@@ -198,7 +207,7 @@
         <% } %>
     <% } %>
     
-    <button onclick="window.location.href='${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp'" class="return-btn">返回验证</button>
+    <button onclick="window.location.href='${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp'" class="return-btn">Back</button>
     
 </body>
 </html>
