@@ -46,7 +46,6 @@
         <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">Job List</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
     </div>
 
     <h2 align="center">TA Application List</h2>
