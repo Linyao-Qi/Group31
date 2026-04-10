@@ -96,12 +96,11 @@
     boolean authPass = false;
     List<Application> appList = null;
     String msg = null;
+    boolean isFail = false;
     Map<String, Job> jobMap = new HashMap<>();
 
     String appId = request.getParameter("appId");
     String cancelAppId = request.getParameter("cancelAppId");
-    String rejectAppId = request.getParameter("rejectAppId");
-    String unrejectAppId = request.getParameter("unrejectAppId");
 
     if (moId != null && password != null) {
         if (AuthUtil.authenticateMO(moId, password)) {
@@ -109,22 +108,20 @@
 
             if (appId != null) {
                 Application result = moService.acceptApplicant(moId, appId);
-                msg = (result != null) ? "Hired successfully!" : "Hire failed!";
+                if (result != null) {
+                    msg = "Hired successfully!";
+                    isFail = false;
+                } else {
+                    // 这里显示超过最大录用人数提示
+                    msg = "Hire failed! Exceeded max hire limit.";
+                    isFail = true;
+                }
             }
 
             if (cancelAppId != null) {
                 boolean result = moService.cancelApplicant(moId, cancelAppId);
                 msg = result ? "Cancel hire successfully!" : "Cancel hire failed!";
-            }
-
-            if (rejectAppId != null) {
-                boolean result = moService.rejectApplicant(moId, rejectAppId);
-                msg = result ? "Applicant rejected." : "Reject failed!";
-            }
-
-            if (unrejectAppId != null) {
-                boolean result = moService.unrejectApplicant(moId, unrejectAppId);
-                msg = result ? "Rejection cancelled. Application restored to PENDING." : "Cancel reject failed!";
+                isFail = !result;
             }
 
             appList = moService.getAllApps(moId, password, false);
@@ -142,7 +139,7 @@
     <h2 align="center">Applicant Management - MO: <%=moId != null ? moId : ""%></h2>
     
     <% if (msg != null) { %>
-        <div class="msg success"><%= msg %></div>
+        <div class="msg <%= isFail ? "fail" : "success" %>"><%= msg %></div>
     <% } %>
 
     <% if (!authPass) { %>
@@ -183,8 +180,7 @@
                 for (Application app : appList) {
                     Job job = jobMap.get(app.getJobId());
                     String status = app.getAppStatus();
-                    String statusClass = "ACCEPTED".equals(status) ? "accepted"
-                                      : "REJECTED".equals(status) ? "rejected" : "pending";
+                    String statusClass = "ACCEPTED".equals(status) ? "accepted" : "pending";
             %>
             <tr>
                 <td><%= app.getAppId() %></td>
@@ -205,30 +201,13 @@
                             <input type="hidden" name="password" value="<%= password %>">
                             <button type="submit" class="btn-cancel" onclick="return confirm('Cancel this hire?');">Cancel Hire</button>
                         </form>
-                    <% } else if ("PENDING".equals(status)) { %>
-                        <div style="display:flex;gap:6px;justify-content:center;">
-                            <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
-                                <input type="hidden" name="appId" value="<%= app.getAppId() %>">
-                                <input type="hidden" name="moId" value="<%= moId %>">
-                                <input type="hidden" name="password" value="<%= password %>">
-                                <button type="submit" class="btn-hire" onclick="return confirm('Hire this applicant?');">Hire</button>
-                            </form>
-                            <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
-                                <input type="hidden" name="rejectAppId" value="<%= app.getAppId() %>">
-                                <input type="hidden" name="moId" value="<%= moId %>">
-                                <input type="hidden" name="password" value="<%= password %>">
-                                <button type="submit" class="btn-reject" onclick="return confirm('Reject this applicant?');">Reject</button>
-                            </form>
-                        </div>
-                    <% } else if ("REJECTED".equals(status)) { %>
+                    <% } else { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
-                            <input type="hidden" name="unrejectAppId" value="<%= app.getAppId() %>">
+                            <input type="hidden" name="appId" value="<%= app.getAppId() %>">
                             <input type="hidden" name="moId" value="<%= moId %>">
                             <input type="hidden" name="password" value="<%= password %>">
-                            <button type="submit" class="btn-hire" onclick="return confirm('Cancel rejection and restore to PENDING?');">Cancel Reject</button>
+                            <button type="submit" class="btn-hire" onclick="return confirm('Hire this applicant?');">Hire</button>
                         </form>
-                    <% } else { %>
-                        —
                     <% } %>
                 </td>
             </tr>
