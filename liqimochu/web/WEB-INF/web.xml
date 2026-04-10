@@ -6,16 +6,7 @@
          version="5.0">
 
     <welcome-file-list>
-        <welcome-file>profile.jsp</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
-    <servlet>
-        <servlet-name>ProfileServlet</servlet-name>
-        <servlet-class>servlet.ProfileServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>ProfileServlet</servlet-name>
-        <url-pattern>/profile</url-pattern>
-    </servlet-mapping>
 </web-app>

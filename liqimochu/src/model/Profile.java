@@ -25,5 +25,10 @@ public class Profile {
     public String getMajor() { return major; }
     public String getCvPath() { return cvPath; }
 
+    public void setName(String name) { this.name = name; }
+    public void setId(String id) { this.id = id; }
+    public void setEmail(String email) { this.email = email; }
+    public void setSkills(String skills) { this.skills = skills; }
+    public void setMajor(String major) { this.major = major; }
     public void setCvPath(String cvPath) { this.cvPath = cvPath; }
 }
