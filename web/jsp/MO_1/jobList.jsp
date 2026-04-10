@@ -7,7 +7,7 @@
 <head>
     <title>TA Job List</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 900px; margin: 50px auto; padding: 0 20px;}
+        body {font-family: Arial, sans-serif; max-width: 1100px; margin: 50px auto; padding: 0 20px;}
         table {width: 100%; border-collapse: collapse; margin-top: 20px;}
         th, td {border: 1px solid #ddd; padding: 12px; text-align: center;}
         th {background: #f8fafc; color: #333;}
@@ -47,6 +47,7 @@
             <th>Skill Requirement</th>
             <th>Hours/Week</th>
             <th>Compensation</th>
+            <th>Max Hire</th> <!-- 新增 -->
             <th>Status</th>
         </tr>
         <%
@@ -60,6 +61,7 @@
                 out.print("<td>" + job.getSkillRequirement() + "</td>");
                 out.print("<td>" + job.getHoursPerWeek() + "</td>");
                 out.print("<td>" + job.getCompensation() + "</td>");
+                out.print("<td>" + job.getMaxHire() + "</td>"); 
                 out.print("<td>" + job.getStatus() + "</td>");
                 out.print("</tr>");
             }
