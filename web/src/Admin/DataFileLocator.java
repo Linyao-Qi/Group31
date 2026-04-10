@@ -9,6 +9,7 @@ public final class DataFileLocator {
     private static final String DATA_DIR_PROPERTY = "tajobsystem.data.dir";
     private static final String DATA_DIR_ENV = "TAJOBSYSTEM_DATA_DIR";
     private static final String WEBAPP_NAME_PROPERTY = "tajobsystem.webapp.name";
+    private static final String DEFAULT_WEBAPP_NAME = "group31-web";
 
     private DataFileLocator() {
     }
@@ -16,11 +17,6 @@ public final class DataFileLocator {
     public static File resolveDataFile(String filename, Class<?> anchorClass) {
         File dataDir = resolveDataDirectory(anchorClass);
         return new File(dataDir, filename);
-    }
-
-    public static File resolveWebDataFile(String filename, Class<?> anchorClass) {
-        File webDataDir = resolveWebDataDirectory(anchorClass);
-        return new File(webDataDir, filename);
     }
 
     private static File resolveDataDirectory(Class<?> anchorClass) {
@@ -55,52 +51,16 @@ public final class DataFileLocator {
         return ensureDirectory(projectDataDir);
     }
 
-    private static File resolveWebDataDirectory(Class<?> anchorClass) {
-        File webDataFromTomcat = resolveTomcatWebappWebDataDir();
-        if (webDataFromTomcat != null) {
-            return ensureDirectory(webDataFromTomcat);
-        }
-
-        try {
-            URL location = anchorClass.getProtectionDomain().getCodeSource().getLocation();
-            if (location != null) {
-                File codeSource = new File(location.toURI());
-                if (!codeSource.isFile()) {
-                    File webAppRoot = new File(new File(codeSource, ".." + File.separator + ".."), "");
-                    return ensureDirectory(new File(webAppRoot.getCanonicalFile(), "web" + File.separator + "data"));
-                }
-            }
-        } catch (URISyntaxException | java.io.IOException ignored) {
-        }
-
-        return ensureDirectory(new File(System.getProperty("user.dir"), "web" + File.separator + "data"));
-    }
-
     private static File resolveTomcatWebappDataDir() {
         String catalinaBase = System.getProperty("catalina.base");
         if (catalinaBase == null || catalinaBase.trim().isEmpty()) {
             return null;
         }
-        String webappName = System.getProperty(WEBAPP_NAME_PROPERTY);
-        if (webappName == null || webappName.trim().isEmpty()) {
-            // No explicit webapp name configured. Let caller fall back to classpath-based data resolution.
-            return null;
+        String webappName = System.getProperty(WEBAPP_NAME_PROPERTY, DEFAULT_WEBAPP_NAME).trim();
+        if (webappName.isEmpty()) {
+            webappName = DEFAULT_WEBAPP_NAME;
         }
-        webappName = webappName.trim();
         return new File(new File(new File(catalinaBase), "webapps"), webappName + File.separator + "data");
-    }
-
-    private static File resolveTomcatWebappWebDataDir() {
-        String catalinaBase = System.getProperty("catalina.base");
-        if (catalinaBase == null || catalinaBase.trim().isEmpty()) {
-            return null;
-        }
-        String webappName = System.getProperty(WEBAPP_NAME_PROPERTY);
-        if (webappName == null || webappName.trim().isEmpty()) {
-            return null;
-        }
-        webappName = webappName.trim();
-        return new File(new File(new File(catalinaBase), "webapps"), webappName + File.separator + "web" + File.separator + "data");
     }
 
     private static File resolveDataDirNearClasspath(Class<?> anchorClass) {

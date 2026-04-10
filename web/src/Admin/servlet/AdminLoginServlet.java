@@ -23,7 +23,7 @@ public class AdminLoginServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/home");
             return;
         }
-        req.getRequestDispatcher("/jsp/admin/login.jsp").forward(req, resp);
+        req.getRequestDispatcher("/jsp/Admin/login.jsp").forward(req, resp);
     }
 
     @Override
@@ -36,14 +36,14 @@ public class AdminLoginServlet extends HttpServlet {
 
         if (username.isEmpty() || password.isEmpty()) {
             req.setAttribute("error", "Please input both username and password.");
-            req.getRequestDispatcher("/jsp/admin/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/jsp/Admin/login.jsp").forward(req, resp);
             return;
         }
 
         if (!authService.validateCredentials(username, password)) {
             req.setAttribute("error", "Invalid username or password.");
             req.setAttribute("username", username);
-            req.getRequestDispatcher("/jsp/admin/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/jsp/Admin/login.jsp").forward(req, resp);
             return;
         }
 

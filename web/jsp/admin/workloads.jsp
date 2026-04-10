@@ -6,8 +6,10 @@
     List<AdminWorkload> workloads = (List<AdminWorkload>) request.getAttribute("workloads");
     Set<String> moduleCodes = (Set<String>) request.getAttribute("moduleCodes");
     Set<String> statuses = (Set<String>) request.getAttribute("statuses");
+    Set<String> moIds = (Set<String>) request.getAttribute("moIds");
     String selectedModuleCode = request.getAttribute("selectedModuleCode") == null ? "" : String.valueOf(request.getAttribute("selectedModuleCode"));
     String selectedStatus = request.getAttribute("selectedStatus") == null ? "" : String.valueOf(request.getAttribute("selectedStatus"));
+    String selectedMoId = request.getAttribute("selectedMoId") == null ? "" : String.valueOf(request.getAttribute("selectedMoId"));
     String message = (String) request.getAttribute("message");
     Boolean hasUnsaved = (Boolean) request.getAttribute("hasUnsavedChanges");
 %>
@@ -54,6 +56,13 @@
         <option value="<%= value %>" <%= value.equals(selectedStatus) ? "selected" : "" %>><%= value %></option>
         <% } %>
     </select>
+    MO ID:
+    <select name="moId">
+        <option value="">All</option>
+        <% for (String value : moIds) { %>
+        <option value="<%= value %>" <%= value.equals(selectedMoId) ? "selected" : "" %>><%= value %></option>
+        <% } %>
+    </select>
     <button type="submit">Apply</button>
 </form>
 
@@ -73,6 +82,8 @@
 <table>
     <thead>
     <tr>
+        <th>MO Name</th>
+        <th>MO ID</th>
         <th>TA ID</th>
         <th>TA Name</th>
         <th>Module Name</th>
@@ -86,6 +97,8 @@
     <tbody>
     <% for (AdminWorkload w : workloads) { %>
     <tr>
+        <td><%= w.getMoName() %></td>
+        <td><%= w.getMoId() %></td>
         <td><%= w.getTaId() %></td>
         <td><%= w.getTaName() %></td>
         <td><%= w.getModuleName() %></td>
@@ -98,8 +111,10 @@
                 <input type="hidden" name="action" value="reassign"/>
                 <input type="hidden" name="taId" value="<%= w.getTaId() %>"/>
                 <input type="hidden" name="moduleCode" value="<%= w.getModuleCode() %>"/>
+                <input type="hidden" name="moId" value="<%= w.getMoId() %>"/>
                 <input type="hidden" name="selectedModuleCode" value="<%= selectedModuleCode %>"/>
                 <input type="hidden" name="selectedStatus" value="<%= selectedStatus %>"/>
+                <input type="hidden" name="selectedMoId" value="<%= selectedMoId %>"/>
                 <button type="submit" <%= "Overloaded".equalsIgnoreCase(w.getStatus()) ? "" : "disabled" %>>Reassign</button>
             </form>
         </td>

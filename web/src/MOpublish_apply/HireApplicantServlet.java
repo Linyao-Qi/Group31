@@ -14,6 +14,7 @@ public class HireApplicantServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         String moId = request.getParameter("moId");
+        String password = request.getParameter("password");
         String appId = request.getParameter("appId");
 
         MoService moService = new MoService();
@@ -22,9 +23,14 @@ public class HireApplicantServlet extends HttpServlet {
         if (result != null) {
             request.setAttribute("msg", "Hired successfully! Status updated.");
         } else {
-            request.setAttribute("msg", "Hire failed: No permission / Not exists / Already processed.");
+            // 这里改成 超过最大录用人数 的提示！
+            request.setAttribute("msg", "Hire failed! Exceeded max hire limit.");
         }
 
+        // 把密码传回去，保持登录状态
+        request.setAttribute("moId", moId);
+        request.setAttribute("password", password);
+        
         request.getRequestDispatcher("/jsp/MO_1/moApplicantList.jsp").forward(request, response);
     }
 }

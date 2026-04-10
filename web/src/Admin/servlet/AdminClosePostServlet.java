@@ -42,7 +42,7 @@ public class AdminClosePostServlet extends HttpServlet {
             req.setAttribute("message", String.valueOf(message));
             session.removeAttribute("admin.post.message");
         }
-        req.getRequestDispatcher("/jsp/admin/posts.jsp").forward(req, resp);
+        req.getRequestDispatcher("/jsp/Admin/posts.jsp").forward(req, resp);
     }
 
     @Override
