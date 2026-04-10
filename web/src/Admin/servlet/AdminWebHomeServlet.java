@@ -15,6 +15,6 @@ public class AdminWebHomeServlet extends HttpServlet {
             return;
         }
 
-        req.getRequestDispatcher("/jsp/admin/home.jsp").forward(req, resp);
+        req.getRequestDispatcher("/jsp/Admin/home.jsp").forward(req, resp);
     }
 }
