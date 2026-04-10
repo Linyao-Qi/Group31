@@ -56,4 +56,3 @@ public class AdminLoginServlet extends HttpServlet {
         return value == null ? "" : value.trim();
     }
 }
-

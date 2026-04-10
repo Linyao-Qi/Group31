@@ -120,4 +120,3 @@ public class AdminWorkloadServlet extends HttpServlet {
         return value == null ? "" : value.trim();
     }
 }
-

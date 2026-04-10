@@ -105,4 +105,3 @@ public class AdminWorkload {
         this.status = status;
     }
 }
-

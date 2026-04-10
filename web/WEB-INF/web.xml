@@ -4,69 +4,6 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <servlet>
-        <servlet-name>adminLoginServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminLoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminLoginServlet</servlet-name>
-        <url-pattern>/admin/login</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>adminLogoutServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminLogoutServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminLogoutServlet</servlet-name>
-        <url-pattern>/admin/logout</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>adminWebHomeServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminWebHomeServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminWebHomeServlet</servlet-name>
-        <url-pattern>/admin/home</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>adminWorkloadServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminWorkloadServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminWorkloadServlet</servlet-name>
-        <url-pattern>/admin/workloads</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>adminClosePostServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminClosePostServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminClosePostServlet</servlet-name>
-        <url-pattern>/admin/posts</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>adminLiveViewServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminLiveViewServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminLiveViewServlet</servlet-name>
-        <url-pattern>/admin/live</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>adminLiveDataServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminLiveDataServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminLiveDataServlet</servlet-name>
-        <url-pattern>/admin/live/data</url-pattern>
-    </servlet-mapping>
-
     <welcome-file-list>
         <welcome-file>publishJob.jsp</welcome-file>
     </welcome-file-list>
@@ -88,4 +25,3 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>
-

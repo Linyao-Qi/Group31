@@ -64,4 +64,3 @@ public final class AdminWebSessionState {
         session.setAttribute(POSTS_UNSAVED_KEY, unsaved);
     }
 }
-

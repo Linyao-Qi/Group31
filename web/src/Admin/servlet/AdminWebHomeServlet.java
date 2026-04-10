@@ -18,4 +18,3 @@ public class AdminWebHomeServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/Admin/home.jsp").forward(req, resp);
     }
 }
-
