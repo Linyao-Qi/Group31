@@ -37,15 +37,11 @@ public class AdminWorkloadServlet extends HttpServlet {
 
         String moduleCode = safeParam(req.getParameter("moduleCode"));
         String status = safeParam(req.getParameter("status"));
-        String moId = safeParam(req.getParameter("moId"));
-
-        List<AdminWorkload> filtered = workloadDomainService.filterWorkloads(drafts, moduleCode, status, moId);
+        List<AdminWorkload> filtered = workloadDomainService.filterWorkloads(drafts, moduleCode, status);
         req.setAttribute("moduleCodes", workloadDomainService.collectModuleCodes(drafts));
         req.setAttribute("statuses", workloadDomainService.collectStatuses(drafts));
-        req.setAttribute("moIds", workloadDomainService.collectMoIds(drafts));
         req.setAttribute("selectedModuleCode", moduleCode);
         req.setAttribute("selectedStatus", status);
-        req.setAttribute("selectedMoId", moId);
         req.setAttribute("workloads", filtered);
         req.setAttribute("totalActiveTAs", adminService.getTotalActiveTAs(filtered));
         req.setAttribute("totalAssignedModules", adminService.getTotalAssignedModules(filtered));
@@ -57,7 +53,7 @@ public class AdminWorkloadServlet extends HttpServlet {
             req.setAttribute("message", String.valueOf(message));
             session.removeAttribute("admin.workload.message");
         }
-        req.getRequestDispatcher("/jsp/Admin/workloads.jsp").forward(req, resp);
+        req.getRequestDispatcher("/jsp/admin/workloads.jsp").forward(req, resp);
     }
 
     @Override
@@ -78,8 +74,7 @@ public class AdminWorkloadServlet extends HttpServlet {
         if ("reassign".equals(action)) {
             String taId = safeParam(req.getParameter("taId"));
             String moduleCode = safeParam(req.getParameter("moduleCode"));
-            String moId = safeParam(req.getParameter("moId"));
-            if (workloadDomainService.markReassigning(drafts, taId, moduleCode, moId)) {
+            if (workloadDomainService.markReassigning(drafts, taId, moduleCode)) {
                 adminService.recalculateTotalsAndStatusesInMemory(drafts);
                 AdminWebSessionState.setWorkloadDraft(session, drafts);
                 AdminWebSessionState.setUnsavedWorkloadChanges(session, true);
@@ -104,8 +99,7 @@ public class AdminWorkloadServlet extends HttpServlet {
 
         String moduleCode = safeParam(req.getParameter("selectedModuleCode"));
         String status = safeParam(req.getParameter("selectedStatus"));
-        String moId = safeParam(req.getParameter("selectedMoId"));
-        resp.sendRedirect(req.getContextPath() + "/admin/workloads?moduleCode=" + moduleCode + "&status=" + status + "&moId=" + moId);
+        resp.sendRedirect(req.getContextPath() + "/admin/workloads?moduleCode=" + moduleCode + "&status=" + status);
     }
 
 

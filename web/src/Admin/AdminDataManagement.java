@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AdminDataManagement {
     private static final File WORKLOAD_FILE =
-            DataFileLocator.resolveDataFile("workloads.csv", AdminDataManagement.class);
+            DataFileLocator.resolveWebDataFile("workloads.csv", AdminDataManagement.class);
     private static final File JOB_FILE =
             DataFileLocator.resolveDataFile("job.csv", AdminDataManagement.class);
 
@@ -32,22 +32,22 @@ public class AdminDataManagement {
                     continue;
                 }
 
-                String[] parts = line.split(",", -1);
-                if (parts.length < 8) {
+                String[] parts = parseCsvLine(line);
+                if (parts.length < 7) {
                     continue;
                 }
 
                 AdminWorkload workload = new AdminWorkload(
+                        "",
+                        "",
                         parts[0].trim(),
                         parts[1].trim(),
                         parts[2].trim(),
                         parts[3].trim(),
-                        parts[4].trim(),
-                        parts[5].trim(),
-                        Double.parseDouble(parts[6].trim()),
-                        Double.parseDouble(parts[7].trim())
+                        Double.parseDouble(parts[4].trim()),
+                        Double.parseDouble(parts[5].trim())
                 );
-                String status = parts.length >= 9 ? parts[8].trim() : "Normal";
+                String status = parts.length >= 7 ? parts[6].trim() : "Normal";
                 workload.setStatus(status.isEmpty() ? "Normal" : status);
                 workloads.add(workload);
             }
@@ -58,13 +58,11 @@ public class AdminDataManagement {
 
     public void saveWorkloads(List<AdminWorkload> workloads) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(WORKLOAD_FILE, false))) {
-            writer.write("moName,moId,taId,taName,moduleName,moduleCode,courseWorkHour,taTotalWorkHour,status");
+            writer.write("taId,taName,moduleName,moduleCode,courseWorkHour,taTotalWorkHour,status");
             writer.newLine();
 
             for (AdminWorkload workload : workloads) {
-                writer.write(workload.getMoName() + ","
-                        + workload.getMoId() + ","
-                        + workload.getTaId() + ","
+                writer.write(workload.getTaId() + ","
                         + workload.getTaName() + ","
                         + workload.getModuleName() + ","
                         + workload.getModuleCode() + ","
