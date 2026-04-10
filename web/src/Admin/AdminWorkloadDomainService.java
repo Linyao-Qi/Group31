@@ -8,17 +8,15 @@ import java.util.TreeSet;
 
 public class AdminWorkloadDomainService {
 
-    public List<AdminWorkload> filterWorkloads(List<AdminWorkload> workloads, String moduleCode, String status, String moId) {
+    public List<AdminWorkload> filterWorkloads(List<AdminWorkload> workloads, String moduleCode, String status) {
         boolean byModule = !isBlank(moduleCode);
         boolean byStatus = !isBlank(status);
-        boolean byMoId = !isBlank(moId);
 
         List<AdminWorkload> filtered = new ArrayList<>();
         for (AdminWorkload workload : workloads) {
             boolean moduleMatch = !byModule || moduleCode.equals(valueOrEmpty(workload.getModuleCode()));
             boolean statusMatch = !byStatus || status.equals(valueOrEmpty(workload.getStatus()));
-            boolean moMatch = !byMoId || moId.equals(valueOrEmpty(workload.getMoId()));
-            if (moduleMatch && statusMatch && moMatch) {
+            if (moduleMatch && statusMatch) {
                 filtered.add(workload);
             }
         }
@@ -44,16 +42,7 @@ public class AdminWorkloadDomainService {
     }
 
 
-    public Set<String> collectMoIds(List<AdminWorkload> workloads) {
-        Set<String> values = new TreeSet<>();
-        for (AdminWorkload workload : workloads) {
-            values.add(valueOrEmpty(workload.getMoId()));
-        }
-        return values;
-    }
-
-
-    public boolean markReassigning(List<AdminWorkload> workloads, String taId, String moduleCode, String moId) {
+    public boolean markReassigning(List<AdminWorkload> workloads, String taId, String moduleCode) {
         for (AdminWorkload workload : workloads) {
             if (!valueOrEmpty(workload.getTaId()).equals(valueOrEmpty(taId))) {
                 continue;
@@ -61,11 +50,8 @@ public class AdminWorkloadDomainService {
             if (!valueOrEmpty(workload.getModuleCode()).equals(valueOrEmpty(moduleCode))) {
                 continue;
             }
-            if (!valueOrEmpty(workload.getMoId()).equals(valueOrEmpty(moId))) {
-                continue;
-            }
             if (!"Overloaded".equalsIgnoreCase(valueOrEmpty(workload.getStatus()))) {
-                return false;
+                continue;
             }
             workload.setStatus("Reassigning");
             return true;
