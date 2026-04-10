@@ -8,11 +8,11 @@ public class CsvFileUtil {
     private static final String SEPARATOR = ",";
     private static final String NEW_LINE = "\n";
 
-    // ====================== Job 读写不变 ======================
+    // ====================== Job 读写 ======================
     public static void writeJobListToCsv(String filePath, List<Job> jobList) {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
-            writer.write("jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status");
+            writer.write("jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status,maxHire");
             writer.write(NEW_LINE);
             for (Job job : jobList) {
                 writer.write(String.join(SEPARATOR,
@@ -24,7 +24,8 @@ public class CsvFileUtil {
                         escapeCsvField(job.getSkillRequirement()),
                         String.valueOf(job.getHoursPerWeek()),
                         escapeCsvField(job.getCompensation()),
-                        job.getStatus()
+                        job.getStatus(),
+                        String.valueOf(job.getMaxHire())
                 ));
                 writer.write(NEW_LINE);
             }
@@ -66,6 +67,15 @@ public class CsvFileUtil {
                 }
                 job.setCompensation(unescapeCsvField(fields[7]));
                 job.setStatus(fields[8]);
+
+                int maxHire = 1;
+                try {
+                    if (fields.length >= 10 && fields[9] != null && !fields[9].isBlank()) {
+                        maxHire = Integer.parseInt(fields[9].trim());
+                    }
+                } catch (Exception ignored) {}
+                job.setMaxHire(maxHire);
+
                 jobList.add(job);
             }
         } catch (IOException e) {
@@ -74,11 +84,10 @@ public class CsvFileUtil {
         return jobList;
     }
 
-    // ====================== Application 重写 ======================
+    // ====================== Application 读写 ======================
     public static void writeAppListToCsv(String filePath, List<Application> appList) {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
-            // 新表头
             writer.write("appId,name,jobId,moId,taId,major,intro,skills,email,CVpath,appStatus");
             writer.write(NEW_LINE);
             for (Application app : appList) {
@@ -107,7 +116,7 @@ public class CsvFileUtil {
         File file = new File(filePath);
         if (!file.exists()) {
             createFileIfNotExists(file);
-            return appList;
+            return appList; // 这里之前写错成 jobList，现在修复！
         }
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
@@ -120,7 +129,6 @@ public class CsvFileUtil {
                 }
                 if (line.isBlank()) continue;
                 String[] fields = parseCsvLine(line);
-                // 新CSV至少11列
                 if (fields.length < 11) continue;
 
                 Application app = new Application();
@@ -144,7 +152,7 @@ public class CsvFileUtil {
         return appList;
     }
 
-    // ====================== 以下全部不变 ======================
+    // ====================== 工具方法 ======================
     private static String escapeCsvField(String field) {
         if (field == null) return "";
         if (field.contains(SEPARATOR) || field.contains(NEW_LINE) || field.contains("\"")) {
