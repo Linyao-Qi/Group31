@@ -24,3 +24,4 @@ public class AdminPostDomainService {
         return value == null ? "" : value.trim();
     }
 }
+

@@ -107,3 +107,4 @@ public class AdminClosePostServlet extends HttpServlet {
         return value == null ? "" : value.trim();
     }
 }
+
