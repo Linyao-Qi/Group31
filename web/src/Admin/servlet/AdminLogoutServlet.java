@@ -21,3 +21,4 @@ public class AdminLogoutServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/admin/login");
     }
 }
+

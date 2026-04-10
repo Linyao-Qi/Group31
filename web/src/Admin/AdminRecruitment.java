@@ -107,3 +107,4 @@ public class AdminRecruitment {
         return open ? "Open" : "Closed";
     }
 }
+
