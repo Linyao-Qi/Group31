@@ -3,20 +3,31 @@
 <head>
     <title>TA Home</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 50px auto; padding: 0 20px; }
-        .nav { margin-bottom: 40px; text-align: center; }
-        .nav a { margin: 0 12px; color: #2563eb; text-decoration: none; font-size: 16px; }
-        .nav a:hover { text-decoration: underline; }
+        :root {
+            --ink: #1e293b;
+            --muted: #475569;
+            --brand: #2563eb;
+            --line: #e2e8f0;
+        }
+        body { font-family: "Segoe UI", "Trebuchet MS", sans-serif; max-width: 1200px; margin: 28px auto; padding: 0 20px 24px; color: var(--ink); background: #f8fafc; }
+        .nav { margin-bottom: 18px; text-align: center; background: #ffffff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 10px; }
+        .nav a { margin: 0 12px; color: #1e40af; text-decoration: none; font-size: 15px; font-weight: 600; }
+        .nav a:hover { color: #1d4ed8; text-decoration: underline; }
         .nav form { display: inline; }
-        .nav button { background: none; border: none; color: #2563eb; font-size: 16px; cursor: pointer; padding: 0; margin: 0 12px; }
-        .nav button:hover { text-decoration: underline; }
-        h2 { text-align: center; color: #1e293b; margin-bottom: 40px; }
+        .nav button { background: none; border: none; color: #1e40af; font-size: 15px; cursor: pointer; padding: 0; margin: 0 12px; font-weight: 600; }
+        .nav button:hover { color: #1d4ed8; text-decoration: underline; }
+        h2 { color: #0f172a; font-size: 26px; text-align: center; margin: 40px 0 10px; }
+        .welcome { text-align: center; color: var(--muted); margin-bottom: 40px; font-size: 15px; }
         .card-grid { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
-        .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 32px 36px; width: 200px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-decoration: none; color: #1e293b; transition: box-shadow 0.2s; }
-        .card:hover { box-shadow: 0 4px 16px rgba(37,99,235,0.15); border-color: #2563eb; }
-        .card .icon { font-size: 36px; margin-bottom: 12px; }
-        .card .label { font-size: 15px; font-weight: bold; color: #2563eb; }
-        .welcome { text-align: center; color: #64748b; margin-bottom: 32px; font-size: 15px; }
+        .card {
+            background: white; border: 1px solid var(--line); border-radius: 10px;
+            padding: 36px 40px; width: 200px; text-align: center;
+            box-shadow: 0 6px 16px rgba(15,23,42,0.06);
+            text-decoration: none; color: var(--ink); transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .card:hover { box-shadow: 0 8px 24px rgba(37,99,235,0.15); border-color: #2563eb; }
+        .card .icon { font-size: 38px; margin-bottom: 14px; }
+        .card .label { font-size: 15px; font-weight: 700; color: #1e40af; }
     </style>
 </head>
 <body>

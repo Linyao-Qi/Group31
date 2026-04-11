@@ -4,29 +4,38 @@
 <head>
     <title>My Applications</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-        .nav { margin-bottom: 30px; text-align: center; }
-        .nav a { margin: 0 12px; color: #2563eb; text-decoration: none; font-size: 15px; }
-        .nav a:hover { text-decoration: underline; }
+        :root {
+            --ink: #1e293b;
+            --muted: #475569;
+            --brand: #2563eb;
+            --brand-2: #1d4ed8;
+            --surface: #ffffff;
+            --line: #e2e8f0;
+        }
+        body { font-family: "Segoe UI", "Trebuchet MS", sans-serif; max-width: 1200px; margin: 28px auto; padding: 0 20px 24px; color: var(--ink); background: #f8fafc; }
+        .nav { margin-bottom: 18px; text-align: center; background: #ffffff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 10px; }
+        .nav a { margin: 0 12px; color: #1e40af; text-decoration: none; font-size: 15px; font-weight: 600; }
+        .nav a:hover { color: #1d4ed8; text-decoration: underline; }
         .nav form { display: inline; }
-        .nav button { background: none; border: none; color: #2563eb; font-size: 15px; cursor: pointer; padding: 0; margin: 0 12px; }
-        .nav button:hover { text-decoration: underline; }
-        h2 { color: #1e293b; }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 10px 12px; text-align: center; }
-        th { background: #f8fafc; font-weight: bold; }
-        td.intro { text-align: left; max-width: 180px; word-break: break-word; }
+        .nav button { background: none; border: none; color: #1e40af; font-size: 15px; cursor: pointer; padding: 0; margin: 0 12px; font-weight: 600; }
+        .nav button:hover { color: #1d4ed8; text-decoration: underline; }
+        h2 { color: #0f172a; margin: 0 0 14px; font-size: 26px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: 0 6px 16px rgba(15,23,42,0.06); }
+        th, td { border-bottom: 1px solid #e2e8f0; padding: 11px 12px; text-align: center; font-size: 14px; }
+        th { background: #eff6ff; color: #1e3a8a; font-weight: 700; }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:hover td { background: #f1f5f9; }
         td.desc { text-align: left; max-width: 200px; word-break: break-word; }
         .status-pending  { color: #d97706; font-weight: bold; }
         .status-accepted { color: #16a34a; font-weight: bold; }
         .status-rejected { color: #dc2626; font-weight: bold; }
-        .status-withdrawn { color: #6b7280; font-weight: bold; }
-        .btn-withdraw { padding: 5px 12px; background: #ef4444; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; }
+        .btn-withdraw { padding: 5px 14px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 700; }
         .btn-withdraw:hover { background: #dc2626; }
-        .empty { text-align: center; color: #64748b; padding: 40px; font-size: 15px; }
-        .msg   { background: #dcfce7; color: #166534; padding: 10px 14px; border-radius: 4px; margin-bottom: 18px; font-size: 14px; }
-        .error { background: #fee2e2; color: #991b1b; padding: 10px 14px; border-radius: 4px; margin-bottom: 18px; font-size: 14px; }
-        .legend { margin-bottom: 12px; font-size: 0; color: #64748b; }
+        .empty { text-align: center; color: #334155; padding: 46px 24px; font-size: 16px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #ffffff; }
+        .msg   { background: #dcfce7; color: #166534; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 14px; }
+        .error { background: #fee2e2; color: #991b1b; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 14px; }
+        .legend { margin-bottom: 14px; font-size: 0; }
         .legend span { font-size: 13px; margin-right: 2px; }
     </style>
 </head>
