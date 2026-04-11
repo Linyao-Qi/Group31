@@ -20,8 +20,12 @@
         .intro {text-align: left; max-width: 180px; word-break: break-word;}
         .btn-hire {padding:6px 12px; background:#16a34a; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
         .btn-cancel {padding:6px 12px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
+        .btn-reject {padding:6px 12px; background:#f97316; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
+        .btn-cancel-reject {padding:6px 12px; background:#64748b; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
         .btn-hire:hover {background:#15803d;}
         .btn-cancel:hover {background:#dc2626;}
+        .btn-reject:hover {background:#ea580c;}
+        .btn-cancel-reject:hover {background:#475569;}
         .msg {
             margin:20px 0;
             padding:15px;
@@ -35,6 +39,7 @@
         .empty {text-align:center; margin-top: 30px; color: #666; font-size: 16px;}
         .pending {color: #f59e0b; font-weight: bold;}
         .accepted {color: #16a34a; font-weight: bold;}
+        .rejected {color: #dc2626; font-weight: bold;}
         .return-btn {
             width: 100%;
             padding: 16px;
@@ -85,7 +90,6 @@
     </div>
 
 <%
-    // 初始化路径，避免空指针
     MoService.init(getServletContext());
     AuthUtil.init(getServletContext());
 
@@ -101,6 +105,8 @@
 
     String appId = request.getParameter("appId");
     String cancelAppId = request.getParameter("cancelAppId");
+    String rejectAppId = request.getParameter("rejectAppId");
+    String cancelRejectAppId = request.getParameter("cancelRejectAppId");
 
     if (moId != null && password != null) {
         if (AuthUtil.authenticateMO(moId, password)) {
@@ -112,7 +118,6 @@
                     msg = "Hired successfully!";
                     isFail = false;
                 } else {
-                    // 这里显示超过最大录用人数提示
                     msg = "Hire failed! Exceeded max hire limit.";
                     isFail = true;
                 }
@@ -122,6 +127,18 @@
                 boolean result = moService.cancelApplicant(moId, cancelAppId);
                 msg = result ? "Cancel hire successfully!" : "Cancel hire failed!";
                 isFail = !result;
+            }
+
+            if (rejectAppId != null) {
+                Application result = moService.rejectApplicant(moId, rejectAppId);
+                msg = result != null ? "Rejected successfully!" : "Reject failed!";
+                isFail = result == null;
+            }
+
+            if (cancelRejectAppId != null) {
+                Application result = moService.cancelRejectApplicant(moId, cancelRejectAppId);
+                msg = result != null ? "Cancel reject successfully!" : "Cancel reject failed!";
+                isFail = result == null;
             }
 
             appList = moService.getAllApps(moId, password, false);
@@ -180,7 +197,14 @@
                 for (Application app : appList) {
                     Job job = jobMap.get(app.getJobId());
                     String status = app.getAppStatus();
-                    String statusClass = "ACCEPTED".equals(status) ? "accepted" : "pending";
+                    String statusClass;
+                    if ("ACCEPTED".equals(status)) {
+                        statusClass = "accepted";
+                    } else if ("REJECTED".equals(status)) {
+                        statusClass = "rejected";
+                    } else {
+                        statusClass = "pending";
+                    }
             %>
             <tr>
                 <td><%= app.getAppId() %></td>
@@ -194,19 +218,32 @@
                 <td><%= app.getCVpath() == null ? "-" : app.getCVpath() %></td>
                 <td class="<%= statusClass %>"><%= status %></td>
                 <td>
-                    <% if ("ACCEPTED".equals(status)) { %>
+                    <% if ("PENDING".equals(status)) { %>
+                        <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="display:inline;margin:0 2px 0 0;">
+                            <input type="hidden" name="appId" value="<%= app.getAppId() %>">
+                            <input type="hidden" name="moId" value="<%= moId %>">
+                            <input type="hidden" name="password" value="<%= password %>">
+                            <button type="submit" class="btn-hire" onclick="return confirm('Hire this applicant?');">Hire</button>
+                        </form>
+                        <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="display:inline;">
+                            <input type="hidden" name="rejectAppId" value="<%= app.getAppId() %>">
+                            <input type="hidden" name="moId" value="<%= moId %>">
+                            <input type="hidden" name="password" value="<%= password %>">
+                            <button type="submit" class="btn-reject" onclick="return confirm('Reject this applicant?');">Reject</button>
+                        </form>
+                    <% } else if ("ACCEPTED".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
                             <input type="hidden" name="cancelAppId" value="<%= app.getAppId() %>">
                             <input type="hidden" name="moId" value="<%= moId %>">
                             <input type="hidden" name="password" value="<%= password %>">
                             <button type="submit" class="btn-cancel" onclick="return confirm('Cancel this hire?');">Cancel Hire</button>
                         </form>
-                    <% } else { %>
+                    <% } else if ("REJECTED".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
-                            <input type="hidden" name="appId" value="<%= app.getAppId() %>">
+                            <input type="hidden" name="cancelRejectAppId" value="<%= app.getAppId() %>">
                             <input type="hidden" name="moId" value="<%= moId %>">
                             <input type="hidden" name="password" value="<%= password %>">
-                            <button type="submit" class="btn-hire" onclick="return confirm('Hire this applicant?');">Hire</button>
+                            <button type="submit" class="btn-cancel-reject" onclick="return confirm('Cancel this reject?');">Cancel Reject</button>
                         </form>
                     <% } %>
                 </td>
