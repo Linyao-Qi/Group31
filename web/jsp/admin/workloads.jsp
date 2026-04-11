@@ -1,12 +1,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="java.util.Collections" %>
 <%@ page import="Admin.AdminWorkload" %>
 <%
     List<AdminWorkload> workloads = (List<AdminWorkload>) request.getAttribute("workloads");
     Set<String> moduleCodes = (Set<String>) request.getAttribute("moduleCodes");
     Set<String> statuses = (Set<String>) request.getAttribute("statuses");
     Set<String> moIds = (Set<String>) request.getAttribute("moIds");
+    if (workloads == null) workloads = Collections.emptyList();
+    if (moduleCodes == null) moduleCodes = Collections.emptySet();
+    if (statuses == null) statuses = Collections.emptySet();
+    if (moIds == null) moIds = Collections.emptySet();
     String selectedModuleCode = request.getAttribute("selectedModuleCode") == null ? "" : String.valueOf(request.getAttribute("selectedModuleCode"));
     String selectedStatus = request.getAttribute("selectedStatus") == null ? "" : String.valueOf(request.getAttribute("selectedStatus"));
     String selectedMoId = request.getAttribute("selectedMoId") == null ? "" : String.valueOf(request.getAttribute("selectedMoId"));
@@ -83,7 +88,6 @@
     <thead>
     <tr>
         <th>MO Name</th>
-        <th>MO ID</th>
         <th>TA ID</th>
         <th>TA Name</th>
         <th>Module Name</th>
@@ -98,7 +102,6 @@
     <% for (AdminWorkload w : workloads) { %>
     <tr>
         <td><%= w.getMoName() %></td>
-        <td><%= w.getMoId() %></td>
         <td><%= w.getTaId() %></td>
         <td><%= w.getTaName() %></td>
         <td><%= w.getModuleName() %></td>

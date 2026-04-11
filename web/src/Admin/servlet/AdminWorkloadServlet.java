@@ -57,7 +57,7 @@ public class AdminWorkloadServlet extends HttpServlet {
             req.setAttribute("message", String.valueOf(message));
             session.removeAttribute("admin.workload.message");
         }
-        req.getRequestDispatcher("/jsp/Admin/workloads.jsp").forward(req, resp);
+        req.getRequestDispatcher("/jsp/admin/workloads.jsp").forward(req, resp);
     }
 
     @Override

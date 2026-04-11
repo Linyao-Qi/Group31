@@ -15,6 +15,8 @@ public class AdminDataManagement {
             DataFileLocator.resolveDataFile("workloads.csv", AdminDataManagement.class);
     private static final File JOB_FILE =
             DataFileLocator.resolveDataFile("job.csv", AdminDataManagement.class);
+    private static final File APPLICATION_FILE =
+            DataFileLocator.resolveDataFile("application.csv", AdminDataManagement.class);
 
     public List<AdminWorkload> loadWorkloads() throws IOException {
         ensureWorkloadCsvExists();
@@ -33,21 +35,38 @@ public class AdminDataManagement {
                 }
 
                 String[] parts = line.split(",", -1);
-                if (parts.length < 8) {
+                if (parts.length < 7) {
                     continue;
                 }
 
-                AdminWorkload workload = new AdminWorkload(
-                        parts[0].trim(),
-                        parts[1].trim(),
-                        parts[2].trim(),
-                        parts[3].trim(),
-                        parts[4].trim(),
-                        parts[5].trim(),
-                        Double.parseDouble(parts[6].trim()),
-                        Double.parseDouble(parts[7].trim())
-                );
-                String status = parts.length >= 9 ? parts[8].trim() : "Normal";
+                AdminWorkload workload;
+                String status = "Normal";
+                if (parts.length >= 9) {
+                    workload = new AdminWorkload(
+                            parts[0].trim(),
+                            parts[1].trim(),
+                            parts[2].trim(),
+                            parts[3].trim(),
+                            parts[4].trim(),
+                            parts[5].trim(),
+                            safeParseDouble(parts[6].trim(), 0.0),
+                            safeParseDouble(parts[7].trim(), 0.0)
+                    );
+                    status = parts[8].trim();
+                } else {
+                    // Compatible with legacy 7-column workload csv.
+                    workload = new AdminWorkload(
+                            "",
+                            "",
+                            parts[0].trim(),
+                            parts[1].trim(),
+                            parts[2].trim(),
+                            parts[3].trim(),
+                            safeParseDouble(parts[4].trim(), 0.0),
+                            safeParseDouble(parts[5].trim(), 0.0)
+                    );
+                    status = parts.length >= 7 ? parts[6].trim() : "Normal";
+                }
                 workload.setStatus(status.isEmpty() ? "Normal" : status);
                 workloads.add(workload);
             }
@@ -151,6 +170,68 @@ public class AdminDataManagement {
         }
     }
 
+    public List<AdminApplicationRecord> loadApplications() throws IOException {
+        ensureApplicationCsvExists();
+        List<AdminApplicationRecord> applications = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(APPLICATION_FILE))) {
+            String line;
+            boolean isHeader = true;
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                String[] parts = parseCsvLine(line);
+                if (parts.length < 11) {
+                    continue;
+                }
+
+                applications.add(new AdminApplicationRecord(
+                        parts[0].trim(),
+                        unescapeCsvField(parts[1].trim()),
+                        parts[2].trim(),
+                        parts[3].trim(),
+                        parts[4].trim(),
+                        unescapeCsvField(parts[5].trim()),
+                        unescapeCsvField(parts[6].trim()),
+                        unescapeCsvField(parts[7].trim()),
+                        unescapeCsvField(parts[8].trim()),
+                        unescapeCsvField(parts[9].trim()),
+                        parts[10].trim()
+                ));
+            }
+        }
+
+        return applications;
+    }
+
+    public void saveApplications(List<AdminApplicationRecord> applications) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPLICATION_FILE, false))) {
+            writer.write("appId,name,jobId,moId,taId,major,intro,skills,email,CVpath,appStatus");
+            writer.newLine();
+
+            for (AdminApplicationRecord application : applications) {
+                writer.write(application.getAppId() + ","
+                        + escapeCsvField(application.getName()) + ","
+                        + application.getJobId() + ","
+                        + application.getMoId() + ","
+                        + application.getTaId() + ","
+                        + escapeCsvField(application.getMajor()) + ","
+                        + escapeCsvField(application.getIntro()) + ","
+                        + escapeCsvField(application.getSkills()) + ","
+                        + escapeCsvField(application.getEmail()) + ","
+                        + escapeCsvField(application.getCvPath()) + ","
+                        + application.getAppStatus());
+                writer.newLine();
+            }
+        }
+    }
+
     private void ensureWorkloadCsvExists() throws IOException {
         if (WORKLOAD_FILE.exists()) {
             return;
@@ -165,6 +246,14 @@ public class AdminDataManagement {
         }
         createParentFolder(JOB_FILE);
         savePosts(defaultPosts());
+    }
+
+    private void ensureApplicationCsvExists() throws IOException {
+        if (APPLICATION_FILE.exists()) {
+            return;
+        }
+        createParentFolder(APPLICATION_FILE);
+        saveApplications(new ArrayList<>());
     }
 
     private void createParentFolder(File file) {
