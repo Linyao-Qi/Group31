@@ -7,11 +7,10 @@
         :root {
             --ink: #1e293b;
             --muted: #475569;
-            --brand: #0f766e;
-            --brand-2: #0284c7;
-            --accent: #f59e0b;
+            --brand: #2563eb;
+            --brand-2: #1d4ed8;
             --surface: #ffffff;
-            --line: #dbeafe;
+            --line: #e2e8f0;
         }
         body {
             font-family: "Segoe UI", "Trebuchet MS", sans-serif;
@@ -19,30 +18,25 @@
             margin: 28px auto;
             padding: 0 20px 24px;
             color: var(--ink);
-            background:
-                radial-gradient(circle at 15% 10%, #cffafe 0%, transparent 35%),
-                radial-gradient(circle at 90% 20%, #fde68a 0%, transparent 30%),
-                linear-gradient(145deg, #f0f9ff 0%, #f8fafc 55%, #ecfeff 100%);
+            background: #f8fafc;
         }
         .nav {
             margin-bottom: 18px;
             text-align: center;
-            background: rgba(255,255,255,0.75);
-            border: 1px solid #dbeafe;
-            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 10px;
             padding: 12px 10px;
-            backdrop-filter: blur(4px);
         }
-        .nav a { margin: 0 12px; color: #0c4a6e; text-decoration: none; font-size: 15px; font-weight: 600; }
-        .nav a:hover { color: #0369a1; text-decoration: underline; }
+        .nav a { margin: 0 12px; color: #1e40af; text-decoration: none; font-size: 15px; font-weight: 600; }
+        .nav a:hover { color: #1d4ed8; text-decoration: underline; }
         .nav form { display: inline; }
-        .nav button { background: none; border: none; color: #0c4a6e; font-size: 15px; cursor: pointer; padding: 0; margin: 0 12px; font-weight: 600; }
-        .nav button:hover { color: #0369a1; text-decoration: underline; }
+        .nav button { background: none; border: none; color: #1e40af; font-size: 15px; cursor: pointer; padding: 0; margin: 0 12px; font-weight: 600; }
+        .nav button:hover { color: #1d4ed8; text-decoration: underline; }
         h2 {
             color: #0f172a;
             margin: 0 0 14px;
-            font-size: 28px;
-            letter-spacing: 0.2px;
+            font-size: 26px;
         }
         .filter-bar {
             display: flex;
@@ -51,10 +45,10 @@
             flex-wrap: wrap;
             margin-bottom: 24px;
             padding: 18px;
-            background: linear-gradient(120deg, rgba(255,255,255,0.95), rgba(240,249,255,0.95));
+            background: #ffffff;
             border: 1px solid var(--line);
-            border-radius: 14px;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
         }
         .filter-bar label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
         .filter-bar input, .filter-bar select {
@@ -66,16 +60,16 @@
         }
         .btn-filter {
             padding: 9px 20px;
-            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            background: var(--brand);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
             font-weight: 700;
         }
-        .btn-filter:hover { filter: brightness(1.05); }
-        .btn-clear { padding: 9px 16px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: 600; }
+        .btn-filter:hover { background: var(--brand-2); }
+        .btn-clear { padding: 9px 16px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: 600; }
         table {
             width: 100%;
             border-collapse: separate;
@@ -83,38 +77,38 @@
             margin-top: 8px;
             background: var(--surface);
             border: 1px solid var(--line);
-            border-radius: 14px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
         }
         th, td { border-bottom: 1px solid #e2e8f0; padding: 11px 12px; text-align: left; font-size: 14px; }
-        th { background: linear-gradient(90deg, #0f766e, #0369a1); color: #f8fafc; font-weight: 700; letter-spacing: 0.3px; }
+        th { background: #eff6ff; color: #1e3a8a; font-weight: 700; }
         tr:nth-child(even):not(.detail-row) td { background: #f8fafc; }
-        tr:hover:not(.detail-row) td { background: #ecfeff; }
+        tr:hover:not(.detail-row) td { background: #f1f5f9; }
         .work-pill {
             display: inline-block;
             padding: 4px 10px;
             border-radius: 999px;
             font-weight: 700;
             font-size: 12px;
-            color: #0c4a6e;
-            background: linear-gradient(120deg, #bae6fd, #a7f3d0);
+            color: #1e3a8a;
+            background: #dbeafe;
         }
-        .btn-detail { padding: 6px 12px; background: linear-gradient(120deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 700; }
-        .btn-detail:hover { filter: brightness(1.06); }
-        .btn-apply { padding: 6px 14px; background: linear-gradient(120deg, #22c55e, #16a34a); color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 700; }
-        .btn-apply:hover { filter: brightness(1.05); }
+        .btn-detail { padding: 6px 12px; background: #0ea5e9; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 700; }
+        .btn-detail:hover { background: #0284c7; }
+        .btn-apply { padding: 6px 14px; background: #16a34a; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 700; }
+        .btn-apply:hover { background: #15803d; }
         .detail-row { display: none; }
-        .detail-cell { background: linear-gradient(90deg, #f0f9ff, #f8fafc) !important; color: #334155; }
+        .detail-cell { background: #f8fafc !important; color: #334155; }
         .detail-title { font-weight: bold; margin-right: 8px; }
         .empty {
             text-align: center;
             color: #334155;
             padding: 46px 24px;
             font-size: 16px;
-            border: 1px dashed #93c5fd;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.7);
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            background: #ffffff;
         }
     </style>
 </head>
