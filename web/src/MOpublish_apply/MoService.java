@@ -160,6 +160,61 @@ public class MoService {
         return true;
     }
 
+    // ==============================================
+    // 新增：拒绝申请者
+    // ==============================================
+    public Application rejectApplicant(String moId, String appId) {
+        if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) return null;
+
+        List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
+
+        // 1. 找到目标申请
+        Application targetApp = null;
+        for (Application app : appList) {
+            if (appId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
+                targetApp = app;
+                break;
+            }
+        }
+        if (targetApp == null) return null;
+        // 仅允许拒绝「待处理(PENDING)」状态的申请
+        if (!"PENDING".equals(targetApp.getAppStatus())) return null;
+
+        // 2. 执行拒绝：状态改为REJECTED
+        targetApp.setAppStatus("REJECTED");
+        CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
+
+        // 拒绝不影响岗位最大录用人数，无需修改岗位状态
+        return targetApp;
+    }
+
+    // ==============================================
+    // 新增：取消拒绝（恢复为PENDING）
+    // ==============================================
+    public Application cancelRejectApplicant(String moId, String appId) {
+        if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) return null;
+
+        List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
+
+        // 1. 找到目标申请
+        Application targetApp = null;
+        for (Application app : appList) {
+            if (appId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
+                targetApp = app;
+                break;
+            }
+        }
+        if (targetApp == null) return null;
+        // 仅允许取消「已拒绝(REJECTED)」状态的申请
+        if (!"REJECTED".equals(targetApp.getAppStatus())) return null;
+
+        // 2. 取消拒绝：状态恢复为PENDING
+        targetApp.setAppStatus("PENDING");
+        CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
+
+        return targetApp;
+    }
+
     // 获取当前 MO 的所有申请（完整信息）
     public List<Application> getAllApps(String moId, String password, boolean isAdmin) {
         if (!AuthUtil.authenticateMO(moId, password)) return null;
