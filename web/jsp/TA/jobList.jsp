@@ -21,9 +21,13 @@
         table { width: 100%; border-collapse: collapse; margin-top: 8px; }
         th, td { border: 1px solid #ddd; padding: 10px 12px; text-align: left; font-size: 14px; }
         th { background: #f8fafc; font-weight: bold; }
-        td.desc { max-width: 220px; word-break: break-word; }
+        .btn-detail { padding: 6px 12px; background: #0ea5e9; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; }
+        .btn-detail:hover { background: #0284c7; }
         .btn-apply { padding: 6px 14px; background: #16a34a; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-block; }
         .btn-apply:hover { background: #15803d; }
+        .detail-row { display: none; }
+        .detail-cell { background: #f8fafc; color: #334155; }
+        .detail-title { font-weight: bold; margin-right: 8px; }
         .empty { text-align: center; color: #64748b; padding: 40px; font-size: 15px; }
     </style>
 </head>
@@ -77,26 +81,41 @@
         <tr>
             <th>Subject</th>
             <th>Work Type</th>
-            <th>Description</th>
             <th>Required Skills</th>
             <th>Hours/Week</th>
             <th>Compensation</th>
+            <th>Details</th>
             <th>Action</th>
         </tr>
         <% for (Job job : jobs) { %>
         <tr>
             <td><%= job.getSubject() %></td>
             <td><%= job.getWorkType() %></td>
-            <td class="desc"><%= job.getDescription() %></td>
             <td><%= job.getSkillRequirement() %></td>
             <td><%= job.getHoursPerWeek() %>h</td>
             <td><%= job.getCompensation() %></td>
             <td>
+                <button type="button" class="btn-detail" onclick="toggleDetails('detail-<%= job.getJobId() %>')">View Details</button>
+            </td>
+            <td>
                 <a href="${pageContext.request.contextPath}/ta/apply?jobId=<%= job.getJobId() %>" class="btn-apply">Apply</a>
+            </td>
+        </tr>
+        <tr id="detail-<%= job.getJobId() %>" class="detail-row">
+            <td colspan="7" class="detail-cell">
+                <span class="detail-title">Description:</span>
+                <span><%= job.getDescription() %></span>
             </td>
         </tr>
         <% } %>
     </table>
     <% } %>
+    <script>
+        function toggleDetails(rowId) {
+            var row = document.getElementById(rowId);
+            if (!row) return;
+            row.style.display = row.style.display === "table-row" ? "none" : "table-row";
+        }
+    </script>
 </body>
 </html>
