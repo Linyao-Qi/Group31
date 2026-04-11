@@ -21,18 +21,16 @@ public class GetAllAppsServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        String userId = request.getParameter("userId");
+        String moId = request.getParameter("userId");
         String password = request.getParameter("password");
-        String isAdminStr = request.getParameter("isAdmin");
-        boolean isAdmin = "true".equals(isAdminStr);
 
-        List<Application> appList = moService.getAllApps(userId, password, isAdmin);
+        List<Application> appList = moService.getAllApps(moId, password, false);
 
         if (appList != null) {
             request.setAttribute("appList", appList);
-            request.setAttribute("msg", "Authentication success. Total applications: " + appList.size());
+            request.setAttribute("msg", "Login successful! Total applications: " + appList.size());
         } else {
-            request.setAttribute("msg", "Failed: Invalid ID or password!");
+            request.setAttribute("msg", "Login failed: Invalid ID or password!");
         }
 
         request.getRequestDispatcher("/jsp/MO_1/allApps.jsp").forward(request, response);
