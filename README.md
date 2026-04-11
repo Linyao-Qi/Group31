@@ -69,16 +69,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 **Core Algorithms:**
 1. **Unique ID Generation Algorithm**: Generates a unique job ID by combining the MO ID with a 6‑digit random alphanumeric string to ensure global uniqueness.
 2. **CSV File Read/Write and Parsing Algorithm**: Supports escaping and unescaping special characters (commas, line breaks, quotes), parses CSV rows reliably, and enables bidirectional serialization and deserialization between Job/Application objects and CSV files with built‑in fault tolerance.
-3. **Status Linkage Update Algorithm**: Synchronizes application status and corresponding job status during hire, cancel hire, reject, and cancel reject operations to maintain consistent data based on the max hire limit. The system performs real‑time statistics of accepted applicants and updates status accordingly.改为markdown
-1. **Job Posting Management**: MO users can post positions after entering relevant information (subject, work type, description, skill requirements, weekly working hours, compensation, etc.) and completing identity authentication. Position data is written into the CSV file in real time with a unique position ID generated automatically, and the default status is "OPEN" after posting.
-2. **Application Review Management**: View all TA applications for positions posted by the current MO; support approving applicants (change application status to "ACCEPTED" and synchronize the corresponding position status to "FILLED") and revoking approval (change application status back to "PENDING" and restore the position status to "OPEN"). Operation results are synchronized to the CSV file in real time.
-3. **Application List Query**: After identity authentication, MO users can query all TA applications for their own positions, including complete fields such as applicant name, major, skills, contact information, and application status.
-4. **Integrated Identity Authentication**: All operations require authentication based on the CSV configuration file to verify the validity of MO user ID and password.
-
-**Core Algorithms:**
-1. **Unique ID Generation Algorithm**: Generates a unique position ID by combining MO ID with a 6-digit random string (letters + numbers) to ensure the uniqueness of position identification.
-2. **CSV File Read/Write and Parsing Algorithm**: Supports escaping/unescaping of fields with special characters (commas, line breaks, quotation marks), parses CSV row data by custom delimiters, and realizes two-way serialization/deserialization between Job/Application objects and CSV files.
-3. **Status Linkage Update Algorithm**: Updates application status and corresponding position status simultaneously when approving or revoking an applicant, ensuring consistency between application and position status.
+3. **Status Linkage Update Algorithm**: Synchronizes application status and corresponding job status during hire, cancel hire, reject, and cancel reject operations to maintain consistent data based on the max hire limit. The system performs real‑time statistics of accepted applicants and updates status accordingly.
 
 ---
 
