@@ -17,6 +17,7 @@ public class TALoginServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         AuthUtil.init(getServletContext());
+        TAAuthService.init(getServletContext());
     }
 
     @Override
@@ -37,7 +38,7 @@ public class TALoginServlet extends HttpServlet {
         String taId = req.getParameter("taId");
         String password = req.getParameter("password");
 
-        if (AuthUtil.authenticateTA(taId, password)) {
+        if (TAAuthService.authenticateTA(taId, password)) {
             HttpSession session = req.getSession(true);
             session.setAttribute("taId", taId);
             resp.sendRedirect(req.getContextPath() + "/ta/home");
