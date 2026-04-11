@@ -54,8 +54,7 @@
         Status: &nbsp;&nbsp;
         <span class="status-pending">PENDING</span><span>— awaiting MO review &nbsp;&nbsp;|&nbsp;&nbsp; </span>
         <span class="status-accepted">ACCEPTED</span><span>— hired &nbsp;&nbsp;|&nbsp;&nbsp; </span>
-        <span class="status-rejected">REJECTED</span><span>— not selected &nbsp;&nbsp;|&nbsp;&nbsp; </span>
-        <span class="status-withdrawn">WITHDRAWN</span><span>— withdrawn by you</span>
+        <span class="status-rejected">REJECTED</span><span>— not selected</span>
     </div>
 
     <%

@@ -84,7 +84,7 @@ public class TAApplicationService {
         for (Application app : apps) {
             if (appId.equals(app.getAppId()) && taId.equals(app.getTaId())) {
                 if (!"PENDING".equals(app.getAppStatus())) return false;
-                app.setAppStatus("WITHDRAWN");
+                apps.remove(app);
                 CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, apps);
                 return true;
             }
