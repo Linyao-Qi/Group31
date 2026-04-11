@@ -26,7 +26,6 @@
     <p>Choose one module:</p>
     <a class="btn" href="${pageContext.request.contextPath}/admin/workloads">Open CheckWorkload</a>
     <a class="btn" href="${pageContext.request.contextPath}/admin/posts">Open ClosePost</a>
-    <a class="btn" href="${pageContext.request.contextPath}/admin/live">Open Live CSV Monitor</a>
     <div class="logout">
         <form method="post" action="${pageContext.request.contextPath}/admin/logout">
             <button type="submit">Logout</button>

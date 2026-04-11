@@ -1,19 +1,19 @@
-﻿taId,taName,moduleName,moduleCode,courseWorkHour,taTotalWorkHour,status
-TA001,Alice,Data Structures,CS101,6.0,20.0,Overloaded
-TA001,Alice,Programming Basics,CS100,8.0,20.0,Overloaded
-TA001,Alice,Programming Basics,CS100,6.0,20.0,Overloaded
-TA002,Bob,Algorithms,CS102,9.0,22.0,Overloaded
-TA002,Bob,Algorithms,CS102,7.0,22.0,Overloaded
-TA002,Bob,Data Structures,CS101,6.0,22.0,Overloaded
-TA003,Cindy,Databases,CS103,5.0,11.0,Normal
-TA003,Cindy,Software Testing,CS205,6.0,11.0,Normal
-TA004,David,Networks,CS104,10.0,19.0,Overloaded
-TA004,David,Operating Systems,CS204,9.0,19.0,Overloaded
-TA005,Eva,Computer Architecture,CS202,8.0,18.0,Overloaded
-TA005,Eva,Computer Architecture,CS202,10.0,18.0,Overloaded
-TA006,Frank,Machine Learning,CS301,7.0,12.0,Normal
-TA006,Frank,Data Mining,CS302,5.0,12.0,Normal
-TA007,Grace,Capstone Project,CS401,12.0,23.0,Overloaded
-TA007,Grace,Capstone Project,CS401,11.0,23.0,Overloaded
-TA008,Henry,Cloud Computing,CS303,8.0,16.0,Overloaded
-TA008,Henry,Software Engineering,CS206,8.0,16.0,Overloaded
+moName,moId,taId,taName,moduleName,moduleCode,courseWorkHour,taTotalWorkHour,status
+Amy,mo001,TA001,Alice,Data Structures,CS101,6.0,20.0,Overloaded
+Amy,mo001,TA001,Alice,Programming Basics,CS100,8.0,20.0,Overloaded
+Amy,mo001,TA001,Alice,Programming Basics,CS100,6.0,20.0,Overloaded
+Amy,mo001,TA002,Bob,Algorithms,CS102,9.0,22.0,Overloaded
+Amy,mo001,TA002,Bob,Algorithms,CS102,7.0,22.0,Overloaded
+Amy,mo001,TA002,Bob,Data Structures,CS101,6.0,22.0,Overloaded
+Brian,mo002,TA003,Cindy,Databases,CS103,5.0,11.0,Normal
+Brian,mo002,TA003,Cindy,Software Testing,CS205,6.0,11.0,Normal
+Brian,mo002,TA004,David,Networks,CS104,10.0,19.0,Overloaded
+Brian,mo002,TA004,David,Operating Systems,CS204,9.0,19.0,Overloaded
+Iris,mo003,TA005,Eva,Computer Architecture,CS202,8.0,18.0,Overloaded
+Iris,mo003,TA005,Eva,Computer Architecture,CS202,10.0,18.0,Overloaded
+Iris,mo003,TA006,Frank,Machine Learning,CS301,7.0,12.0,Normal
+Iris,mo003,TA006,Frank,Data Mining,CS302,5.0,12.0,Normal
+Liam,mo004,TA007,Grace,Capstone Project,CS401,12.0,23.0,Overloaded
+Liam,mo004,TA007,Grace,Capstone Project,CS401,11.0,23.0,Overloaded
+Liam,mo004,TA008,Henry,Cloud Computing,CS303,8.0,16.0,Overloaded
+Liam,mo004,TA008,Henry,Software Engineering,CS206,8.0,16.0,Overloaded
