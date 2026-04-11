@@ -69,7 +69,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 **Core Algorithms:**
 1. **Unique ID Generation Algorithm**: Generates a unique job ID by combining the MO ID with a 6‑digit random alphanumeric string to ensure global uniqueness.
 2. **CSV File Read/Write and Parsing Algorithm**: Supports escaping and unescaping special characters (commas, line breaks, quotes), parses CSV rows reliably, and enables bidirectional serialization and deserialization between Job/Application objects and CSV files with built‑in fault tolerance.
-3. **Status Linkage Update Algorithm**: Synchronizes application status and corresponding job status during hire, cancel hire, reject, and cancel reject operations to maintain consistent data based on the max hire limit. The system performs real‑time statistics of accepted applicants and updates status accordingly.改为markdown
+3. **Status Linkage Update Algorithm**: Synchronizes application status and corresponding job status during hire, cancel hire, reject, and cancel reject operations to maintain consistent data based on the max hire limit. The system performs real‑time statistics of accepted applicants and updates status accordingly.
 
 ---
 
