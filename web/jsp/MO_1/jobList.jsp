@@ -2,12 +2,12 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.Job" %>
 <%@ page import="com.MoService" %>
-<%@ page import="com.CsvFileUtil" %>
+<%@ page import="com.AuthUtil" %>
 <html>
 <head>
-    <title>所有TA岗位列表</title>
+    <title>TA Job List</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px;}
+        body {font-family: Arial, sans-serif; max-width: 1100px; margin: 50px auto; padding: 0 20px;}
         table {width: 100%; border-collapse: collapse; margin-top: 20px;}
         th, td {border: 1px solid #ddd; padding: 12px; text-align: center;}
         th {background: #f8fafc; color: #333;}
@@ -18,36 +18,51 @@
     </style>
 </head>
 <body>
+<%
+    MoService.init(getServletContext());
+    AuthUtil.init(getServletContext());
+
+    MoService moService = new MoService();
+    List<Job> jobList = moService.getAllJobs();
+%>
     <div class="nav">
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">发布岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">录用申请者</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">查看所有岗位</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">查看所有申请</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/jobList.jsp">Job List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
     </div>
-    <h2 align="center">TA岗位列表</h2>
+    <h2 align="center">TA Job List</h2>
     <%
-        MoService moService = new MoService();
-        List<Job> jobList = moService.getAllJobs();
-        if (jobList == null || jobList.size() == 0) {
-            out.print("<div class='empty'>暂无岗位数据，请先发布岗位</div>");
+        if (jobList == null || jobList.isEmpty()) {
+            out.print("<div class='empty'>No jobs available yet. Please publish a job first.</div>");
         } else {
     %>
     <table>
         <tr>
-            <th>岗位ID</th>
-            <th>发布MO ID</th>
-            <th>岗位名称</th>
-            <th>岗位要求</th>
-            <th>岗位状态</th>
+            <th>Job ID</th>
+            <th>MO ID</th>
+            <th>Subject</th>
+            <th>Work Type</th>
+            <th>Description</th>
+            <th>Skill Requirement</th>
+            <th>Hours/Week</th>
+            <th>Compensation</th>
+            <th>Max Hire</th> <!-- 新增 -->
+            <th>Status</th>
         </tr>
         <%
             for (Job job : jobList) {
                 out.print("<tr>");
                 out.print("<td>" + job.getJobId() + "</td>");
                 out.print("<td>" + job.getMoId() + "</td>");
-                out.print("<td>" + job.getJobName() + "</td>");
-                out.print("<td>" + job.getJobRequirements() + "</td>");
-                out.print("<td>" + job.getJobStatus() + "</td>");
+                out.print("<td>" + job.getSubject() + "</td>");
+                out.print("<td>" + job.getWorkType() + "</td>");
+                out.print("<td>" + job.getDescription() + "</td>");
+                out.print("<td>" + job.getSkillRequirement() + "</td>");
+                out.print("<td>" + job.getHoursPerWeek() + "</td>");
+                out.print("<td>" + job.getCompensation() + "</td>");
+                out.print("<td>" + job.getMaxHire() + "</td>"); 
+                out.print("<td>" + job.getStatus() + "</td>");
                 out.print("</tr>");
             }
         %>

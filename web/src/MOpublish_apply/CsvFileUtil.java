@@ -1,33 +1,32 @@
 package com;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CsvFileUtil {
-
-    // CSV文件分隔符
     private static final String SEPARATOR = ",";
-    // 换行符
     private static final String NEW_LINE = "\n";
 
-    /**
-     * 写入Job列表到CSV文件
-     */
+    // ====================== Job 读写 ======================
     public static void writeJobListToCsv(String filePath, List<Job> jobList) {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
-            // 写入表头
-            writer.write("jobId,moId,jobName,jobRequirements,jobStatus");
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+            writer.write("jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status,maxHire");
             writer.write(NEW_LINE);
-            // 写入数据行
             for (Job job : jobList) {
                 writer.write(String.join(SEPARATOR,
                         job.getJobId(),
                         job.getMoId(),
-                        escapeCsvField(job.getJobName()),
-                        escapeCsvField(job.getJobRequirements()),
-                        job.getJobStatus()));
+                        escapeCsvField(job.getSubject()),
+                        escapeCsvField(job.getWorkType()),
+                        escapeCsvField(job.getDescription()),
+                        escapeCsvField(job.getSkillRequirement()),
+                        String.valueOf(job.getHoursPerWeek()),
+                        escapeCsvField(job.getCompensation()),
+                        job.getStatus(),
+                        String.valueOf(job.getMaxHire())
+                ));
                 writer.write(NEW_LINE);
             }
         } catch (IOException e) {
@@ -35,36 +34,48 @@ public class CsvFileUtil {
         }
     }
 
-    /**
-     * 从CSV文件读取Job列表
-     */
     public static List<Job> readJobListFromCsv(String filePath) {
         List<Job> jobList = new ArrayList<>();
         File file = new File(filePath);
-        // 文件不存在则创建空文件并返回空列表
         if (!file.exists()) {
             createFileIfNotExists(file);
             return jobList;
         }
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
-            boolean isFirstLine = true; // 跳过表头
+            boolean isFirstLine = true;
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 if (line.isBlank()) continue;
-                // 解析CSV行
                 String[] fields = parseCsvLine(line);
-                if (fields.length < 5) continue; // 字段不全则跳过
+                if (fields.length < 9) continue;
                 Job job = new Job();
                 job.setJobId(fields[0]);
                 job.setMoId(fields[1]);
-                job.setJobName(unescapeCsvField(fields[2]));
-                job.setJobRequirements(unescapeCsvField(fields[3]));
-                job.setJobStatus(fields[4]);
+                job.setSubject(unescapeCsvField(fields[2]));
+                job.setWorkType(unescapeCsvField(fields[3]));
+                job.setDescription(unescapeCsvField(fields[4]));
+                job.setSkillRequirement(unescapeCsvField(fields[5]));
+                try {
+                    job.setHoursPerWeek(Integer.parseInt(fields[6].trim()));
+                } catch (Exception e) {
+                    job.setHoursPerWeek(0);
+                }
+                job.setCompensation(unescapeCsvField(fields[7]));
+                job.setStatus(fields[8]);
+
+                int maxHire = 1;
+                try {
+                    if (fields.length >= 10 && fields[9] != null && !fields[9].isBlank()) {
+                        maxHire = Integer.parseInt(fields[9].trim());
+                    }
+                } catch (Exception ignored) {}
+                job.setMaxHire(maxHire);
+
                 jobList.add(job);
             }
         } catch (IOException e) {
@@ -73,22 +84,26 @@ public class CsvFileUtil {
         return jobList;
     }
 
-    /**
-     * 写入Application列表到CSV文件
-     */
+    // ====================== Application 读写 ======================
     public static void writeAppListToCsv(String filePath, List<Application> appList) {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
-            // 写入表头
-            writer.write("appId,jobId,taId,intro,appStatus");
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+            writer.write("appId,name,jobId,moId,taId,major,intro,skills,email,CVpath,appStatus");
             writer.write(NEW_LINE);
-            // 写入数据行
             for (Application app : appList) {
                 writer.write(String.join(SEPARATOR,
                         app.getAppId(),
+                        escapeCsvField(app.getName()),
                         app.getJobId(),
+                        app.getMoId(),
                         app.getTaId(),
+                        escapeCsvField(app.getMajor()),
                         escapeCsvField(app.getIntro()),
-                        app.getAppStatus()));
+                        escapeCsvField(app.getSkills()),
+                        escapeCsvField(app.getEmail()),
+                        escapeCsvField(app.getCVpath()),
+                        app.getAppStatus()
+                ));
                 writer.write(NEW_LINE);
             }
         } catch (IOException e) {
@@ -96,36 +111,39 @@ public class CsvFileUtil {
         }
     }
 
-    /**
-     * 从CSV文件读取Application列表
-     */
     public static List<Application> readAppListFromCsv(String filePath) {
         List<Application> appList = new ArrayList<>();
         File file = new File(filePath);
-        // 文件不存在则创建空文件并返回空列表
         if (!file.exists()) {
             createFileIfNotExists(file);
-            return appList;
+            return appList; // 这里之前写错成 jobList，现在修复！
         }
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
-            boolean isFirstLine = true; // 跳过表头
+            boolean isFirstLine = true;
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 if (line.isBlank()) continue;
-                // 解析CSV行
                 String[] fields = parseCsvLine(line);
-                if (fields.length < 5) continue; //
+                if (fields.length < 11) continue;
+
                 Application app = new Application();
                 app.setAppId(fields[0]);
-                app.setJobId(fields[1]);
-                app.setTaId(fields[2]);
-                app.setIntro(unescapeCsvField(fields[3]));
-                app.setAppStatus(fields[4]);
+                app.setName(unescapeCsvField(fields[1]));
+                app.setJobId(fields[2]);
+                app.setMoId(fields[3]);
+                app.setTaId(fields[4]);
+                app.setMajor(unescapeCsvField(fields[5]));
+                app.setIntro(unescapeCsvField(fields[6]));
+                app.setSkills(unescapeCsvField(fields[7]));
+                app.setEmail(unescapeCsvField(fields[8]));
+                app.setCVpath(unescapeCsvField(fields[9]));
+                app.setAppStatus(fields[10]);
+
                 appList.add(app);
             }
         } catch (IOException e) {
@@ -134,20 +152,17 @@ public class CsvFileUtil {
         return appList;
     }
 
-    // 辅助方法：处理CSV字段中的分隔符/换行符（转义）
+    // ====================== 工具方法 ======================
     private static String escapeCsvField(String field) {
         if (field == null) return "";
-        // 如果字段包含分隔符、换行符或双引号，需要用双引号包裹，并转义内部的双引号
         if (field.contains(SEPARATOR) || field.contains(NEW_LINE) || field.contains("\"")) {
             return "\"" + field.replace("\"", "\"\"") + "\"";
         }
         return field;
     }
 
-    // 辅助方法：还原转义的CSV字段
     private static String unescapeCsvField(String field) {
         if (field == null) return "";
-        // 移除双引号包裹，并还原内部的双引号
         if (field.startsWith("\"") && field.endsWith("\"")) {
             field = field.substring(1, field.length() - 1);
             return field.replace("\"\"", "\"");
@@ -155,64 +170,54 @@ public class CsvFileUtil {
         return field;
     }
 
-    // 辅助方法：解析CSV行（处理带双引号的字段）
     private static String[] parseCsvLine(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder currentField = new StringBuilder();
         boolean inQuotes = false;
-
         for (char c : line.toCharArray()) {
             if (c == '"') {
-                inQuotes = !inQuotes; // 切换引号状态
+                inQuotes = !inQuotes;
             } else if (c == SEPARATOR.charAt(0) && !inQuotes) {
-                // 分隔符且不在引号内，结束当前字段
                 fields.add(currentField.toString());
                 currentField.setLength(0);
             } else {
                 currentField.append(c);
             }
         }
-        // 添加最后一个字段
         fields.add(currentField.toString());
         return fields.toArray(new String[0]);
     }
 
-    // 辅助方法：创建文件（含父目录）
     private static void createFileIfNotExists(File file) {
         try {
             if (file.getParentFile() != null) {
-                file.getParentFile().mkdirs(); // 创建父目录
+                file.getParentFile().mkdirs();
             }
-            file.createNewFile(); // 创建文件
+            file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * 从CSV文件读取认证信息列表（适配auth.csv）
-     */
     public static List<AuthUtil.Auth> readAuthListFromCsv(String filePath) {
         List<AuthUtil.Auth> authList = new ArrayList<>();
         File file = new File(filePath);
-        // 文件不存在则创建空文件并返回空列表
         if (!file.exists()) {
             createFileIfNotExists(file);
             return authList;
         }
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
-            boolean isFirstLine = true; // 跳过表头（userType,userId,password）
+            boolean isFirstLine = true;
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
-                if (line.isBlank()) continue; // 跳过空行
-                // 解析CSV行（复用原有解析方法，支持特殊字符）
+                if (line.isBlank()) continue;
                 String[] fields = parseCsvLine(line);
-                if (fields.length < 3) continue; // 字段不全则跳过（至少3个字段）
-                // 封装Auth对象
+                if (fields.length < 3) continue;
                 AuthUtil.Auth auth = new AuthUtil.Auth();
                 auth.setUserType(fields[0]);
                 auth.setUserId(fields[1]);
