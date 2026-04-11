@@ -17,6 +17,7 @@ public class AuthUtil {
     // 全局认证Map
     private static final Map<String, String> MO_USER_MAP = new HashMap<>();
     private static final Map<String, String> ADMIN_USER_MAP = new HashMap<>();
+    private static final Map<String, String> TA_USER_MAP = new HashMap<>();
 
     // 必须由 Web 项目初始化一次路径
     public static void init(ServletContext context) {
@@ -31,8 +32,16 @@ public class AuthUtil {
                 MO_USER_MAP.put(auth.getUserId(), auth.getPassword());
             } else if ("ADMIN".equals(auth.getUserType())) {
                 ADMIN_USER_MAP.put(auth.getUserId(), auth.getPassword());
+            } else if ("TA".equals(auth.getUserType())) {
+                TA_USER_MAP.put(auth.getUserId(), auth.getPassword());
             }
         }
+    }
+
+    public static boolean authenticateTA(String taId, String password) {
+        if (taId == null || taId.isBlank() || password == null || password.isBlank())
+            return false;
+        return password.equals(TA_USER_MAP.get(taId));
     }
 
     public static boolean authenticateMO(String moId, String password) {
