@@ -9,7 +9,7 @@ public final class DataFileLocator {
     private static final String DATA_DIR_PROPERTY = "tajobsystem.data.dir";
     private static final String DATA_DIR_ENV = "TAJOBSYSTEM_DATA_DIR";
     private static final String WEBAPP_NAME_PROPERTY = "tajobsystem.webapp.name";
-    private static final String DEFAULT_WEBAPP_NAME = "group31-web";
+    private static final String DEFAULT_WEBAPP_NAME = "weblogin";
 
     private DataFileLocator() {
     }
