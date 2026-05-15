@@ -17,6 +17,8 @@ public class AdminDataManagement {
             DataFileLocator.resolveDataFile("job.csv", AdminDataManagement.class);
     private static final File APPLICATION_FILE =
             DataFileLocator.resolveDataFile("application.csv", AdminDataManagement.class);
+    private static final File AUTH_FILE =
+            DataFileLocator.resolveDataFile("auth.csv", AdminDataManagement.class);
 
     public List<AdminWorkload> loadWorkloads() throws IOException {
         ensureWorkloadCsvExists();
@@ -230,6 +232,40 @@ public class AdminDataManagement {
                 writer.newLine();
             }
         }
+    }
+
+    public boolean validateAdminCredentials(String username, String password) throws IOException {
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            return false;
+        }
+        if (!AUTH_FILE.exists()) {
+            return false;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(AUTH_FILE))) {
+            String line;
+            boolean isHeader = true;
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                String[] parts = parseCsvLine(line);
+                if (parts.length < 3) {
+                    continue;
+                }
+                if ("ADMIN".equalsIgnoreCase(parts[0].trim())
+                        && username.trim().equals(parts[1].trim())
+                        && password.equals(parts[2].trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void ensureWorkloadCsvExists() throws IOException {

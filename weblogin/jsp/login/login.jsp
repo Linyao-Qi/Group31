@@ -50,7 +50,7 @@
 
         <!-- 登录表单（和注册完全一样样式） -->
         <div id="loginForm">
-            <form action="${pageContext.request.contextPath}/login" method="post">
+            <form id="loginFormElement" action="${pageContext.request.contextPath}/login" method="post">
                 <input type="hidden" name="userType" id="loginUserType">
                 <div class="form-item">
                     <label id="loginIdLabel">User ID:</label>
@@ -94,22 +94,30 @@
             const loginIdLabel = document.getElementById('loginIdLabel');
             const loginUserType = document.getElementById('loginUserType');
             const registerUserType = document.getElementById('registerUserType');
+            const loginFormElement = document.getElementById('loginFormElement');
 
             loginUserType.value = userType;
             registerUserType.value = userType;
+            loginFormElement.action = '${pageContext.request.contextPath}/login';
 
             if (userType === 'MO') {
                 loginIdLabel.innerText = 'MO ID:';
                 tabGroup.style.display = 'none';
                 loginForm.style.display = 'block';
                 registerForm.classList.add('hidden');
-            } else if (userType === 'TA' || userType === 'ADMIN') {
+            } else if (userType === 'TA') {
                 loginIdLabel.innerText = 'User ID:';
                 tabGroup.style.display = 'flex';
                 loginForm.style.display = 'block';
                 registerForm.classList.add('hidden');
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab')[0].classList.add('active');
+            } else if (userType === 'ADMIN') {
+                loginIdLabel.innerText = 'Admin ID:';
+                loginFormElement.action = '${pageContext.request.contextPath}/admin/unified-login';
+                tabGroup.style.display = 'none';
+                loginForm.style.display = 'block';
+                registerForm.classList.add('hidden');
             } else {
                 loginForm.style.display = 'none';
                 tabGroup.style.display = 'none';
