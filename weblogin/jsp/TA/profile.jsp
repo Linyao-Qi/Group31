@@ -35,7 +35,7 @@
         .error { background: #fee2e2; color: #991b1b; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 14px; }
         .cv-current { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #374151; }
         .cv-current span { flex: 1; }
-        .btn-cv-action { display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; font-size: 12px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; background: #f1f5f9; color: #374151; box-sizing: border-box; margin: 0; white-space: nowrap; font-weight: normal; text-transform: none; letter-spacing: 0; }
+        .btn-cv-action { display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; font-family: inherit; font-size: 12px; line-height: normal; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; background: #f1f5f9; color: #374151; box-sizing: border-box; margin: 0; white-space: nowrap; font-weight: normal; text-transform: none; letter-spacing: 0; text-decoration: none; }
         label.btn-cv-action { display: inline-flex; font-size: 12px; font-weight: normal; margin-bottom: 0; }
         .btn-cv-action:hover { background: #e2e8f0; }
         .btn-cv-remove { border-color: #fca5a5; background: #fff; color: #dc2626; }
@@ -103,6 +103,9 @@
         <script>
         var _cvHadOriginal = <%= (pCvName != null && !pCvName.isEmpty()) ? "true" : "false" %>;
         var _cvRemoving = false;
+        function isPdfFile(fileName) {
+            return fileName && fileName.toLowerCase().endsWith('.pdf');
+        }
         function clearCvFile() {
             document.getElementById('cvFile').value = '';
             document.getElementById('cvFileName').textContent = 'No file chosen';
@@ -122,6 +125,7 @@
             <% if (pCvName != null && !pCvName.isEmpty()) { %>
             <div class="cv-current" id="cvCurrentRow">
                 <span>&#128196; <%= pCvName %></span>
+                <a class="btn-cv-action" href="${pageContext.request.contextPath}/ta/profile/cv" target="_blank">View</a>
                 <label class="btn-cv-action" for="cvFile" id="replaceBtn">Replace</label>
                 <button type="button" class="btn-cv-action btn-cv-remove" onclick="
                     _cvRemoving = true;
@@ -139,10 +143,19 @@
                 <label class="file-label" for="cvFile" id="cvChooseBtn">Choose File</label>
                 <span class="file-name" id="cvFileName">No file chosen</span>
                 <button type="button" id="cvClearBtn" class="btn-cv-action"
-                        style="display:none;margin-left:6px;" onclick="clearCvFile()">✕</button>
+                        style="display:none;margin-left:6px;" onclick="clearCvFile()">&times;</button>
             </div>
-            <input type="file" id="cvFile" name="cv" accept=".pdf,.doc,.docx" style="display:none"
+            <small>Only PDF files are accepted.</small>
+            <input type="file" id="cvFile" name="cv" accept=".pdf,application/pdf" style="display:none"
                    onchange="if(this.files&&this.files[0]){
+                       if(!isPdfFile(this.files[0].name)){
+                           alert('Please upload a PDF file only.');
+                           this.value='';
+                           document.getElementById('cvFileName').textContent='No file chosen';
+                           document.getElementById('cvChooseBtn').textContent='Choose File';
+                           document.getElementById('cvClearBtn').style.display='none';
+                           return;
+                       }
                        document.getElementById('cvFileName').textContent=this.files[0].name;
                        document.getElementById('cvChooseBtn').textContent='Change File';
                        document.getElementById('removeCvInput').value='false';

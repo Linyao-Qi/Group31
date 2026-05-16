@@ -65,7 +65,13 @@ public class TAProfileServlet extends HttpServlet {
         } else {
             Part cvPart = req.getPart("cv");
             if (cvPart != null && cvPart.getSize() > 0) {
-                uploadedFileName = cvPart.getSubmittedFileName();
+                uploadedFileName = new File(cvPart.getSubmittedFileName()).getName();
+                if (!isPdfFile(uploadedFileName)) {
+                    req.setAttribute("error", "Only PDF files can be uploaded as CV.");
+                    req.setAttribute("profile", new TAProfile(taId, name, email, skills, major, cvPath));
+                    req.getRequestDispatcher("/jsp/TA/profile.jsp").forward(req, resp);
+                    return;
+                }
                 File uploadDir = DataFileLocator.resolveDataFile("cvs" + File.separator + taId, TAProfileServlet.class);
                 uploadDir.mkdirs();
                 cvPart.write(new File(uploadDir, uploadedFileName).getAbsolutePath());
@@ -85,5 +91,9 @@ public class TAProfileServlet extends HttpServlet {
         }
         req.setAttribute("profile", profile);
         req.getRequestDispatcher("/jsp/TA/profile.jsp").forward(req, resp);
+    }
+
+    private boolean isPdfFile(String fileName) {
+        return fileName != null && fileName.toLowerCase().endsWith(".pdf");
     }
 }

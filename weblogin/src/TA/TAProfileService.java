@@ -14,9 +14,12 @@ import java.util.List;
 public class TAProfileService {
 
     private static String TA_PROFILE_PATH;
+    private static String LEGACY_TA_PROFILE_PATH;
 
     public static void init(ServletContext context) {
         TA_PROFILE_PATH = context.getRealPath("data/profiles.csv");
+        LEGACY_TA_PROFILE_PATH = context.getRealPath("data/ta_profiles.csv");
+        migrateLegacyProfileFileIfNewer();
     }
 
     public static TAProfile getProfileByTaId(String taId) {
@@ -43,11 +46,13 @@ public class TAProfileService {
     // ──────────────────────── CSV I/O ────────────────────────
 
     private static List<TAProfile> loadAll() {
-        List<TAProfile> list = new ArrayList<>();
-        if (TA_PROFILE_PATH == null) return list;
+        if (TA_PROFILE_PATH == null) return new ArrayList<>();
+        return loadFromFile(new File(TA_PROFILE_PATH));
+    }
 
-        File file = new File(TA_PROFILE_PATH);
-        if (!file.exists()) return list;
+    private static List<TAProfile> loadFromFile(File file) {
+        List<TAProfile> list = new ArrayList<>();
+        if (file == null || !file.exists()) return list;
 
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
@@ -75,8 +80,11 @@ public class TAProfileService {
 
     private static void writeAll(List<TAProfile> profiles) {
         if (TA_PROFILE_PATH == null) return;
+        File file = new File(TA_PROFILE_PATH);
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) parent.mkdirs();
         try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(TA_PROFILE_PATH), StandardCharsets.UTF_8))) {
+                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
             writer.write("taId,name,email,skills,major,cvPath");
             writer.newLine();
             for (TAProfile p : profiles) {
@@ -125,5 +133,28 @@ public class TAProfileService {
 
     private static String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private static void migrateLegacyProfileFileIfNewer() {
+        if (TA_PROFILE_PATH == null || LEGACY_TA_PROFILE_PATH == null) return;
+
+        File mainFile = new File(TA_PROFILE_PATH);
+        File legacyFile = new File(LEGACY_TA_PROFILE_PATH);
+        if (!legacyFile.exists()) return;
+        if (mainFile.exists() && legacyFile.lastModified() <= mainFile.lastModified()) return;
+
+        List<TAProfile> merged = loadFromFile(mainFile);
+        for (TAProfile legacyProfile : loadFromFile(legacyFile)) {
+            boolean found = false;
+            for (int i = 0; i < merged.size(); i++) {
+                if (legacyProfile.getTaId() != null && legacyProfile.getTaId().equals(merged.get(i).getTaId())) {
+                    merged.set(i, legacyProfile);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) merged.add(legacyProfile);
+        }
+        writeAll(merged);
     }
 }

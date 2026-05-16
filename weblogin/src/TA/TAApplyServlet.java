@@ -88,29 +88,41 @@ public class TAApplyServlet extends HttpServlet {
         String intro = req.getParameter("intro");
         String skills = req.getParameter("skills");
         String email = req.getParameter("email");
+        boolean useProfileCv = !"false".equals(req.getParameter("useProfileCv"));
+        TAProfile profile = TAProfileService.getProfileByTaId(taId);
 
         // 处理 CV 上传，按 jobId 隔离目录避免不同职位的 CV 互相覆盖
         String cvPath = "";
         Part cvPart = req.getPart("cv");
-        if (cvPart == null || cvPart.getSize() == 0) {
-            Job job2 = TAApplicationService.getJobById(jobId);
-            req.setAttribute("job", job2);
-            req.setAttribute("profile", TAProfileService.getProfileByTaId(taId));
-            req.setAttribute("error", "CV upload is required.");
-            req.getRequestDispatcher("/jsp/TA/applyJob.jsp").forward(req, resp);
-            return;
+        if (cvPart != null && cvPart.getSize() > 0) {
+            String fileName = new File(cvPart.getSubmittedFileName()).getName();
+            if (!isPdfFile(fileName)) {
+                Job job2 = TAApplicationService.getJobById(jobId);
+                req.setAttribute("job", job2);
+                req.setAttribute("profile", profile);
+                req.setAttribute("error", "Only PDF files can be uploaded as CV.");
+                req.getRequestDispatcher("/jsp/TA/applyJob.jsp").forward(req, resp);
+                return;
+            }
+            File uploadDir = DataFileLocator.resolveDataFile("cvs" + File.separator + taId + File.separator + jobId, TAApplyServlet.class);
+            uploadDir.mkdirs();
+            cvPart.write(new File(uploadDir, fileName).getAbsolutePath());
+            cvPath = "cvs/" + taId + "/" + jobId + "/" + fileName;
+        } else if (useProfileCv && profile != null && profile.getCvPath() != null && !profile.getCvPath().trim().isEmpty()) {
+            cvPath = profile.getCvPath();
+        } else {
+                Job job2 = TAApplicationService.getJobById(jobId);
+                req.setAttribute("job", job2);
+                req.setAttribute("profile", profile);
+                req.setAttribute("error", "CV upload is required.");
+                req.getRequestDispatcher("/jsp/TA/applyJob.jsp").forward(req, resp);
+                return;
         }
-        String fileName = cvPart.getSubmittedFileName();
-        File uploadDir = DataFileLocator.resolveDataFile("cvs" + File.separator + taId + File.separator + jobId, TAApplyServlet.class);
-        uploadDir.mkdirs();
-        cvPart.write(new File(uploadDir, fileName).getAbsolutePath());
-        cvPath = "cvs/" + taId + "/" + jobId + "/" + fileName;
 
         String result = TAApplicationService.applyForJob(
                 taId, jobId, moId, name, major, intro, skills, email, cvPath);
 
         Job job = TAApplicationService.getJobById(jobId);
-        TAProfile profile = TAProfileService.getProfileByTaId(taId);
         req.setAttribute("job", job);
         req.setAttribute("profile", profile);
 
@@ -128,5 +140,9 @@ public class TAApplyServlet extends HttpServlet {
         }
 
         req.getRequestDispatcher("/jsp/TA/applyJob.jsp").forward(req, resp);
+    }
+
+    private boolean isPdfFile(String fileName) {
+        return fileName != null && fileName.toLowerCase().endsWith(".pdf");
     }
 }
