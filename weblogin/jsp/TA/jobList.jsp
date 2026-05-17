@@ -70,6 +70,8 @@
         }
         .btn-filter:hover { background: var(--brand-2); }
         .btn-clear { padding: 9px 16px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: 600; }
+        .btn-recommend { padding: 9px 18px; background: #0f766e; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: 700; display: inline-block; }
+        .btn-recommend:hover { background: #115e59; }
         table {
             width: 100%;
             border-collapse: separate;
@@ -85,6 +87,10 @@
         th { background: #eff6ff; color: #1e3a8a; font-weight: 700; }
         tr:nth-child(even):not(.detail-row) td { background: #f8fafc; }
         tr:hover:not(.detail-row) td { background: #f1f5f9; }
+        tr.focus-job td {
+            background: #fef3c7 !important;
+            box-shadow: inset 4px 0 0 #f59e0b;
+        }
         .work-pill {
             display: inline-block;
             padding: 4px 10px;
@@ -148,6 +154,7 @@
             </div>
             <button type="submit" class="btn-filter">Search</button>
             <a href="${pageContext.request.contextPath}/ta/jobs" class="btn-clear">Clear</a>
+            <a href="${pageContext.request.contextPath}/taJobRecommendations" class="btn-recommend">Recommended Jobs</a>
         </div>
     </form>
 
@@ -168,8 +175,11 @@
             <th>Details</th>
             <th>Action</th>
         </tr>
-        <% for (Job job : jobs) { %>
-        <tr>
+        <% for (Job job : jobs) {
+            String focusJobId = request.getAttribute("focusJobId") == null ? "" : String.valueOf(request.getAttribute("focusJobId"));
+            boolean isFocused = job.getJobId() != null && job.getJobId().equals(focusJobId);
+        %>
+        <tr id="job-<%= job.getJobId() %>" class="<%= isFocused ? "focus-job" : "" %>">
             <td><%= job.getSubject() %></td>
             <td><span class="work-pill"><%= job.getWorkType() %></span></td>
             <td><%= job.getSkillRequirement() %></td>
@@ -197,6 +207,14 @@
             if (!row) return;
             row.style.display = row.style.display === "table-row" ? "none" : "table-row";
         }
+        window.addEventListener("load", function () {
+            var focusJobId = "<%= request.getAttribute("focusJobId") == null ? "" : request.getAttribute("focusJobId") %>";
+            if (!focusJobId) return;
+            var row = document.getElementById("job-" + focusJobId);
+            if (row) {
+                row.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        });
     </script>
 </body>
 </html>
