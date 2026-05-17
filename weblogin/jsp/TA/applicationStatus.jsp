@@ -30,6 +30,8 @@
         .status-pending  { color: #d97706; font-weight: bold; }
         .status-accepted { color: #16a34a; font-weight: bold; }
         .status-rejected { color: #dc2626; font-weight: bold; }
+        .status-canceled, .status-cancelled { color: #64748b; font-weight: bold; }
+        .status-unknown { color: #475569; font-weight: bold; }
         .btn-withdraw { padding: 5px 14px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 700; }
         .btn-withdraw:hover { background: #dc2626; }
         .empty { text-align: center; color: #334155; padding: 46px 24px; font-size: 16px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #ffffff; }
@@ -61,6 +63,7 @@
 
     <div class="legend">
         Status: &nbsp;&nbsp;
+        <span class="status-canceled">CANCELED</span><span>— canceled by admin &nbsp;&nbsp;|&nbsp;&nbsp; </span>
         <span class="status-pending">PENDING</span><span>— awaiting MO review &nbsp;&nbsp;|&nbsp;&nbsp; </span>
         <span class="status-accepted">ACCEPTED</span><span>— hired &nbsp;&nbsp;|&nbsp;&nbsp; </span>
         <span class="status-rejected">REJECTED</span><span>— not selected</span>
@@ -89,7 +92,8 @@
             <th>Action</th>
         </tr>
         <% for (Application app : apps) {
-            String status = app.getAppStatus();
+            String status = app.getAppStatus() == null ? "" : app.getAppStatus().trim().toUpperCase();
+            if (status.isEmpty()) status = "UNKNOWN";
             String statusClass = "status-" + status.toLowerCase();
             Job job = jobMap.get(app.getJobId());
             String subject = job != null ? job.getSubject() : app.getJobId();
