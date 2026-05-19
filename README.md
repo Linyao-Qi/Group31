@@ -10,6 +10,8 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 
 ## ✅ Implemented Core Features
 
+## Core Implemented Features
+
 ### 1. TA Portal - Job Browsing and Intelligent Filtering
 **Features:**
 1. **Job List View**: After logging in, TAs can view all available positions, with core fields such as subject, work type, skill requirements, weekly working hours, and compensation displayed in a table.
@@ -113,16 +115,27 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ## 📂 Project Structure
 ```
 web/
-├── META-INF/ # Project meta information
-├── WEB-INF/ # Web configuration directory
-├── data/ # CSV data files
-├── jsp/ # Frontend pages
-│ ├── MO_1/ # MO portal pages
-│ ├── TA/ # TA portal pages│ └── admin/ # Admin portal pages
-└── src/ # Backend Java source code
-├── Admin/ # Admin business module
-├── MOpublish_apply/ # MO business module
-└── TA/ # TA business module
+├── .idea/                 # IDE configuration files
+├── META‑INF/              # Web metadata
+├── WEB‑INF/               # Web application configuration
+├── build/                 # Compiled output files
+├── data/                  # Persistent CSV data files
+│   ├── application.csv    # TA application records
+│   ├── auth.csv           # User authentication data
+│   ├── job.csv            # Job posting data
+│   ├── profiles.csv       # TA personal profile data
+│   └── workloads.csv      # TA workload statistics
+├── jsp/                   # Front‑end view pages
+│   ├── MO_1/              # Module Organizer pages
+│   ├── TA/                # TA user pages
+│   ├── Ta_Job/            # TA job browsing pages
+│   ├── admin/             # Administrator backend pages
+│   └── login/             # Unified login pages
+└── src/                   # Java backend source code
+    ├── Admin/             # Administrator business modules
+    ├── MOpublish_apply/   # MO business modules
+    ├── TA/                # TA core service modules
+    └── TaJob/             # TA job‑related service modules
 ```
 ---
 
@@ -135,7 +148,7 @@ web/
 ### Deployment Steps
 1. Import the project into Eclipse and configure the Tomcat server.
 2. Ensure the CSV files in the `web/data/` directory are complete.
-3. Start Tomcat and access `http://localhost:8080/web/`.
+3. Start Tomcat and access `http://localhost:8080/weblogin/login/`.
 4. Log in with the corresponding role account.
 
 ---
