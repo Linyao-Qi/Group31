@@ -10,6 +10,10 @@ public class AdminRecruitmentReportItem {
     private final String status;
     private final int applicationCount;
     private final int pendingCount;
+    private final int maxHire;
+    private final int acceptedCount;
+    private final int remainingVacancy;
+    private final String recruitmentProgress;
 
     public AdminRecruitmentReportItem(
             String jobId,
@@ -20,7 +24,11 @@ public class AdminRecruitmentReportItem {
             String compensation,
             String status,
             int applicationCount,
-            int pendingCount
+            int pendingCount,
+            int maxHire,
+            int acceptedCount,
+            int remainingVacancy,
+            String recruitmentProgress
     ) {
         this.jobId = jobId;
         this.moId = moId;
@@ -31,6 +39,10 @@ public class AdminRecruitmentReportItem {
         this.status = status;
         this.applicationCount = applicationCount;
         this.pendingCount = pendingCount;
+        this.maxHire = maxHire;
+        this.acceptedCount = acceptedCount;
+        this.remainingVacancy = remainingVacancy;
+        this.recruitmentProgress = recruitmentProgress;
     }
 
     public String getJobId() {
@@ -67,5 +79,21 @@ public class AdminRecruitmentReportItem {
 
     public int getPendingCount() {
         return pendingCount;
+    }
+
+    public int getMaxHire() {
+        return maxHire;
+    }
+
+    public int getAcceptedCount() {
+        return acceptedCount;
+    }
+
+    public int getRemainingVacancy() {
+        return remainingVacancy;
+    }
+
+    public String getRecruitmentProgress() {
+        return recruitmentProgress;
     }
 }

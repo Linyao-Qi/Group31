@@ -8,13 +8,18 @@
     Set<String> moduleCodes = (Set<String>) request.getAttribute("moduleCodes");
     Set<String> statuses = (Set<String>) request.getAttribute("statuses");
     Set<String> moIds = (Set<String>) request.getAttribute("moIds");
+    Set<String> taIds = (Set<String>) request.getAttribute("taIds");
     if (workloads == null) workloads = Collections.emptyList();
     if (moduleCodes == null) moduleCodes = Collections.emptySet();
     if (statuses == null) statuses = Collections.emptySet();
     if (moIds == null) moIds = Collections.emptySet();
+    if (taIds == null) taIds = Collections.emptySet();
     String selectedModuleCode = request.getAttribute("selectedModuleCode") == null ? "" : String.valueOf(request.getAttribute("selectedModuleCode"));
     String selectedStatus = request.getAttribute("selectedStatus") == null ? "" : String.valueOf(request.getAttribute("selectedStatus"));
     String selectedMoId = request.getAttribute("selectedMoId") == null ? "" : String.valueOf(request.getAttribute("selectedMoId"));
+    String selectedTaId = request.getAttribute("selectedTaId") == null ? "" : String.valueOf(request.getAttribute("selectedTaId"));
+    String selectedSortBy = request.getAttribute("selectedSortBy") == null ? "" : String.valueOf(request.getAttribute("selectedSortBy"));
+    String selectedSortOrder = request.getAttribute("selectedSortOrder") == null ? "asc" : String.valueOf(request.getAttribute("selectedSortOrder"));
     String message = (String) request.getAttribute("message");
     Boolean hasUnsaved = (Boolean) request.getAttribute("hasUnsavedChanges");
 %>
@@ -42,10 +47,15 @@
         .stat-label { color: #6b7280; font-size: 13px; margin-bottom: 8px; }
         .stat-value { color: #111827; font-size: 24px; line-height: 1; font-weight: 800; }
         .danger .stat-value { color: #b91c1c; }
-        .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end; }
+        .filters { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+        .field { width: 160px; }
+        .field-sm { width: 135px; }
         label { display: block; margin-bottom: 6px; color: #374151; font-weight: 700; }
         select { width: 100%; height: 38px; border: 1px solid #d1d5db; border-radius: 9px; padding: 8px 10px; background: #fff; font: inherit; }
         select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13); }
+        .filter-section { margin-bottom: 16px; }
+        .filter-section:last-child { margin-bottom: 0; }
+        .section-label { margin: 0 0 10px; color: #111827; font-weight: 800; }
         .controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
         .inline-form { display: inline-flex; margin: 0; }
         .btn, button {
@@ -112,36 +122,69 @@
 
     <div class="card">
         <form method="get" action="${pageContext.request.contextPath}/admin/workloads">
-            <div class="filters">
-                <div>
-                    <label for="moduleCode">Module Code</label>
-                    <select id="moduleCode" name="moduleCode">
-                        <option value="">All</option>
-                        <% for (String value : moduleCodes) { %>
-                        <option value="<%= value %>" <%= value.equals(selectedModuleCode) ? "selected" : "" %>><%= value %></option>
-                        <% } %>
-                    </select>
+            <div class="filter-section">
+                <div class="section-label">Filters</div>
+                <div class="filters">
+                    <div class="field">
+                        <label for="moduleCode">Module Code</label>
+                        <select id="moduleCode" name="moduleCode">
+                            <option value="">All</option>
+                            <% for (String value : moduleCodes) { %>
+                            <option value="<%= value %>" <%= value.equals(selectedModuleCode) ? "selected" : "" %>><%= value %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="field-sm">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="">All</option>
+                            <% for (String value : statuses) { %>
+                            <option value="<%= value %>" <%= value.equals(selectedStatus) ? "selected" : "" %>><%= value %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="field-sm">
+                        <label for="moId">MO ID</label>
+                        <select id="moId" name="moId">
+                            <option value="">All</option>
+                            <% for (String value : moIds) { %>
+                            <option value="<%= value %>" <%= value.equals(selectedMoId) ? "selected" : "" %>><%= value %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="field-sm">
+                        <label for="taId">TA ID</label>
+                        <select id="taId" name="taId">
+                            <option value="">All</option>
+                            <% for (String value : taIds) { %>
+                            <option value="<%= value %>" <%= value.equals(selectedTaId) ? "selected" : "" %>><%= value %></option>
+                            <% } %>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label for="status">Status</label>
-                    <select id="status" name="status">
-                        <option value="">All</option>
-                        <% for (String value : statuses) { %>
-                        <option value="<%= value %>" <%= value.equals(selectedStatus) ? "selected" : "" %>><%= value %></option>
-                        <% } %>
-                    </select>
-                </div>
-                <div>
-                    <label for="moId">MO ID</label>
-                    <select id="moId" name="moId">
-                        <option value="">All</option>
-                        <% for (String value : moIds) { %>
-                        <option value="<%= value %>" <%= value.equals(selectedMoId) ? "selected" : "" %>><%= value %></option>
-                        <% } %>
-                    </select>
-                </div>
-                <div>
-                    <button class="primary" type="submit">Apply</button>
+            </div>
+
+            <div class="filter-section">
+                <div class="section-label">Sort</div>
+                <div class="filters">
+                    <div class="field-sm">
+                        <label for="sortBy">Sort By</label>
+                        <select id="sortBy" name="sortBy">
+                            <option value="" <%= selectedSortBy.isEmpty() ? "selected" : "" %>>Default</option>
+                            <option value="moId" <%= "moId".equals(selectedSortBy) ? "selected" : "" %>>MO ID</option>
+                            <option value="taId" <%= "taId".equals(selectedSortBy) ? "selected" : "" %>>TA ID</option>
+                        </select>
+                    </div>
+                    <div class="field-sm">
+                        <label for="sortOrder">Order</label>
+                        <select id="sortOrder" name="sortOrder">
+                            <option value="asc" <%= "asc".equalsIgnoreCase(selectedSortOrder) ? "selected" : "" %>>Ascending</option>
+                            <option value="desc" <%= "desc".equalsIgnoreCase(selectedSortOrder) ? "selected" : "" %>>Descending</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="primary" type="submit">Apply</button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -196,6 +239,9 @@
                             <input type="hidden" name="selectedModuleCode" value="<%= selectedModuleCode %>"/>
                             <input type="hidden" name="selectedStatus" value="<%= selectedStatus %>"/>
                             <input type="hidden" name="selectedMoId" value="<%= selectedMoId %>"/>
+                            <input type="hidden" name="selectedTaId" value="<%= selectedTaId %>"/>
+                            <input type="hidden" name="selectedSortBy" value="<%= selectedSortBy %>"/>
+                            <input type="hidden" name="selectedSortOrder" value="<%= selectedSortOrder %>"/>
                             <button type="submit" <%= "Overloaded".equalsIgnoreCase(w.getStatus()) ? "" : "disabled" %>>Reassign</button>
                         </form>
                     </td>

@@ -31,6 +31,9 @@ public class AdminRecruitmentReportService {
                 if ("PENDING".equals(appStatus)) {
                     counter.pending++;
                 }
+                if ("ACCEPTED".equals(appStatus)) {
+                    counter.accepted++;
+                }
             }
 
             if (!appStatus.isEmpty()) {
@@ -61,7 +64,7 @@ public class AdminRecruitmentReportService {
         csv.append("Recruitment Statistics Report").append('\n');
         csv.append("Generated At,").append(escapeCsv(reportData.getGeneratedAt())).append('\n');
         csv.append('\n');
-        csv.append("job ID,MO ID,Subject,Work Type,Hours/Week,Compensation,Status,Application Count,Pending Count")
+        csv.append("job ID,MO ID,Subject,Work Type,Hours/Week,Compensation,Status,Application Count,Pending Count,Max Hire,Accepted Count,Remaining Vacancy,Recruitment Progress")
                 .append('\n');
         for (AdminRecruitmentReportItem item : reportData.getItems()) {
             csv.append(escapeCsv(item.getJobId())).append(',')
@@ -72,7 +75,11 @@ public class AdminRecruitmentReportService {
                     .append(escapeCsv(item.getCompensation())).append(',')
                     .append(escapeCsv(item.getStatus())).append(',')
                     .append(item.getApplicationCount()).append(',')
-                    .append(item.getPendingCount())
+                    .append(item.getPendingCount()).append(',')
+                    .append(item.getMaxHire()).append(',')
+                    .append(item.getAcceptedCount()).append(',')
+                    .append(item.getRemainingVacancy()).append(',')
+                    .append(escapeCsv(item.getRecruitmentProgress()))
                     .append('\n');
         }
         return csv.toString();
@@ -81,11 +88,14 @@ public class AdminRecruitmentReportService {
     public String buildSuccessfulRecruitmentCsv(ReportData reportData) {
         StringBuilder csv = new StringBuilder();
         csv.append('\uFEFF');
-        csv.append("job ID,Subject,MO ID,appId,taId,name,email,appStatus").append('\n');
+        csv.append("job ID,Subject,MO ID,Work Type,Hours/Week,Compensation,appId,taId,name,email,appStatus").append('\n');
         for (SuccessfulRecruitmentDetail detail : reportData.getSuccessfulRecruitmentDetails()) {
             csv.append(escapeCsv(detail.getJobId())).append(',')
                     .append(escapeCsv(detail.getSubject())).append(',')
                     .append(escapeCsv(detail.getMoId())).append(',')
+                    .append(escapeCsv(detail.getWorkType())).append(',')
+                    .append(formatNumber(detail.getHoursPerWeek())).append(',')
+                    .append(escapeCsv(detail.getCompensation())).append(',')
                     .append(escapeCsv(detail.getAppId())).append(',')
                     .append(escapeCsv(detail.getTaId())).append(',')
                     .append(escapeCsv(detail.getName())).append(',')
@@ -130,6 +140,9 @@ public class AdminRecruitmentReportService {
         List<AdminRecruitmentReportItem> items = new ArrayList<>();
         for (AdminRecruitment job : jobs) {
             JobApplicationCounter counter = countersByJobId.getOrDefault(safe(job.getJobId()), new JobApplicationCounter());
+            int maxHire = Math.max(0, job.getOpenPositions());
+            int remainingVacancy = Math.max(0, maxHire - counter.accepted);
+            String status = job.isOpen() ? "OPEN" : "CLOSED";
             items.add(new AdminRecruitmentReportItem(
                     safe(job.getJobId()),
                     safe(job.getMoId()),
@@ -137,15 +150,29 @@ public class AdminRecruitmentReportService {
                     safe(job.getWorkType()),
                     job.getHoursPerWeek(),
                     safe(job.getCompensation()),
-                    job.isOpen() ? "OPEN" : "CLOSED",
+                    status,
                     counter.total,
-                    counter.pending
+                    counter.pending,
+                    maxHire,
+                    counter.accepted,
+                    remainingVacancy,
+                    buildRecruitmentProgress(counter.accepted, maxHire, status)
             ));
         }
 
         items.sort(Comparator.comparingInt(AdminRecruitmentReportItem::getApplicationCount).reversed()
                 .thenComparing(AdminRecruitmentReportItem::getJobId));
         return items;
+    }
+
+    private String buildRecruitmentProgress(int acceptedCount, int maxHire, String jobStatus) {
+        if (acceptedCount >= maxHire) {
+            return "Completed";
+        }
+        if ("OPEN".equalsIgnoreCase(jobStatus)) {
+            return "In Progress";
+        }
+        return "Closed before full";
     }
 
     private List<ApplicationStatusCount> buildStatusCounts(Map<String, Integer> statusCounts) {
@@ -176,10 +203,16 @@ public class AdminRecruitmentReportService {
             AdminRecruitment job = jobsById.get(safe(application.getJobId()));
             String subject = job == null ? "" : safe(job.getSubject());
             String moId = job == null ? safe(application.getMoId()) : safe(job.getMoId());
+            String workType = job == null ? "" : safe(job.getWorkType());
+            double hoursPerWeek = job == null ? 0.0 : job.getHoursPerWeek();
+            String compensation = job == null ? "" : safe(job.getCompensation());
             details.add(new SuccessfulRecruitmentDetail(
                     safe(application.getJobId()),
                     subject,
                     moId,
+                    workType,
+                    hoursPerWeek,
+                    compensation,
                     safe(application.getAppId()),
                     safe(application.getTaId()),
                     safe(application.getName()),
@@ -272,6 +305,7 @@ public class AdminRecruitmentReportService {
     private static class JobApplicationCounter {
         int total;
         int pending;
+        int accepted;
     }
 
     public static class Summary {
@@ -381,6 +415,9 @@ public class AdminRecruitmentReportService {
         private final String jobId;
         private final String subject;
         private final String moId;
+        private final String workType;
+        private final double hoursPerWeek;
+        private final String compensation;
         private final String appId;
         private final String taId;
         private final String name;
@@ -391,6 +428,9 @@ public class AdminRecruitmentReportService {
                 String jobId,
                 String subject,
                 String moId,
+                String workType,
+                double hoursPerWeek,
+                String compensation,
                 String appId,
                 String taId,
                 String name,
@@ -400,6 +440,9 @@ public class AdminRecruitmentReportService {
             this.jobId = jobId;
             this.subject = subject;
             this.moId = moId;
+            this.workType = workType;
+            this.hoursPerWeek = hoursPerWeek;
+            this.compensation = compensation;
             this.appId = appId;
             this.taId = taId;
             this.name = name;
@@ -417,6 +460,18 @@ public class AdminRecruitmentReportService {
 
         public String getMoId() {
             return moId;
+        }
+
+        public String getWorkType() {
+            return workType;
+        }
+
+        public double getHoursPerWeek() {
+            return hoursPerWeek;
+        }
+
+        public String getCompensation() {
+            return compensation;
         }
 
         public String getAppId() {
