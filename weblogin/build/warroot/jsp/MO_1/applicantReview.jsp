@@ -1,6 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="com.Application, com.SkillMatchUtil, java.util.List" %>
+<%
+    if (request.getAttribute("apps") == null) {
+        response.sendRedirect(request.getContextPath() + "/moApplicantReview");
+        return;
+    }
+%>
 <html>
 <head>
     <title>All Applications</title>
@@ -55,24 +61,6 @@
             color: #1e3a8a;
             font-size: 14px;
         }
-        .login-form {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .login-form input {
-            padding: 8px;
-            margin: 5px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-        }
-        .login-form button {
-            padding: 8px 16px;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
         .success { color: green; font-weight: bold; text-align: center; }
         .error { color: red; font-weight: bold; text-align: center; }
         .score-pill {
@@ -117,8 +105,8 @@
             font-size: 13px;
         }
         .matched-chip {
-            background: #dcfce7;
-            color: #166534;
+            background: #dbeafe;
+            color: #1e3a8a;
         }
         .missing-chip {
             background: #fee2e2;
@@ -128,6 +116,18 @@
             color: #64748b;
             font-size: 13px;
         }
+        .current-mo {
+            margin: 0 auto 26px;
+            padding: 14px;
+            border-radius: 6px;
+            background: #dbeafe;
+            color: #1e3a8a;
+            text-align: center;
+            font-size: 20px;
+        }
+        .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
+        .logout-btn {width: 100%; padding: 12px; background: #64748b; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .logout-btn:hover {background: #475569;}
     </style>
     <script>
         function toggleDetails(id) {
@@ -141,9 +141,9 @@
 
     <div class="nav">
         <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp">Hire Applicant</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
+        <a href="${pageContext.request.contextPath}/moApplicantReview">Skill Match Score</a>
     </div>
 
     <h2>All Applications</h2>
@@ -151,19 +151,13 @@
     <%
         String msg = (String) request.getAttribute("msg");
         String msgType = (String) request.getAttribute("msgType");
+        String currentMoId = (String) session.getAttribute("userId");
     %>
+    <div class="current-mo">Current MO: <%= currentMoId %></div>
 
     <% if (msg != null) { %>
         <div class="<%= msgType %>"><%= msg %></div>
     <% } %>
-
-    <div class="login-form">
-        <form action="${pageContext.request.contextPath}/moApplicantReview" method="post">
-            <input type="text" name="moId" placeholder="MO ID" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-    </div>
 
     <table>
         <tr>
@@ -228,6 +222,9 @@
         }
         %>
     </table>
+    <form class="logout-form" method="post" action="${pageContext.request.contextPath}/mo/logout">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
 
 </body>
 </html>

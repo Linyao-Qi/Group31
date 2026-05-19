@@ -79,14 +79,18 @@
             font-size: 16px;
         }
         .auth-box button:hover {background: #1d4ed8;}
+        .current-mo {margin: 0 auto 26px; padding: 14px; border-radius: 6px; background: #dbeafe; color: #1e3a8a; text-align: center; font-size: 20px;}
+        .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
+        .logout-btn {width: 100%; padding: 12px; background: #64748b; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .logout-btn:hover {background: #475569;}
     </style>
 </head>
 <body>
     <div class="nav">
         <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp">Hire Applicant</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
+        <a href="${pageContext.request.contextPath}/moApplicantReview">Skill Match Score</a>
     </div>
 
 <%
@@ -94,10 +98,13 @@
     AuthUtil.init(getServletContext());
 
     request.setCharacterEncoding("UTF-8");
-    String moId = request.getParameter("moId");
-    String password = request.getParameter("password");
+    String moId = (String) session.getAttribute("userId");
+    if (!"MO".equals(session.getAttribute("userType")) || moId == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
     MoService moService = new MoService();
-    boolean authPass = false;
+    boolean authPass = true;
     List<Application> appList = null;
     String msg = null;
     boolean isFail = false;
@@ -107,10 +114,6 @@
     String cancelAppId = request.getParameter("cancelAppId");
     String rejectAppId = request.getParameter("rejectAppId");
     String cancelRejectAppId = request.getParameter("cancelRejectAppId");
-
-    if (moId != null && password != null) {
-        if (AuthUtil.authenticateMO(moId, password)) {
-            authPass = true;
 
             if (appId != null) {
                 Application result = moService.acceptApplicant(moId, appId);
@@ -141,40 +144,21 @@
                 isFail = result == null;
             }
 
-            appList = moService.getAllApps(moId, password, false);
+            appList = moService.getAllAppsForMo(moId);
             List<Job> allJobs = moService.getAllJobs();
             for(Job j : allJobs) {
                 jobMap.put(j.getJobId(), j);
             }
-        } else {
-            response.sendRedirect("${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp?error=1");
-            return;
-        }
-    }
 %>
 
     <h2 align="center">Applicant Management - MO: <%=moId != null ? moId : ""%></h2>
+    <div class="current-mo">Current MO: <%= moId %></div>
     
     <% if (msg != null) { %>
         <div class="msg <%= isFail ? "fail" : "success" %>"><%= msg %></div>
     <% } %>
 
     <% if (!authPass) { %>
-        <div class="auth-box">
-            <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post">
-                <div>
-                    <label>MO ID:</label>
-                    <input type="text" name="moId" required placeholder="Enter MO ID">
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" name="password" required placeholder="Enter password">
-                </div>
-                <div style="text-align:center; margin-top:15px;">
-                    <button type="submit">Authenticate & View</button>
-                </div>
-            </form>
-        </div>
     <% } else { %>
         <% if (appList == null || appList.isEmpty()) { %>
             <div class="empty">No applicants yet</div>
@@ -189,7 +173,6 @@
                 <th>Intro</th>
                 <th>Skills</th>
                 <th>Email</th>
-                <th>CV</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -215,34 +198,25 @@
                 <td class="intro"><%= app.getIntro() %></td>
                 <td><%= app.getSkills() %></td>
                 <td><%= app.getEmail() %></td>
-                <td><%= app.getCVpath() == null ? "-" : app.getCVpath() %></td>
                 <td class="<%= statusClass %>"><%= status %></td>
                 <td>
                     <% if ("PENDING".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="display:inline;margin:0 2px 0 0;">
                             <input type="hidden" name="appId" value="<%= app.getAppId() %>">
-                            <input type="hidden" name="moId" value="<%= moId %>">
-                            <input type="hidden" name="password" value="<%= password %>">
                             <button type="submit" class="btn-hire" onclick="return confirm('Hire this applicant?');">Hire</button>
                         </form>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="display:inline;">
                             <input type="hidden" name="rejectAppId" value="<%= app.getAppId() %>">
-                            <input type="hidden" name="moId" value="<%= moId %>">
-                            <input type="hidden" name="password" value="<%= password %>">
                             <button type="submit" class="btn-reject" onclick="return confirm('Reject this applicant?');">Reject</button>
                         </form>
                     <% } else if ("ACCEPTED".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
                             <input type="hidden" name="cancelAppId" value="<%= app.getAppId() %>">
-                            <input type="hidden" name="moId" value="<%= moId %>">
-                            <input type="hidden" name="password" value="<%= password %>">
                             <button type="submit" class="btn-cancel" onclick="return confirm('Cancel this hire?');">Cancel Hire</button>
                         </form>
                     <% } else if ("REJECTED".equals(status)) { %>
                         <form action="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp" method="post" style="margin:0;">
                             <input type="hidden" name="cancelRejectAppId" value="<%= app.getAppId() %>">
-                            <input type="hidden" name="moId" value="<%= moId %>">
-                            <input type="hidden" name="password" value="<%= password %>">
                             <button type="submit" class="btn-cancel-reject" onclick="return confirm('Cancel this reject?');">Cancel Reject</button>
                         </form>
                     <% } %>
@@ -253,7 +227,9 @@
         <% } %>
     <% } %>
     
-    <button onclick="window.location.href='${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp'" class="return-btn">Back</button>
+    <form class="logout-form" method="post" action="${pageContext.request.contextPath}/mo/logout">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
     
 </body>
 </html>

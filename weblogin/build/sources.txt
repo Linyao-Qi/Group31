@@ -28,6 +28,7 @@ C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\Job.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\MoApplicantReviewService.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\MoApplicantReviewServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\MoLoginServlet.java
+C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\MoLogoutServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\MoService.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\PublishJobServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\SkillMatchUtil.java
