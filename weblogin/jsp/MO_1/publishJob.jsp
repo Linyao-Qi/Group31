@@ -1,4 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String currentMoId = (String) session.getAttribute("userId");
+    if (!"MO".equals(session.getAttribute("userType")) || currentMoId == null) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+%>
 <html>
 <head>
     <title>Publish TA Job</title>
@@ -11,31 +18,26 @@
         .msg {margin: 20px 0; padding: 10px; border-radius: 5px; text-align: center;}
         .success {background: #dcfce7; color: #166534;}
         .fail {background: #fee2e2; color: #991b1b;}
+        .current-mo {background: #dbeafe; color: #1e3a8a;}
         .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.10); transform: translateX(-50%);}
         .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
         .nav a:hover {background: #dbeafe; text-decoration: none;}
+        .logout-form {margin: 28px auto 0; width: 100%;}
+        .logout-btn {width: 100%; padding: 12px; background: #94a3b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .logout-btn:hover {background: #7c8da3;}
     </style>
 </head>
 <body>
     <div class="nav">
         <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp">Hire Applicant</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
+        <a href="${pageContext.request.contextPath}/moApplicantReview">Skill Match Score</a>
     </div>
     <h2 align="center">Publish TA Job</h2>
+    <div class="msg current-mo">Current MO: <%= currentMoId %></div>
 
     <form action="${pageContext.request.contextPath}/publishJob" method="post">
-        <div class="form-item">
-            <label>MO ID (e.g. mo001):</label>
-            <input type="text" name="moId" required placeholder="Enter your MO ID">
-        </div>
-
-        <div class="form-item">
-            <label>MO Password:</label>
-            <input type="password" name="password" required placeholder="Enter your password">
-        </div>
-
         <div class="form-item">
             <label>Subject / Course:</label>
             <input type="text" name="subject" required placeholder="e.g. Java, Python, Software Engineering">
@@ -84,5 +86,8 @@
             }
         }
     %>
+    <form class="logout-form" method="post" action="${pageContext.request.contextPath}/mo/logout">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
 </body>
 </html>

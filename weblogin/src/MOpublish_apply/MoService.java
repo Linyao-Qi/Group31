@@ -26,6 +26,14 @@ public class MoService {
                           String compensation, int maxHire) { // 新增maxHire参数
         if (JOB_FILE_PATH == null) return null;
         if (!AuthUtil.authenticateMO(moId, password)) return null;
+        return publishJobForMo(moId, subject, workType, description, skillRequirement,
+                hoursPerWeek, compensation, maxHire);
+    }
+
+    public Job publishJobForMo(String moId, String subject, String workType,
+                               String description, String skillRequirement, int hoursPerWeek,
+                               String compensation, int maxHire) {
+        if (JOB_FILE_PATH == null) return null;
         if (moId == null || moId.isBlank() || subject == null || subject.isBlank()
                 || workType == null || workType.isBlank() || description == null || description.isBlank()
                 || skillRequirement == null || skillRequirement.isBlank() || compensation == null || compensation.isBlank()
@@ -218,6 +226,12 @@ public class MoService {
     // 获取当前 MO 的所有申请（完整信息）
     public List<Application> getAllApps(String moId, String password, boolean isAdmin) {
         if (!AuthUtil.authenticateMO(moId, password)) return null;
+
+        return getAllAppsForMo(moId);
+    }
+
+    public List<Application> getAllAppsForMo(String moId) {
+        if (moId == null || moId.isBlank()) return new ArrayList<>();
 
         List<Application> allApps = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
         List<Application> result = new ArrayList<>();

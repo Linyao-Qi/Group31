@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +37,12 @@ public class MoApplicantReviewServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        String moId = request.getParameter("moId");
-        String password = request.getParameter("password");
-
-        if (!service.isValidMO(moId, password)) {
-            request.setAttribute("msg", "Login failed: Please use a valid MO account!");
-            request.getRequestDispatcher("/jsp/MO_1/applicantReview.jsp").forward(request, response);
+        HttpSession session = request.getSession(false);
+        if (session == null || !"MO".equals(session.getAttribute("userType")) || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        String moId = (String) session.getAttribute("userId");
 
         List<Application> apps = service.getApplications(moId);
         List<SkillMatchUtil.MatchResult> matchResults = new ArrayList<>();

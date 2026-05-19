@@ -17,7 +17,7 @@
         .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
         .nav a:hover {background: #dbeafe; text-decoration: none;}
         .empty {text-align: center; margin: 30px auto; padding: 18px; color: #64748b; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);}
-        .accepted, .pending, .rejected {display: inline-block; min-width: 78px; padding: 5px 10px; border-radius: 999px; font-weight: bold;}
+        .accepted, .pending, .rejected {display: table-cell; font-weight: bold; letter-spacing: 0.3px;}
         .accepted {background: #dcfce7; color: #166534;}
         .pending {background: #fef3c7; color: #b45309;}
         .rejected {background: #fee2e2; color: #991b1b;}
@@ -76,57 +76,39 @@
             font-weight: bold;
             border-radius: 6px;
         }
+        .current-mo {margin: 0 auto 26px; padding: 14px; border-radius: 6px; background: #dbeafe; color: #1e3a8a; text-align: center; font-size: 20px;}
+        .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
+        .logout-btn {width: 100%; padding: 12px; background: #64748b; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .logout-btn:hover {background: #475569;}
     </style>
 </head>
 <body>
     <div class="nav">
         <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp">Hire Applicant</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
+        <a href="${pageContext.request.contextPath}/moApplicantReview">Skill Match Score</a>
     </div>
 
     <h2 align="center">TA Application List</h2>
 
     <%
         request.setCharacterEncoding("UTF-8");
-        String userId = request.getParameter("userId");
-        String password = request.getParameter("password");
+        String userId = (String) session.getAttribute("userId");
+        if (!"MO".equals(session.getAttribute("userType")) || userId == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         MoService moService = new MoService();
-        List<Application> appList = null;
-        boolean needLogin = true;
+        MoService.init(getServletContext());
+        List<Application> appList = moService.getAllAppsForMo(userId);
+        boolean needLogin = false;
         String errorMsg = "";
-
-        if (userId != null && password != null) {
-            appList = moService.getAllApps(userId, password, false);
-            if (appList != null) {
-                needLogin = false;
-            } else {
-                errorMsg = "Authentication failed! Invalid ID or password.";
-            }
-        }
     %>
+    <div class="current-mo">Current MO: <%= userId %></div>
 
     <% if (needLogin) { %>
-        <div class="auth-box">
-            <form action="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp" method="post">
-                <div>
-                    <label>User ID (MO):</label>
-                    <input type="text" name="userId" required>
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" name="password" required>
-                </div>
-                <div style="text-align:center; margin-top:15px;">
-                    <button type="submit">Authenticate & View</button>
-                </div>
-            </form>
-        </div>
-        <% if (!errorMsg.isEmpty()) { %>
-            <div class="error"><%= errorMsg %></div>
-        <% } %>
     <% } else { %>
         <%
             if (appList == null || appList.size() == 0) {
@@ -161,5 +143,8 @@
             }
         %>
     <% } %>
+    <form class="logout-form" method="post" action="${pageContext.request.contextPath}/mo/logout">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
 </body>
 </html>
