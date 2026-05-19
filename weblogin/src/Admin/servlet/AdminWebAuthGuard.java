@@ -23,7 +23,7 @@ public final class AdminWebAuthGuard {
         if (session != null && AdminWebSessionState.isAuthenticated(session)) {
             return true;
         }
-        resp.sendRedirect(req.getContextPath() + "/admin/login");
+        resp.sendRedirect(req.getContextPath() + "/jsp/login/login.jsp");
         return false;
     }
 }

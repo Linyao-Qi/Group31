@@ -18,7 +18,7 @@ public class AdminLogoutServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        resp.sendRedirect(req.getContextPath() + "/admin/login");
+        resp.sendRedirect(req.getContextPath() + "/jsp/login/login.jsp");
     }
 }
 

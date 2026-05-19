@@ -38,6 +38,7 @@ public class TAJobListServlet extends HttpServlet {
         String filterSubject  = req.getParameter("subject");
         String filterWorkType = req.getParameter("workType");
         String keyword        = req.getParameter("keyword");
+        String focusJobId     = req.getParameter("focusJobId");
 
         List<Job> result = new ArrayList<>();
         for (Job job : moService.getAllJobs()) {
@@ -62,6 +63,7 @@ public class TAJobListServlet extends HttpServlet {
         req.setAttribute("filterSubject", filterSubject);
         req.setAttribute("filterWorkType", filterWorkType);
         req.setAttribute("keyword", keyword);
+        req.setAttribute("focusJobId", focusJobId);
         req.getRequestDispatcher("/jsp/TA/jobList.jsp").forward(req, resp);
     }
 }

@@ -2,129 +2,103 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.Application" %>
 <%@ page import="com.MoService" %>
-<%@ page import="com.CsvFileUtil" %>
+<%@ page import="com.Job" %>
 <html>
 <head>
     <title>All TA Applications</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px;}
-        table {width: 100%; border-collapse: collapse; margin-top: 20px;}
-        th, td {border: 1px solid #ddd; padding: 12px; text-align: center;}
-        th {background: #f8fafc; color: #333;}
-        .nav {margin-bottom: 30px; text-align: center;}
-        .nav a {margin: 0 10px; color: #2563eb; text-decoration: none;}
-        .nav a:hover {text-decoration: underline;}
-        .empty {text-align: center; margin-top: 30px; color: #666;}
-        .accepted {color: #166534; font-weight: bold;}
-        .pending {color: #f59e0b; font-weight: bold;}
-        .rejected {color: #dc2626; font-weight: bold;}
-        .auth-box {
-            border: 1px solid #ddd;
-            padding: 20px;
-            width: 400px;
-            margin: 0 auto 30px;
-            border-radius: 8px;
-        }
-        .auth-box div {
-            margin: 10px 0;
-        }
-        .auth-box label {
-            display: inline-block;
-            width: 120px;
-            text-align: right;
-            margin-right: 10px;
-        }
-        .error {
-            color: red;
-            text-align: center;
-            font-weight: bold;
-        }
+        body {font-family: Arial, sans-serif; max-width: 980px; margin: 50px auto; padding: 0 20px; background: #f8fafc; color: #1f2937;}
+        h2 {font-size: 24px; margin: 34px 0 24px; text-align: center;}
+        table {width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);}
+        th, td {border-bottom: 1px solid #e5e7eb; padding: 12px; text-align: center;}
+        th {background: #eff6ff; color: #1e3a8a; font-size: 14px;}
+        tr:last-child td {border-bottom: none;}
+        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.10); transform: translateX(-50%);}
+        .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
+        .nav a:hover {background: #dbeafe; text-decoration: none;}
+        .empty {text-align: center; margin: 30px auto; padding: 18px; color: #64748b; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);}
+        .accepted, .pending, .rejected {display: table-cell; font-weight: bold; letter-spacing: 0.3px;}
+        .accepted {background: #dcfce7; color: #166534;}
+        .pending {background: #fef3c7; color: #b45309;}
+        .rejected {background: #fee2e2; color: #991b1b;}
+        .current-mo {margin: 0 auto 26px; padding: 14px; border-radius: 6px; background: #dbeafe; color: #1e3a8a; text-align: center; font-size: 20px;}
+        .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
+        .logout-btn {width: 100%; padding: 12px; background: #94a3b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .logout-btn:hover {background: #7c8da3;}
     </style>
 </head>
 <body>
     <div class="nav">
         <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/hireApplicant.jsp">Hire Applicant</a>
-
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp">Hire Applicant</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/applicantReview.jsp">Skill Match Score</a>
-
+        <a href="${pageContext.request.contextPath}/moApplicantReview">Skill Match Score</a>
     </div>
 
-    <h2 align="center">TA Application List</h2>
+    <h2>TA Application List</h2>
 
     <%
         request.setCharacterEncoding("UTF-8");
-        String userId = request.getParameter("userId");
-        String password = request.getParameter("password");
+        String userId = (String) session.getAttribute("userId");
+        if (!"MO".equals(session.getAttribute("userType")) || userId == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         MoService moService = new MoService();
-        List<Application> appList = null;
-        boolean needLogin = true;
-        String errorMsg = "";
-
-        if (userId != null && password != null) {
-            appList = moService.getAllApps(userId, password, false);
-            if (appList != null) {
-                needLogin = false;
-            } else {
-                errorMsg = "Authentication failed! Invalid ID or password.";
-            }
-        }
+        MoService.init(getServletContext());
+        List<Application> appList = moService.getAllAppsForMo(userId);
+        List<Job> jobList = moService.getAllJobs();
     %>
 
-    <% if (needLogin) { %>
-        <div class="auth-box">
-            <form action="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp" method="post">
-                <div>
-                    <label>User ID (MO):</label>
-                    <input type="text" name="userId" required>
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" name="password" required>
-                </div>
-                <div style="text-align:center; margin-top:15px;">
-                    <button type="submit">Authenticate & View</button>
-                </div>
-            </form>
-        </div>
-        <% if (!errorMsg.isEmpty()) { %>
-            <div class="error"><%= errorMsg %></div>
-        <% } %>
-    <% } else { %>
-        <%
-            if (appList == null || appList.size() == 0) {
-                out.print("<div class='empty'>No application records yet.</div>");
-            } else {
-        %>
+    <div class="current-mo">Current MO: <%= userId %></div>
+
+    <%
+        if (appList == null || appList.isEmpty()) {
+            out.print("<div class='empty'>No application records yet.</div>");
+        } else {
+    %>
         <table>
             <tr>
                 <th>App ID</th>
                 <th>Job ID</th>
+                <th>Subject</th>
+                <th>Work Type</th>
                 <th>TA ID</th>
                 <th>Status</th>
             </tr>
             <%
                 for (Application app : appList) {
-                    out.print("<tr>");
-                    out.print("<td>" + app.getAppId() + "</td>");
-                    out.print("<td>" + app.getJobId() + "</td>");
-                    out.print("<td>" + app.getTaId() + "</td>");
-                    if ("ACCEPTED".equals(app.getAppStatus())) {
-                        out.print("<td class='accepted'>" + app.getAppStatus() + "</td>");
-                    } else if ("REJECTED".equals(app.getAppStatus())) {
-                        out.print("<td class='rejected'>" + app.getAppStatus() + "</td>");
-                    } else {
-                        out.print("<td class='pending'>" + app.getAppStatus() + "</td>");
+                    String subject = "";
+                    String workType = "";
+                    for (Job job : jobList) {
+                        if (app.getJobId().equals(job.getJobId())) {
+                            subject = job.getSubject();
+                            workType = job.getWorkType();
+                            break;
+                        }
                     }
-                    out.print("</tr>");
-                }
             %>
+            <tr>
+                <td><%= app.getAppId() %></td>
+                <td><%= app.getJobId() %></td>
+                <td><%= subject %></td>
+                <td><%= workType %></td>
+                <td><%= app.getTaId() %></td>
+                <td class="
+                    <%= "ACCEPTED".equals(app.getAppStatus()) ? "accepted" : "" %>
+                    <%= "REJECTED".equals(app.getAppStatus()) ? "rejected" : "" %>
+                    <%= "PENDING".equals(app.getAppStatus()) ? "pending" : "" %>
+                ">
+                    <%= app.getAppStatus() %>
+                </td>
+            </tr>
+            <% } %>
         </table>
-        <%
-            }
-        %>
     <% } %>
+
+    <form class="logout-form" method="post" action="${pageContext.request.contextPath}/mo/logout">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
 </body>
 </html>

@@ -17,6 +17,8 @@ public class AdminDataManagement {
             DataFileLocator.resolveDataFile("job.csv", AdminDataManagement.class);
     private static final File APPLICATION_FILE =
             DataFileLocator.resolveDataFile("application.csv", AdminDataManagement.class);
+    private static final File AUTH_FILE =
+            DataFileLocator.resolveDataFile("auth.csv", AdminDataManagement.class);
 
     public List<AdminWorkload> loadWorkloads() throws IOException {
         ensureWorkloadCsvExists();
@@ -126,6 +128,7 @@ public class AdminDataManagement {
                 double hoursPerWeek = safeParseDouble(parts[6].trim(), 0.0);
                 String compensation = unescapeCsvField(parts[7].trim());
                 String jobStatus = unescapeCsvField(parts[8].trim());
+                int maxHire = parts.length >= 10 ? safeParseInt(parts[9].trim(), 0) : 0;
 
                 posts.add(new AdminRecruitment(
                         jobId,
@@ -135,7 +138,7 @@ public class AdminDataManagement {
                         "",
                         description,
                         skillRequirement,
-                        0,
+                        maxHire,
                         "",
                         hoursPerWeek,
                         compensation,
@@ -151,7 +154,7 @@ public class AdminDataManagement {
 
     public void savePosts(List<AdminRecruitment> posts) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(JOB_FILE, false))) {
-            writer.write("job ID, MO ID, Subject, Work Type, Description, Skill Requirement, Hours/Week, Compensation, Status");
+            writer.write("jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status,maxHire");
             writer.newLine();
 
             for (AdminRecruitment post : posts) {
@@ -164,7 +167,8 @@ public class AdminDataManagement {
                         + escapeCsvField(post.getRequirements()) + ","
                         + post.getHoursPerWeek() + ","
                         + escapeCsvField(post.getCompensation()) + ","
-                        + jobStatus);
+                        + jobStatus + ","
+                        + post.getOpenPositions());
                 writer.newLine();
             }
         }
@@ -230,6 +234,40 @@ public class AdminDataManagement {
                 writer.newLine();
             }
         }
+    }
+
+    public boolean validateAdminCredentials(String username, String password) throws IOException {
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            return false;
+        }
+        if (!AUTH_FILE.exists()) {
+            return false;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(AUTH_FILE))) {
+            String line;
+            boolean isHeader = true;
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                String[] parts = parseCsvLine(line);
+                if (parts.length < 3) {
+                    continue;
+                }
+                if ("ADMIN".equalsIgnoreCase(parts[0].trim())
+                        && username.trim().equals(parts[1].trim())
+                        && password.equals(parts[2].trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void ensureWorkloadCsvExists() throws IOException {
@@ -312,6 +350,17 @@ public class AdminDataManagement {
         }
         try {
             return Double.parseDouble(value.trim());
+        } catch (NumberFormatException ignored) {
+            return defaultValue;
+        }
+    }
+
+    private int safeParseInt(String value, int defaultValue) {
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value.trim());
         } catch (NumberFormatException ignored) {
             return defaultValue;
         }

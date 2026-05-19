@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@WebServlet("/taJobList")
 public class JobListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private transient TaJobService taJobService;

@@ -1,14 +1,34 @@
 package com;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CSV File Operation Utility
+ * <p>Provides unified CSV read/write functionality for Job, Application, and Auth data.
+ * Handles field escaping, parsing, file creation, and UTF-8 encoding for persistent storage.
+ * Centralizes all file I/O operations for the TA recruitment system.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-04-18
+ */
 public class CsvFileUtil {
+
+    /** CSV field separator */
     private static final String SEPARATOR = ",";
+
+    /** New line delimiter for CSV files */
     private static final String NEW_LINE = "\n";
 
-    // ====================== Job 读写 ======================
+    // ====================== Job Read/Write ======================
+
+    /**
+     * Write a list of Job objects to CSV file
+     * @param filePath target file path
+     * @param jobList list of Job entities to save
+     */
     public static void writeJobListToCsv(String filePath, List<Job> jobList) {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
@@ -34,6 +54,11 @@ public class CsvFileUtil {
         }
     }
 
+    /**
+     * Read and parse Job list from CSV file
+     * @param filePath source CSV path
+     * @return List of Job entities
+     */
     public static List<Job> readJobListFromCsv(String filePath) {
         List<Job> jobList = new ArrayList<>();
         File file = new File(filePath);
@@ -84,7 +109,13 @@ public class CsvFileUtil {
         return jobList;
     }
 
-    // ====================== Application 读写 ======================
+    // ====================== Application Read/Write ======================
+
+    /**
+     * Write Application list to CSV file
+     * @param filePath target file path
+     * @param appList list of Application entities
+     */
     public static void writeAppListToCsv(String filePath, List<Application> appList) {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
@@ -111,12 +142,17 @@ public class CsvFileUtil {
         }
     }
 
+    /**
+     * Read and parse Application list from CSV
+     * @param filePath source CSV path
+     * @return List of Application entities
+     */
     public static List<Application> readAppListFromCsv(String filePath) {
         List<Application> appList = new ArrayList<>();
         File file = new File(filePath);
         if (!file.exists()) {
             createFileIfNotExists(file);
-            return appList; // 这里之前写错成 jobList，现在修复！
+            return appList;
         }
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
@@ -152,7 +188,13 @@ public class CsvFileUtil {
         return appList;
     }
 
-    // ====================== 工具方法 ======================
+    // ====================== Core Helper Methods ======================
+
+    /**
+     * Escape special characters for CSV field safety
+     * @param field original string
+     * @return escaped CSV-compatible string
+     */
     private static String escapeCsvField(String field) {
         if (field == null) return "";
         if (field.contains(SEPARATOR) || field.contains(NEW_LINE) || field.contains("\"")) {
@@ -161,6 +203,11 @@ public class CsvFileUtil {
         return field;
     }
 
+    /**
+     * Unescape CSV field to original text
+     * @param field escaped string
+     * @return original raw string
+     */
     private static String unescapeCsvField(String field) {
         if (field == null) return "";
         if (field.startsWith("\"") && field.endsWith("\"")) {
@@ -170,6 +217,11 @@ public class CsvFileUtil {
         return field;
     }
 
+    /**
+     * Parse a single CSV line with quote support
+     * @param line raw CSV line
+     * @return string array of parsed fields
+     */
     private static String[] parseCsvLine(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder currentField = new StringBuilder();
@@ -188,6 +240,10 @@ public class CsvFileUtil {
         return fields.toArray(new String[0]);
     }
 
+    /**
+     * Create file and parent directories if missing
+     * @param file target file
+     */
     private static void createFileIfNotExists(File file) {
         try {
             if (file.getParentFile() != null) {
@@ -199,6 +255,11 @@ public class CsvFileUtil {
         }
     }
 
+    /**
+     * Read user authentication data from auth.csv
+     * @param filePath auth file path
+     * @return List of Auth entities
+     */
     public static List<AuthUtil.Auth> readAuthListFromCsv(String filePath) {
         List<AuthUtil.Auth> authList = new ArrayList<>();
         File file = new File(filePath);
