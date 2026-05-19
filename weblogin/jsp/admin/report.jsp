@@ -133,12 +133,11 @@
                         <th>job ID</th>
                         <th>MO ID</th>
                         <th>Subject</th>
-                        <th>Work Type</th>
-                        <th>Hours/Week</th>
-                        <th>Compensation</th>
                         <th>Status</th>
-                        <th>Application Count</th>
-                        <th>Pending Count</th>
+                        <th>Max Hire</th>
+                        <th>Accepted Count</th>
+                        <th>Remaining Vacancy</th>
+                        <th>Recruitment Progress</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -147,12 +146,11 @@
                             <td><%= item.getJobId() %></td>
                             <td><%= item.getMoId() %></td>
                             <td><%= item.getSubject() %></td>
-                            <td><%= item.getWorkType() %></td>
-                            <td><%= hoursFormat.format(item.getHoursPerWeek()) %></td>
-                            <td><%= item.getCompensation() %></td>
                             <td><span class="pill <%= "OPEN".equalsIgnoreCase(item.getStatus()) ? "open" : "closed" %>"><%= item.getStatus() %></span></td>
-                            <td><%= item.getApplicationCount() %></td>
-                            <td><%= item.getPendingCount() %></td>
+                            <td><%= item.getMaxHire() %></td>
+                            <td><%= item.getAcceptedCount() %></td>
+                            <td><%= item.getRemainingVacancy() %></td>
+                            <td><%= item.getRecruitmentProgress() %></td>
                         </tr>
                     <% } %>
                     </tbody>

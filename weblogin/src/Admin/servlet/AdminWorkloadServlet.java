@@ -38,14 +38,23 @@ public class AdminWorkloadServlet extends HttpServlet {
         String moduleCode = safeParam(req.getParameter("moduleCode"));
         String status = safeParam(req.getParameter("status"));
         String moId = safeParam(req.getParameter("moId"));
+        String taId = safeParam(req.getParameter("taId"));
+        String sortBy = safeSortBy(req.getParameter("sortBy"));
+        String sortOrder = safeSortOrder(req.getParameter("sortOrder"));
 
-        List<AdminWorkload> filtered = workloadDomainService.filterWorkloads(drafts, moduleCode, status, moId);
+        List<AdminWorkload> filtered = workloadDomainService.filterAndSortWorkloads(
+                drafts, moduleCode, status, moId, taId, sortBy, sortOrder
+        );
         req.setAttribute("moduleCodes", workloadDomainService.collectModuleCodes(drafts));
         req.setAttribute("statuses", workloadDomainService.collectStatuses(drafts));
         req.setAttribute("moIds", workloadDomainService.collectMoIds(drafts));
+        req.setAttribute("taIds", workloadDomainService.collectTaIds(drafts));
         req.setAttribute("selectedModuleCode", moduleCode);
         req.setAttribute("selectedStatus", status);
         req.setAttribute("selectedMoId", moId);
+        req.setAttribute("selectedTaId", taId);
+        req.setAttribute("selectedSortBy", sortBy);
+        req.setAttribute("selectedSortOrder", sortOrder);
         req.setAttribute("workloads", filtered);
         req.setAttribute("totalActiveTAs", adminService.getTotalActiveTAs(filtered));
         req.setAttribute("totalAssignedModules", adminService.getTotalAssignedModules(filtered));
@@ -105,7 +114,15 @@ public class AdminWorkloadServlet extends HttpServlet {
         String moduleCode = safeParam(req.getParameter("selectedModuleCode"));
         String status = safeParam(req.getParameter("selectedStatus"));
         String moId = safeParam(req.getParameter("selectedMoId"));
-        resp.sendRedirect(req.getContextPath() + "/admin/workloads?moduleCode=" + moduleCode + "&status=" + status + "&moId=" + moId);
+        String taId = safeParam(req.getParameter("selectedTaId"));
+        String sortBy = safeSortBy(req.getParameter("selectedSortBy"));
+        String sortOrder = safeSortOrder(req.getParameter("selectedSortOrder"));
+        resp.sendRedirect(req.getContextPath() + "/admin/workloads?moduleCode=" + url(moduleCode)
+                + "&status=" + url(status)
+                + "&moId=" + url(moId)
+                + "&taId=" + url(taId)
+                + "&sortBy=" + url(sortBy)
+                + "&sortOrder=" + url(sortOrder));
     }
 
 
@@ -118,6 +135,26 @@ public class AdminWorkloadServlet extends HttpServlet {
 
     private String safeParam(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private String safeSortBy(String value) {
+        String safeValue = safeParam(value);
+        if ("moId".equals(safeValue) || "taId".equals(safeValue)) {
+            return safeValue;
+        }
+        return "";
+    }
+
+    private String safeSortOrder(String value) {
+        String safeValue = safeParam(value).toLowerCase();
+        if ("desc".equals(safeValue)) {
+            return "desc";
+        }
+        return "asc";
+    }
+
+    private String url(String value) {
+        return java.net.URLEncoder.encode(value == null ? "" : value, java.nio.charset.StandardCharsets.UTF_8);
     }
 }
 
