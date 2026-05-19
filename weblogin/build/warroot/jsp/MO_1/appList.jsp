@@ -17,7 +17,7 @@
         .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
         .nav a:hover {background: #dbeafe; text-decoration: none;}
         .empty {text-align: center; margin: 30px auto; padding: 18px; color: #64748b; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);}
-        .accepted, .pending, .rejected {display: table-cell; font-weight: bold; letter-spacing: 0.3px;}
+        .accepted, .pending, .rejected {display: inline-block; min-width: 78px; padding: 5px 10px; border-radius: 999px; font-weight: bold;}
         .accepted {background: #dcfce7; color: #166534;}
         .pending {background: #fef3c7; color: #b45309;}
         .rejected {background: #fee2e2; color: #991b1b;}

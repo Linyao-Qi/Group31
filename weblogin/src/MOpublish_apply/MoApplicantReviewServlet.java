@@ -46,17 +46,16 @@ public class MoApplicantReviewServlet extends HttpServlet {
         }
 
         List<Application> apps = service.getApplications(moId);
-        List<Integer> scores = new ArrayList<>();
+        List<SkillMatchUtil.MatchResult> matchResults = new ArrayList<>();
 
         for (Application app : apps) {
             String jobSkill = service.getSkillRequirement(app.getJobId());
-            String taSkill = service.getTaSkill(app.getTaId());
-            int score = SkillMatchUtil.calculateMatchScore(jobSkill, taSkill);
-            scores.add(score);
+            String taSkill = service.getTaSkill(app);
+            matchResults.add(SkillMatchUtil.calculateMatchResult(jobSkill, taSkill));
         }
 
         request.setAttribute("apps", apps);
-        request.setAttribute("scores", scores);
+        request.setAttribute("matchResults", matchResults);
         request.getRequestDispatcher("/jsp/MO_1/applicantReview.jsp").forward(request, response);
     }
 }
