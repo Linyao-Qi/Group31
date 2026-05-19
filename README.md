@@ -168,5 +168,7 @@ web/
 ## 🤝 Contribution
 This project is developed through team collaboration. Future extensions may include TA portal pages, Admin management functions, interface beautification, and other modules.
 
+---
+
 ## 📄 Open Source License
 This project is open source under the MIT License.
