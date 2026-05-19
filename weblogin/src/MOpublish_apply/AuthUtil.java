@@ -13,7 +13,7 @@ import java.util.Map;
  * Must be initialized during web application startup.</p>
  * @author Group31
  * @version 1.0
- * @since 2026-05-20
+ * @since 2026-04-15
  */
 public class AuthUtil {
 
