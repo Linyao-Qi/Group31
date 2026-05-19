@@ -14,7 +14,7 @@ import java.util.List;
  * Forwards authenticated MO users to the application management page with full application data.</p>
  * @author Group31
  * @version 1.0
- * @since 2026-05-20
+ * @since 2026-04-20
  */
 @WebServlet(value = "/getAllApps", loadOnStartup = 1)
 public class GetAllAppsServlet extends HttpServlet {
