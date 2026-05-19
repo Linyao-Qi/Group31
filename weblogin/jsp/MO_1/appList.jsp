@@ -50,7 +50,6 @@
         List<Application> appList = moService.getAllAppsForMo(userId);
         List<Job> jobList = moService.getAllJobs();
     %>
-    <div class="current-mo">Current MO: <%= userId %></div>
 
     <div class="current-mo">Current MO: <%= userId %></div>
 
