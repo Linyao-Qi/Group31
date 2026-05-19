@@ -149,7 +149,6 @@ web/
 | 231222811 | yaoyutong-31 (Member) |
 | 231222763 | Star-Angle (Member) |
 | 231221881 | KikiGao313 (Member) |
-| 190898878 | qrsikno2 (TA) |
 
 ---
 
