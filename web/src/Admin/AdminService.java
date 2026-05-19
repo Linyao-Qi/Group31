@@ -8,21 +8,25 @@ public class AdminService {
     private static final double OVERLOAD_THRESHOLD = 15.0;
     private static final String STATUS_NORMAL = "Normal";
     private static final String STATUS_OVERLOADED = "Overloaded";
-    private static final String STATUS_REASSIGNING = "Reassigning";
+    private static final String STATUS_CANCEL = "Cancel";
 
     private final AdminDataManagement dataManagement;
+    private final AdminWorkloadApplicationSyncService workloadApplicationSyncService;
 
     public AdminService() {
         this.dataManagement = new AdminDataManagement();
+        this.workloadApplicationSyncService = new AdminWorkloadApplicationSyncService(this.dataManagement);
     }
 
 
     public List<AdminWorkload> getAllWorkloads() {
         try {
             List<AdminWorkload> workloads = dataManagement.loadWorkloads();
+            workloadApplicationSyncService.appendAcceptedApplicationsToWorkloads(workloads);
             normalizeTotalsAndStatuses(workloads, true);
             return workloads;
         } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
             return fallbackWorkloads();
         }
     }
@@ -32,6 +36,7 @@ public class AdminService {
         normalizeTotalsAndStatuses(workloads, false);
         try {
             dataManagement.saveWorkloads(workloads);
+            syncCancelledWorkloadsToApplications(workloads);
             return true;
         } catch (IOException e) {
             return false;
@@ -41,6 +46,26 @@ public class AdminService {
 
     public void recalculateTotalsAndStatusesInMemory(List<AdminWorkload> workloads) {
         normalizeTotalsAndStatuses(workloads, false);
+    }
+
+    public void rejectApplicationForCancelledWorkload(String taId, String moduleCode, String moId) {
+        workloadApplicationSyncService.rejectApplicationForCancelledWorkload(taId, moduleCode, moId);
+    }
+
+    public void syncCancelledWorkloadsToApplications(List<AdminWorkload> workloads) {
+        if (workloads == null || workloads.isEmpty()) {
+            return;
+        }
+        for (AdminWorkload workload : workloads) {
+            if (!STATUS_CANCEL.equalsIgnoreCase(valueOrEmpty(workload.getStatus()))) {
+                continue;
+            }
+            workloadApplicationSyncService.rejectApplicationForCancelledWorkload(
+                    workload.getTaId(),
+                    workload.getModuleCode(),
+                    workload.getMoId()
+            );
+        }
     }
 
 
@@ -107,8 +132,8 @@ public class AdminService {
 
         for (AdminWorkload workload : workloads) {
             String taKey = buildTaKey(workload);
-            boolean reassigning = STATUS_REASSIGNING.equalsIgnoreCase(valueOrEmpty(workload.getStatus()));
-            if (reassigning) {
+            boolean cancelled = STATUS_CANCEL.equalsIgnoreCase(valueOrEmpty(workload.getStatus()));
+            if (cancelled) {
                 continue;
             }
             double newTotal = taTotalHourMap.getOrDefault(taKey, 0.0) + workload.getCourseWorkHour();
@@ -125,8 +150,8 @@ public class AdminService {
                 changed = true;
             }
 
-            boolean reassigning = STATUS_REASSIGNING.equalsIgnoreCase(valueOrEmpty(workload.getStatus()));
-            if (!reassigning) {
+            boolean cancelled = STATUS_CANCEL.equalsIgnoreCase(valueOrEmpty(workload.getStatus()));
+            if (!cancelled) {
                 String computedStatus = computedTotal > OVERLOAD_THRESHOLD ? STATUS_OVERLOADED : STATUS_NORMAL;
                 if (!computedStatus.equals(workload.getStatus())) {
                     workload.setStatus(computedStatus);

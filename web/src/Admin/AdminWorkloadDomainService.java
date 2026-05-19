@@ -67,7 +67,7 @@ public class AdminWorkloadDomainService {
             if (!"Overloaded".equalsIgnoreCase(valueOrEmpty(workload.getStatus()))) {
                 return false;
             }
-            workload.setStatus("Reassigning");
+            workload.setStatus("Cancel");
             return true;
         }
         return false;
