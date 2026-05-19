@@ -10,13 +10,18 @@
 <head>
     <title>Applicant Management</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 1400px; margin: 50px auto; padding: 0 20px;}
-        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 0 auto 30px; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.10);}
-        .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px;}
+        body {font-family: Arial, sans-serif; max-width: 1400px; margin: 50px auto; padding: 0 20px; background: #f8fafc; color: #1f2937;}
+        
+
+        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border-radius: 8px; transform: translateX(-50%);}
+        .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
         .nav a:hover {background: #dbeafe; text-decoration: none;}
+
+        
         table {width:100%; border-collapse:collapse; margin:20px 0; font-size: 14px;}
         th,td {border:1px solid #ddd; padding:10px; text-align:center;}
         th {background:#f8fafc; font-size: 14px;}
+        td {background:#ffffff;}
         .intro {text-align: left; max-width: 180px; word-break: break-word;}
         .btn-hire {padding:6px 12px; background:#16a34a; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}
         .btn-cancel {padding:6px 12px; background:#ef4444; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;}

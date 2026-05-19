@@ -9,18 +9,48 @@
     <style>
         body {font-family: Arial, sans-serif; max-width: 980px; margin: 50px auto; padding: 0 20px; background: #f8fafc; color: #1f2937;}
         h2 {font-size: 24px; margin: 34px 0 24px; text-align: center;}
-        table {width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);}
-        th, td {border-bottom: 1px solid #e5e7eb; padding: 12px; text-align: center;}
-        th {background: #eff6ff; color: #1e3a8a; font-size: 14px;}
-        tr:last-child td {border-bottom: none;}
-        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.10); transform: translateX(-50%);}
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 16px; 
+            text-align: center;
+            font-size: 15px; 
+        }
+        th {
+            background-color: #f8fafc;
+            color: #000;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border-radius: 8px; transform: translateX(-50%);}
         .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
         .nav a:hover {background: #dbeafe; text-decoration: none;}
+        
         .empty {text-align: center; margin: 30px auto; padding: 18px; color: #64748b; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);}
-        .accepted, .pending, .rejected {display: table-cell; font-weight: bold; letter-spacing: 0.3px;}
-        .accepted {background: #dcfce7; color: #166534;}
-        .pending {background: #fef3c7; color: #b45309;}
-        .rejected {background: #fee2e2; color: #991b1b;}
+        
+        .accepted {
+            font-weight: bold;
+            color: #16a34a;
+            background: transparent !important;
+        }
+        .pending {
+            font-weight: bold;
+            color: #f59e0b;
+            background: transparent !important;
+        }
+        .rejected {
+            font-weight: bold;
+            color: #dc2626;
+            background: transparent !important;
+        }
+
         .current-mo {margin: 0 auto 26px; padding: 14px; border-radius: 6px; background: #dbeafe; color: #1e3a8a; text-align: center; font-size: 20px;}
         .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
         .logout-btn {width: 100%; padding: 12px; background: #94a3b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
