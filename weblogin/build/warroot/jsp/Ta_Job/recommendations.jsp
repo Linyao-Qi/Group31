@@ -56,8 +56,7 @@
 </head>
 <body>
 <div class="nav">
-    <a href="${pageContext.request.contextPath}/taJobList">Job Browser</a>
-    <a href="${pageContext.request.contextPath}/taJobRecommendations">Recommended Jobs</a>
+    <a href="${pageContext.request.contextPath}/ta/jobs">Job List</a>
     <a href="${pageContext.request.contextPath}/ta/home">TA Home</a>
 </div>
 

@@ -46,7 +46,6 @@ C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAProfileCvServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAProfileService.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAProfileServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAWithdrawServlet.java
-C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TaJob\JobListServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TaJob\JobPosting.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TaJob\JobRecommendation.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TaJob\JobRecommendationService.java
