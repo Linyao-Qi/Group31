@@ -13,15 +13,37 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+/**
+ * Service class that builds explainable job recommendations for the logged-in TA.
+ * <p>
+ * The recommendation score combines skill overlap, major relevance, and profile
+ * completeness. Skills that are not present in the TA profile are treated as
+ * items to confirm rather than proof that the TA lacks those skills.
+ *
+ * @author Linyao Qi
+ * @version 3
+ */
 public class JobRecommendationService {
     private final TaJobService jobService;
     private final Path profileCsvPath;
 
+    /**
+     * Creates the recommendation service with job and profile CSV locations.
+     *
+     * @param jobCsvPath path to job.csv
+     * @param profileCsvPath path to profiles.csv
+     */
     public JobRecommendationService(String jobCsvPath, String profileCsvPath) {
         this.jobService = new TaJobService(jobCsvPath);
         this.profileCsvPath = resolvePath(profileCsvPath);
     }
 
+    /**
+     * Loads the profile snapshot for a TA from profiles.csv.
+     *
+     * @param taId TA identifier
+     * @return profile snapshot, or null when no profile is found
+     */
     public TaProfileSnapshot getProfile(String taId) {
         String targetTaId = normalize(taId);
         if (targetTaId.isEmpty() || profileCsvPath == null || !Files.exists(profileCsvPath)) {
@@ -58,10 +80,22 @@ public class JobRecommendationService {
         return null;
     }
 
+    /**
+     * Generates recommendations for a TA ID.
+     *
+     * @param taId TA identifier
+     * @return recommended open jobs sorted by descending match rate
+     */
     public List<JobRecommendation> recommendJobs(String taId) {
         return recommendJobs(getProfile(taId));
     }
 
+    /**
+     * Generates recommendations for a given TA profile snapshot.
+     *
+     * @param profile current TA profile, or null when the profile is incomplete
+     * @return recommended open jobs sorted by descending match rate
+     */
     public List<JobRecommendation> recommendJobs(TaProfileSnapshot profile) {
         List<JobRecommendation> recommendations = new ArrayList<>();
         Set<String> profileSkills = splitTerms(profile == null ? "" : profile.getSkills());
@@ -81,6 +115,14 @@ public class JobRecommendationService {
         return recommendations;
     }
 
+    /**
+     * Calculates the match rate and explanation for one job.
+     *
+     * @param job job posting to score
+     * @param profileSkills normalised skills from the TA profile
+     * @param major normalised TA major
+     * @return recommendation result for the job
+     */
     private JobRecommendation scoreJob(JobPosting job, Set<String> profileSkills, String major) {
         Set<String> requiredSkills = splitTerms(job.getSkillRequirement());
         List<String> matchedSkills = new ArrayList<>();
@@ -109,6 +151,13 @@ public class JobRecommendationService {
                 buildReason(profileSkills, majorScore, matchedSkills, missingSkills));
     }
 
+    /**
+     * Calculates whether the TA major is related to the job subject or description.
+     *
+     * @param major normalised TA major
+     * @param job job posting
+     * @return 20 when the major appears related, otherwise 0
+     */
     private int calculateMajorScore(String major, JobPosting job) {
         if (major.isEmpty()) {
             return 0;
@@ -118,6 +167,15 @@ public class JobRecommendationService {
         return searchable.contains(major) || (!subject.isEmpty() && major.contains(subject)) ? 20 : 0;
     }
 
+    /**
+     * Builds an explanation for the recommendation result.
+     *
+     * @param profileSkills normalised TA skills
+     * @param majorScore score contributed by major relevance
+     * @param matchedSkills skills matched between profile and job
+     * @param missingSkills listed job skills not found in the profile
+     * @return human-readable recommendation reason
+     */
     private String buildReason(Set<String> profileSkills, int majorScore,
                                List<String> matchedSkills, List<String> missingSkills) {
         if (profileSkills.isEmpty()) {
@@ -136,6 +194,14 @@ public class JobRecommendationService {
                 : "Limited profile match. Confirm these listed skills or update your profile before applying.";
     }
 
+    /**
+     * Checks whether a required skill is compatible with any profile skill.
+     * Partial containment is allowed to handle simple variations in wording.
+     *
+     * @param profileSkills normalised profile skills
+     * @param requiredSkill normalised job skill requirement
+     * @return true when the skill can be matched
+     */
     private boolean hasCompatibleSkill(Set<String> profileSkills, String requiredSkill) {
         for (String profileSkill : profileSkills) {
             if (profileSkill.equals(requiredSkill)
@@ -147,6 +213,12 @@ public class JobRecommendationService {
         return false;
     }
 
+    /**
+     * Splits comma- or separator-delimited skill text into normalised terms.
+     *
+     * @param value raw skill text
+     * @return ordered set of normalised terms
+     */
     private Set<String> splitTerms(String value) {
         Set<String> terms = new LinkedHashSet<>();
         if (value == null) {
@@ -162,10 +234,22 @@ public class JobRecommendationService {
         return terms;
     }
 
+    /**
+     * Normalises nullable text values for comparison.
+     *
+     * @param value raw value
+     * @return trimmed lower-case value, or an empty string when null
+     */
     private String normalize(String value) {
         return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
+    /**
+     * Resolves the profile CSV path.
+     *
+     * @param csvPath configured path
+     * @return resolved path to profiles.csv
+     */
     private Path resolvePath(String csvPath) {
         if (csvPath == null || csvPath.trim().isEmpty()) {
             return Paths.get(System.getProperty("user.dir"), "web", "data", "profiles.csv");
@@ -173,6 +257,12 @@ public class JobRecommendationService {
         return Paths.get(csvPath);
     }
 
+    /**
+     * Parses one CSV row while supporting quoted fields and escaped quotes.
+     *
+     * @param line raw CSV row
+     * @return parsed field values
+     */
     private List<String> parseCsvLine(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder current = new StringBuilder();
