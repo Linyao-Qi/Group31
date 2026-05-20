@@ -1,5 +1,9 @@
 package TA;
 
+/**
+ * Entity class for TA personal profile data model
+ * Stores all basic information and CV file path of a teaching assistant
+ */
 public class TAProfile {
     private String taId;
     private String name;
@@ -8,8 +12,20 @@ public class TAProfile {
     private String major;
     private String cvPath;
 
+    /**
+     * Default no-argument constructor
+     */
     public TAProfile() {}
 
+    /**
+     * Full parameterized constructor for initializing complete profile info
+     * @param taId Unique TA ID
+     * @param name TA full name
+     * @param email Contact email
+     * @param skills Personal professional skills
+     * @param major Academic major
+     * @param cvPath Storage path of resume file
+     */
     public TAProfile(String taId, String name, String email,
                      String skills, String major, String cvPath) {
         this.taId = taId;
