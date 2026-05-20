@@ -57,8 +57,6 @@
             font-size: 14px;
         }
         .btn-secondary { background: #64748b; text-decoration: none; display: inline-block; }
-        .btn-recommend { background: #0f766e; text-decoration: none; display: inline-block; }
-        .btn-recommend:hover { background: #115e59; }
         table { width: 100%; border-collapse: collapse; background: #fff; }
         th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; font-size: 14px; vertical-align: top; }
         th { background: #eff6ff; }
@@ -68,7 +66,6 @@
 <body>
 <div style="margin-bottom: 18px;">
     <a href="${pageContext.request.contextPath}/taJobList" style="margin-right: 14px; color: #1d4ed8; text-decoration: none; font-weight: 600;">Job Browser</a>
-    <a href="${pageContext.request.contextPath}/taJobRecommendations" style="margin-right: 14px; color: #1d4ed8; text-decoration: none; font-weight: 600;">Recommended Jobs</a>
     <a href="${pageContext.request.contextPath}/ta/home" style="color: #1d4ed8; text-decoration: none; font-weight: 600;">TA Home</a>
 </div>
 <h1>TA Job Browser</h1>
@@ -130,7 +127,6 @@
 
         <button class="btn" type="submit">Search</button>
         <a class="btn btn-secondary" href="${pageContext.request.contextPath}/taJobList">Reset</a>
-        <a class="btn btn-recommend" href="${pageContext.request.contextPath}/taJobRecommendations">Recommended Jobs</a>
     </div>
 </form>
 
