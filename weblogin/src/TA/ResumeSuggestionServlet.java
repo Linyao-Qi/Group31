@@ -10,14 +10,31 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Resume Suggestion Servlet
+ * <p>Builds resume improvement suggestions for the logged-in TA. The servlet
+ * loads the TA profile, selects a job posting, generates feedback, and forwards
+ * the result to the resume suggestion JSP.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 @WebServlet("/ta/resumeSuggestion")
 public class ResumeSuggestionServlet
         extends HttpServlet {
 
+    /** Service used to generate resume feedback */
     private final ResumeSuggestionService
             suggestionService =
             new ResumeSuggestionService();
 
+    /**
+     * Handles resume suggestion page requests for the current TA.
+     * @param request HTTP request containing the TA session
+     * @param response HTTP response used for redirecting, errors, or forwarding
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if redirecting or forwarding fails
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,

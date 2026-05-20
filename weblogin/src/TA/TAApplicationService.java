@@ -9,21 +9,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TA 申请业务逻辑
- * 移植自 _previous/ApplicationService，适配 web 模块 CSV schema
+ * TA Application Service
+ * <p>Provides the business logic for teaching assistant job applications.
+ * It reads and writes application.csv, prevents duplicate active applications,
+ * supports withdrawal of pending applications, and loads job details for TA
+ * workflows.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
  */
 public class TAApplicationService {
 
+    /** Path to application.csv */
     private static String APP_FILE_PATH;
+
+    /** Path to job.csv */
     private static String JOB_FILE_PATH;
 
+    /**
+     * Initializes CSV file paths from the servlet context.
+     * @param context servlet context used to resolve data file locations
+     */
     public static void init(ServletContext context) {
         APP_FILE_PATH = context.getRealPath("data/application.csv");
         JOB_FILE_PATH = context.getRealPath("data/job.csv");
     }
 
     /**
-     * 检查是否已有有效申请（非 WITHDRAWN 状态），防止重复投递
+     * Checks whether the TA already has an active application for the job.
+     * @param taId teaching assistant identifier
+     * @param jobId job identifier
+     * @return true when an application exists and is not withdrawn
      */
     public static boolean hasActiveApplication(String taId, String jobId) {
         List<Application> apps = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
@@ -37,7 +53,10 @@ public class TAApplicationService {
     }
 
     /**
-     * 获取已有有效申请的状态（PENDING/ACCEPTED/REJECTED），无则返回 null
+     * Gets the current non-withdrawn application status for a TA and job.
+     * @param taId teaching assistant identifier
+     * @param jobId job identifier
+     * @return application status such as PENDING, ACCEPTED, or REJECTED; null if none exists
      */
     public static String getActiveApplicationStatus(String taId, String jobId) {
         List<Application> apps = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
@@ -51,8 +70,17 @@ public class TAApplicationService {
     }
 
     /**
-     * 投递申请
-     * @return "SUCCESS" | "DUPLICATE" | "ERROR"
+     * Creates a new pending job application for a TA.
+     * @param taId teaching assistant identifier
+     * @param jobId job identifier
+     * @param moId module organizer identifier
+     * @param name applicant name
+     * @param major applicant major
+     * @param intro applicant self-introduction
+     * @param skills applicant skill list
+     * @param email applicant email address
+     * @param cvPath stored CV path
+     * @return SUCCESS, DUPLICATE, or ERROR
      */
     public static String applyForJob(String taId, String jobId, String moId,
                                      String name, String major, String intro,
@@ -75,8 +103,10 @@ public class TAApplicationService {
     }
 
     /**
-     * 撤回申请 — 仅允许 PENDING 状态
-     * @return true 成功，false 失败（状态不对或不存在）
+     * Withdraws a TA application when it is still pending.
+     * @param taId teaching assistant identifier
+     * @param appId application identifier
+     * @return true when the pending application was removed, false otherwise
      */
     public static boolean withdrawApplication(String taId, String appId) {
         if (APP_FILE_PATH == null) return false;
@@ -93,7 +123,9 @@ public class TAApplicationService {
     }
 
     /**
-     * 获取该 TA 的所有申请历史
+     * Gets all applications submitted by a specific TA.
+     * @param taId teaching assistant identifier
+     * @return list of matching applications
      */
     public static List<Application> getApplicationsByTA(String taId) {
         List<Application> result = new ArrayList<>();
@@ -106,7 +138,9 @@ public class TAApplicationService {
     }
 
     /**
-     * 根据 jobId 查找职位
+     * Finds a job by its identifier.
+     * @param jobId job identifier
+     * @return matching job, or null if it cannot be found
      */
     public static Job getJobById(String jobId) {
         if (JOB_FILE_PATH == null) return null;

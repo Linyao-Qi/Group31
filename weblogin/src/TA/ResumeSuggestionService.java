@@ -6,8 +6,25 @@ import com.SkillMatchUtil.MatchResult;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Resume Suggestion Service
+ * <p>Creates skill-based and content-based improvement suggestions for a TA's
+ * resume. The service compares job requirements with TA skills and checks the
+ * CV text for useful evidence such as GitHub links, projects, and teaching
+ * experience.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 public class ResumeSuggestionService {
 
+    /**
+     * Generates resume improvement feedback for a TA application.
+     * @param jobSkills comma-separated skill requirements from a job posting
+     * @param taSkills comma-separated skills from the TA profile
+     * @param cvText extracted or representative CV text
+     * @return resume suggestion result containing score, matched skills, missing skills, and advice
+     */
     public ResumeSuggestion generateSuggestion(
             String jobSkills,
             String taSkills,

@@ -10,13 +10,33 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TA Authentication Service
+ * <p>Validates teaching assistant login credentials against auth.csv.
+ * The service is initialized with the web application's data path and then
+ * checks only rows marked with the TA user type.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 public class TAAuthService {
+    /** Path to the authentication CSV file */
     private static String authFilePath;
 
+    /**
+     * Initializes the authentication data path from the servlet context.
+     * @param context servlet context used to resolve data/auth.csv
+     */
     public static void init(ServletContext context) {
         authFilePath = context.getRealPath("data/auth.csv");
     }
 
+    /**
+     * Checks whether a TA ID and password match a TA row in auth.csv.
+     * @param taId teaching assistant identifier
+     * @param password submitted password
+     * @return true when credentials are valid, false otherwise
+     */
     public static boolean authenticateTA(String taId, String password) {
         if (taId == null || taId.isBlank() || password == null || password.isBlank()) {
             return false;
@@ -53,6 +73,11 @@ public class TAAuthService {
         return false;
     }
 
+    /**
+     * Parses a CSV line while preserving commas inside quoted fields.
+     * @param line raw CSV row
+     * @return parsed CSV fields
+     */
     private static String[] parseCsvLine(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder current = new StringBuilder();

@@ -11,15 +11,33 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * TA Withdraw Servlet
+ * <p>Handles withdrawal requests for teaching assistant job applications.
+ * Only pending applications owned by the current TA can be withdrawn.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 @WebServlet("/ta/withdraw")
 public class TAWithdrawServlet extends HttpServlet {
 
+    /**
+     * Initializes the TA application service.
+     * @throws ServletException if servlet initialization fails
+     */
     @Override
     public void init() throws ServletException {
         super.init();
         TAApplicationService.init(getServletContext());
     }
 
+    /**
+     * Processes a withdrawal request and redirects back to the application status page.
+     * @param req HTTP request containing appId and TA session
+     * @param resp HTTP response used for redirects with result messages
+     * @throws IOException if redirecting fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {

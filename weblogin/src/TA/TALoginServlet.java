@@ -10,9 +10,21 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/**
+ * TA Login Servlet
+ * <p>Handles teaching assistant login requests. GET requests display the login
+ * page, while POST requests validate credentials and create a TA session.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 @WebServlet("/ta/login")
 public class TALoginServlet extends HttpServlet {
 
+    /**
+     * Initializes authentication services for TA login.
+     * @throws ServletException if servlet initialization fails
+     */
     @Override
     public void init() throws ServletException {
         super.init();
@@ -20,6 +32,13 @@ public class TALoginServlet extends HttpServlet {
         TAAuthService.init(getServletContext());
     }
 
+    /**
+     * Displays the TA login page or redirects an already logged-in TA home.
+     * @param req HTTP request containing optional session data
+     * @param resp HTTP response used for redirecting or forwarding
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if redirecting or forwarding fails
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -31,6 +50,13 @@ public class TALoginServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/TA/login.jsp").forward(req, resp);
     }
 
+    /**
+     * Validates TA login credentials and stores taId in the session on success.
+     * @param req HTTP request containing taId and password
+     * @param resp HTTP response used for redirecting or forwarding
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if redirecting or forwarding fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

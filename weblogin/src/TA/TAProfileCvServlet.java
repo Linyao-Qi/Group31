@@ -15,14 +15,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Servlet to handle TA CV (PDF) file viewing and downloading.
- * It securely serves the stored PDF file to the logged-in TA only.
+ * TA Profile CV Servlet
+ * <p>Streams the stored CV file for the logged-in teaching assistant. It
+ * validates login status, checks the saved CV path, prevents path traversal,
+ * and serves the file inline through the HTTP response.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
  */
 @WebServlet("/ta/profile/cv")
 public class TAProfileCvServlet extends HttpServlet {
 
     /**
-     * Initialize authentication and profile service on servlet startup
+     * Initializes authentication and profile services on servlet startup.
+     * @throws ServletException if initialization fails
      */
     @Override
     public void init() throws ServletException {
@@ -32,8 +38,11 @@ public class TAProfileCvServlet extends HttpServlet {
     }
 
     /**
-     * Handle GET request: stream the CV PDF file to the browser
-     * Security checks: login status, valid CV path, file existence, and path traversal protection
+     * Streams the current TA's CV file to the browser after security checks.
+     * @param req HTTP request containing the TA session
+     * @param resp HTTP response used to stream the CV or send errors
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if file reading or response writing fails
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

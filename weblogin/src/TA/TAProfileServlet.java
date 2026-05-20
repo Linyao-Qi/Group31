@@ -15,15 +15,20 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Servlet responsible for handling TA personal profile operations
- * including profile viewing, updating, CV (PDF) upload, and CV removal
+ * TA Profile Servlet
+ * <p>Handles teaching assistant profile operations, including viewing profile
+ * details, updating personal information, uploading a PDF CV, and removing the
+ * stored CV path.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
  */
 @WebServlet("/ta/profile")
 @MultipartConfig  // Required to handle file upload requests
 public class TAProfileServlet extends HttpServlet {
 
     /**
-     * Initialize service utilities during servlet startup
+     * Initializes authentication and profile services during servlet startup.
      * @throws ServletException if initialization fails
      */
     @Override
@@ -34,7 +39,11 @@ public class TAProfileServlet extends HttpServlet {
     }
 
     /**
-     * Handle GET requests: load and display the TA's profile page
+     * Loads and displays the logged-in TA's profile page.
+     * @param req HTTP request containing the TA session
+     * @param resp HTTP response used for redirecting or forwarding
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if redirecting or forwarding fails
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -55,7 +64,11 @@ public class TAProfileServlet extends HttpServlet {
     }
 
     /**
-     * Handle POST requests: update profile info, upload/remove CV
+     * Updates profile information and handles CV upload or removal.
+     * @param req HTTP request containing profile form fields and optional CV upload
+     * @param resp HTTP response used for redirecting or forwarding
+     * @throws ServletException if multipart parsing or forwarding fails
+     * @throws IOException if file upload, redirecting, or forwarding fails
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -129,7 +142,7 @@ public class TAProfileServlet extends HttpServlet {
     }
 
     /**
-     * Helper method to check if the uploaded file is a PDF
+     * Checks whether the uploaded file name uses a PDF extension.
      * @param fileName name of the uploaded file
      * @return true if it ends with .pdf, false otherwise
      */
