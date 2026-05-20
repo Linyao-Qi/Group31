@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="lib3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Group31-main/web/WEB-INF/lib/gson-2.10.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Group31-main/web/WEB-INF/lib/servlet-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

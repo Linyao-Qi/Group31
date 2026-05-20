@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="apache.tomcat.catalina" type="repository">
+    <properties maven-id="org.apache.tomcat:tomcat-catalina:9.0.85" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-catalina-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-servlet-api-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-jsp-api-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-el-api-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-juli-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-annotations-api-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-api-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-jni-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-coyote-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-util-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-util-scan-9.0.85.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tomcat-jaspic-api-9.0.85.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
