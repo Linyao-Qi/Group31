@@ -9,9 +9,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Displays and exports the administrator recruitment statistics report.
+ *
+ * @author Yutong Yao
+ * @version 3.0
+ */
 public class AdminRecruitmentReportServlet extends HttpServlet {
     private final AdminRecruitmentReportService reportService = new AdminRecruitmentReportService();
 
+    /**
+     * Builds the report for browser display or exports it as CSV when requested.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws ServletException if forwarding to the JSP fails
+     * @throws IOException if report generation or response writing fails
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {

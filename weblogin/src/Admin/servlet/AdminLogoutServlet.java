@@ -8,10 +8,19 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * 登出控制器。
- * 清空当前会话并回到登录页。
+ * Clears the current administrator session and returns to the login page.
+ *
+ * @author Yutong Yao
+ * @version 2.0
  */
 public class AdminLogoutServlet extends HttpServlet {
+    /**
+     * Invalidates the current session and redirects to the shared login page.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws IOException if redirecting the response fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);

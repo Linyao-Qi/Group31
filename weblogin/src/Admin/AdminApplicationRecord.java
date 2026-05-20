@@ -1,5 +1,11 @@
 package Admin;
 
+/**
+ * Represents one TA job application row loaded from application.csv.
+ *
+ * @author Yutong Yao
+ * @version 3.0
+ */
 public class AdminApplicationRecord {
     private final String appId;
     private final String name;
@@ -13,6 +19,21 @@ public class AdminApplicationRecord {
     private final String cvPath;
     private String appStatus;
 
+    /**
+     * Creates an immutable application record except for the mutable application status.
+     *
+     * @param appId unique application identifier
+     * @param name applicant name
+     * @param jobId applied job identifier
+     * @param moId module organizer identifier
+     * @param taId teaching assistant identifier
+     * @param major applicant major
+     * @param intro applicant introduction
+     * @param skills applicant skills
+     * @param email applicant email address
+     * @param cvPath path to the submitted CV
+     * @param appStatus current application status
+     */
     public AdminApplicationRecord(
             String appId,
             String name,
@@ -83,8 +104,12 @@ public class AdminApplicationRecord {
         return appStatus;
     }
 
+    /**
+     * Updates the application status used by admin workflows.
+     *
+     * @param appStatus new application status
+     */
     public void setAppStatus(String appStatus) {
         this.appStatus = appStatus;
     }
 }
-

@@ -5,13 +5,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Synchronizes accepted or cancelled applications with administrator workload rows.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminWorkloadApplicationSyncService {
     private final AdminDataManagement dataManagement;
 
+    /**
+     * Creates the sync service with the shared CSV data manager.
+     *
+     * @param dataManagement data manager used to load applications and posts
+     */
     public AdminWorkloadApplicationSyncService(AdminDataManagement dataManagement) {
         this.dataManagement = dataManagement;
     }
 
+    /**
+     * Adds accepted applications to workloads and marks cancelled accepted applications as Cancel.
+     *
+     * @param workloads workload draft list to update
+     * @return true when the workload list changed
+     */
     public boolean appendAcceptedApplicationsToWorkloads(List<AdminWorkload> workloads) {
         try {
             List<AdminApplicationRecord> applications = dataManagement.loadApplications();
@@ -72,6 +89,13 @@ public class AdminWorkloadApplicationSyncService {
         }
     }
 
+    /**
+     * Marks the matching application as CANCELED after a workload reassignment is requested.
+     *
+     * @param taId target TA identifier
+     * @param moduleCode target module or job code
+     * @param moId target module organizer identifier
+     */
     public void rejectApplicationForCancelledWorkload(String taId, String moduleCode, String moId) {
         try {
             List<AdminApplicationRecord> applications = dataManagement.loadApplications();

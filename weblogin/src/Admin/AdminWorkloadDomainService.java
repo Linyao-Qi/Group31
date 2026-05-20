@@ -7,12 +7,39 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
+/**
+ * Provides filtering, sorting, and status-changing rules for workload drafts.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminWorkloadDomainService {
 
+    /**
+     * Filters workloads by module code, status, and module organizer.
+     *
+     * @param workloads source workloads
+     * @param moduleCode optional module code filter
+     * @param status optional status filter
+     * @param moId optional module organizer filter
+     * @return filtered workloads
+     */
     public List<AdminWorkload> filterWorkloads(List<AdminWorkload> workloads, String moduleCode, String status, String moId) {
         return filterAndSortWorkloads(workloads, moduleCode, status, moId, "", "", "");
     }
 
+    /**
+     * Filters workloads and applies an optional stable sort for admin tables.
+     *
+     * @param workloads source workloads
+     * @param moduleCode optional module code filter
+     * @param status optional workload status filter
+     * @param moId optional module organizer filter
+     * @param taId optional TA identifier filter
+     * @param sortBy sort key, currently moId or taId
+     * @param sortOrder asc or desc
+     * @return filtered and sorted workloads
+     */
     public List<AdminWorkload> filterAndSortWorkloads(
             List<AdminWorkload> workloads,
             String moduleCode,
@@ -42,6 +69,12 @@ public class AdminWorkloadDomainService {
     }
 
 
+    /**
+     * Collects module codes for filter controls.
+     *
+     * @param workloads workloads to inspect
+     * @return sorted unique module codes
+     */
     public Set<String> collectModuleCodes(List<AdminWorkload> workloads) {
         Set<String> values = new TreeSet<>();
         for (AdminWorkload workload : workloads) {
@@ -51,6 +84,12 @@ public class AdminWorkloadDomainService {
     }
 
 
+    /**
+     * Collects workload statuses for filter controls.
+     *
+     * @param workloads workloads to inspect
+     * @return sorted unique statuses
+     */
     public Set<String> collectStatuses(List<AdminWorkload> workloads) {
         Set<String> values = new TreeSet<>();
         for (AdminWorkload workload : workloads) {
@@ -60,6 +99,12 @@ public class AdminWorkloadDomainService {
     }
 
 
+    /**
+     * Collects module organizer identifiers for filter controls.
+     *
+     * @param workloads workloads to inspect
+     * @return sorted unique MO identifiers
+     */
     public Set<String> collectMoIds(List<AdminWorkload> workloads) {
         Set<String> values = new TreeSet<>();
         for (AdminWorkload workload : workloads) {
@@ -69,6 +114,12 @@ public class AdminWorkloadDomainService {
     }
 
 
+    /**
+     * Collects teaching assistant identifiers for filter controls.
+     *
+     * @param workloads workloads to inspect
+     * @return sorted unique TA identifiers
+     */
     public Set<String> collectTaIds(List<AdminWorkload> workloads) {
         Set<String> values = new TreeSet<>();
         for (AdminWorkload workload : workloads) {
@@ -78,6 +129,15 @@ public class AdminWorkloadDomainService {
     }
 
 
+    /**
+     * Marks an overloaded workload as cancelled so it can be reassigned.
+     *
+     * @param workloads workload draft list
+     * @param taId target TA identifier
+     * @param moduleCode target module code
+     * @param moId target module organizer identifier
+     * @return true when a matching overloaded workload was marked as Cancel
+     */
     public boolean markReassigning(List<AdminWorkload> workloads, String taId, String moduleCode, String moId) {
         for (AdminWorkload workload : workloads) {
             if (!valueOrEmpty(workload.getTaId()).equals(valueOrEmpty(taId))) {
