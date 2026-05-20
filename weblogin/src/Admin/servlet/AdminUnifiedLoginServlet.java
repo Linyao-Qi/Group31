@@ -9,9 +9,23 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/**
+ * Authenticates administrators from the shared system login page.
+ *
+ * @author Yutong Yao
+ * @version 2.0
+ */
 public class AdminUnifiedLoginServlet extends HttpServlet {
     private final AdminAuthService authService = new AdminAuthService();
 
+    /**
+     * Validates shared-login credentials and initializes admin session attributes.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws ServletException if forwarding to the JSP fails
+     * @throws IOException if the response cannot be written
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = safe(req.getParameter("userId"));

@@ -1,6 +1,12 @@
 package Admin;
 
 
+/**
+ * Stores the administrator view of one recruitment post.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminRecruitment {
     private String jobId;
     private String title;
@@ -16,6 +22,23 @@ public class AdminRecruitment {
     private boolean open;
     private String moId;
 
+    /**
+     * Creates a recruitment post record.
+     *
+     * @param jobId unique job identifier
+     * @param title post title
+     * @param subject subject or module name
+     * @param workType working mode such as remote, hybrid, or on-site
+     * @param department owning department
+     * @param description post description
+     * @param requirements skill and eligibility requirements
+     * @param openPositions maximum number of hires
+     * @param deadline application deadline
+     * @param hoursPerWeek expected workload hours per week
+     * @param compensation compensation text
+     * @param open whether the post is open for applications
+     * @param moId module organizer identifier
+     */
     public AdminRecruitment(
             String jobId,
             String title,
@@ -94,6 +117,11 @@ public class AdminRecruitment {
         return open;
     }
 
+    /**
+     * Changes whether the post is open for applications.
+     *
+     * @param open true to mark the post open; false to close it
+     */
     public void setOpen(boolean open) {
         this.open = open;
     }
@@ -102,6 +130,11 @@ public class AdminRecruitment {
         return moId;
     }
 
+    /**
+     * Returns a human-readable status label for JSP display.
+     *
+     * @return Open or Closed
+     */
     public String getDisplayStatus() {
 
         return open ? "Open" : "Closed";

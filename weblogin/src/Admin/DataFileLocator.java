@@ -5,6 +5,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 
+/**
+ * Resolves the data directory used by admin services in local and web-server runtimes.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public final class DataFileLocator {
     private static final String DATA_DIR_PROPERTY = "tajobsystem.data.dir";
     private static final String DATA_DIR_ENV = "TAJOBSYSTEM_DATA_DIR";
@@ -14,6 +20,13 @@ public final class DataFileLocator {
     private DataFileLocator() {
     }
 
+    /**
+     * Resolves a named data file below the selected data directory.
+     *
+     * @param filename data file name
+     * @param anchorClass class used to locate the runtime classpath when needed
+     * @return file reference for the requested data file
+     */
     public static File resolveDataFile(String filename, Class<?> anchorClass) {
         File dataDir = resolveDataDirectory(anchorClass);
         return new File(dataDir, filename);

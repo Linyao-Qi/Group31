@@ -14,10 +14,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Handles administrator workload listing, filtering, reassignment, and save actions.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminWorkloadServlet extends HttpServlet {
     private final AdminService adminService = new AdminService();
     private final AdminWorkloadDomainService workloadDomainService = new AdminWorkloadDomainService();
 
+    /**
+     * Displays workload drafts with filters, sorting, and summary metrics.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws ServletException if forwarding to the JSP fails
+     * @throws IOException if the response cannot be written
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
@@ -69,6 +83,13 @@ public class AdminWorkloadServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/admin/workloads.jsp").forward(req, resp);
     }
 
+    /**
+     * Applies workload reassignment, save, and refresh actions.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws IOException if redirecting the response fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
