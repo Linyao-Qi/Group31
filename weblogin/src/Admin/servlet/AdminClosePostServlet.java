@@ -14,10 +14,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Handles the administrator recruitment-post page and draft save workflow.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminClosePostServlet extends HttpServlet {
     private final AdminService adminService = new AdminService();
     private final AdminPostDomainService postDomainService = new AdminPostDomainService();
 
+    /**
+     * Displays recruitment post drafts and summary values.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws ServletException if forwarding to the JSP fails
+     * @throws IOException if the response cannot be written
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {
@@ -45,6 +59,13 @@ public class AdminClosePostServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/admin/posts.jsp").forward(req, resp);
     }
 
+    /**
+     * Applies open, close, save, or refresh actions for recruitment post drafts.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @throws IOException if redirecting the response fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!AdminWebAuthGuard.ensureAuthenticated(req, resp)) {

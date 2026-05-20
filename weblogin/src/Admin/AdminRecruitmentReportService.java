@@ -10,11 +10,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Builds recruitment statistics and CSV exports for administrators.
+ *
+ * @author Yutong Yao
+ * @version 3.0
+ */
 public class AdminRecruitmentReportService {
     private static final DateTimeFormatter DISPLAY_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final AdminDataManagement dataManagement = new AdminDataManagement();
 
+    /**
+     * Builds the complete recruitment report from job and application CSV data.
+     *
+     * @return report data ready for JSP rendering or export
+     * @throws IOException if source CSV files cannot be loaded
+     */
     public ReportData buildReport() throws IOException {
         List<AdminRecruitment> jobs = dataManagement.loadPosts();
         List<AdminApplicationRecord> applications = dataManagement.loadApplications();
@@ -58,6 +70,12 @@ public class AdminRecruitmentReportService {
         );
     }
 
+    /**
+     * Creates the main recruitment statistics CSV export.
+     *
+     * @param reportData report data to export
+     * @return UTF-8 CSV text with byte order mark
+     */
     public String buildCsv(ReportData reportData) {
         StringBuilder csv = new StringBuilder();
         csv.append('\uFEFF');
@@ -85,6 +103,12 @@ public class AdminRecruitmentReportService {
         return csv.toString();
     }
 
+    /**
+     * Creates a CSV export containing successful recruitment application details.
+     *
+     * @param reportData report data to export
+     * @return UTF-8 CSV text with byte order mark
+     */
     public String buildSuccessfulRecruitmentCsv(ReportData reportData) {
         StringBuilder csv = new StringBuilder();
         csv.append('\uFEFF');
@@ -308,6 +332,12 @@ public class AdminRecruitmentReportService {
         int accepted;
     }
 
+    /**
+     * Summary counters displayed at the top of the recruitment report.
+     *
+     * @author Yutong Yao
+     * @version 3.0
+     */
     public static class Summary {
         private int totalJobs;
         private int openJobs;
@@ -351,10 +381,22 @@ public class AdminRecruitmentReportService {
         }
     }
 
+    /**
+     * Count of applications for one normalized application status.
+     *
+     * @author Yutong Yao
+     * @version 3.0
+     */
     public static class ApplicationStatusCount {
         private final String appStatus;
         private final int count;
 
+        /**
+         * Creates a status-count pair.
+         *
+         * @param appStatus normalized application status
+         * @param count number of applications with this status
+         */
         public ApplicationStatusCount(String appStatus, int count) {
             this.appStatus = appStatus;
             this.count = count;
@@ -369,6 +411,12 @@ public class AdminRecruitmentReportService {
         }
     }
 
+    /**
+     * Highlights derived from the recruitment report.
+     *
+     * @author Yutong Yao
+     * @version 3.0
+     */
     public static class KeyFindings {
         private final int jobsWithNoApplications;
         private final String mostAppliedJob;
@@ -376,6 +424,15 @@ public class AdminRecruitmentReportService {
         private final String moIdWithMostJobs;
         private final int moJobCount;
 
+        /**
+         * Creates key report findings for display.
+         *
+         * @param jobsWithNoApplications number of jobs without applications
+         * @param mostAppliedJob label of the most applied job
+         * @param mostAppliedJobApplicationCount applications for the most applied job
+         * @param moIdWithMostJobs module organizer with most jobs
+         * @param moJobCount number of jobs for that module organizer
+         */
         public KeyFindings(
                 int jobsWithNoApplications,
                 String mostAppliedJob,
@@ -411,6 +468,12 @@ public class AdminRecruitmentReportService {
         }
     }
 
+    /**
+     * Details of one successful application joined with its recruitment post.
+     *
+     * @author Yutong Yao
+     * @version 3.0
+     */
     public static class SuccessfulRecruitmentDetail {
         private final String jobId;
         private final String subject;
@@ -424,6 +487,21 @@ public class AdminRecruitmentReportService {
         private final String email;
         private final String appStatus;
 
+        /**
+         * Creates one successful recruitment detail row.
+         *
+         * @param jobId job identifier
+         * @param subject job subject
+         * @param moId module organizer identifier
+         * @param workType work mode
+         * @param hoursPerWeek expected weekly hours
+         * @param compensation compensation text
+         * @param appId application identifier
+         * @param taId teaching assistant identifier
+         * @param name applicant name
+         * @param email applicant email
+         * @param appStatus normalized application status
+         */
         public SuccessfulRecruitmentDetail(
                 String jobId,
                 String subject,
@@ -495,6 +573,12 @@ public class AdminRecruitmentReportService {
         }
     }
 
+    /**
+     * Complete recruitment report model used by the servlet and JSP.
+     *
+     * @author Yutong Yao
+     * @version 3.0
+     */
     public static class ReportData {
         private final Summary summary;
         private final List<AdminRecruitmentReportItem> items;
@@ -503,6 +587,16 @@ public class AdminRecruitmentReportService {
         private final List<SuccessfulRecruitmentDetail> successfulRecruitmentDetails;
         private final String generatedAt;
 
+        /**
+         * Creates a complete report model.
+         *
+         * @param summary summary counters
+         * @param items per-job report rows
+         * @param applicationStatusCounts application status counts
+         * @param keyFindings derived report highlights
+         * @param successfulRecruitmentDetails successful recruitment rows
+         * @param generatedAt display timestamp
+         */
         public ReportData(
                 Summary summary,
                 List<AdminRecruitmentReportItem> items,

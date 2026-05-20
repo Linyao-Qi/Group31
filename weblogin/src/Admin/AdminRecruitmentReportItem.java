@@ -1,5 +1,11 @@
 package Admin;
 
+/**
+ * Holds one row of the recruitment statistics report.
+ *
+ * @author Yutong Yao
+ * @version 3.0
+ */
 public class AdminRecruitmentReportItem {
     private final String jobId;
     private final String moId;
@@ -15,6 +21,23 @@ public class AdminRecruitmentReportItem {
     private final int remainingVacancy;
     private final String recruitmentProgress;
 
+    /**
+     * Creates a report row with job, application, and vacancy metrics.
+     *
+     * @param jobId job identifier
+     * @param moId module organizer identifier
+     * @param subject job subject
+     * @param workType work mode
+     * @param hoursPerWeek expected weekly hours
+     * @param compensation compensation text
+     * @param status job status
+     * @param applicationCount total applications for the job
+     * @param pendingCount pending applications for the job
+     * @param maxHire maximum hire count
+     * @param acceptedCount accepted applications for the job
+     * @param remainingVacancy remaining open vacancies
+     * @param recruitmentProgress display label for recruitment progress
+     */
     public AdminRecruitmentReportItem(
             String jobId,
             String moId,
