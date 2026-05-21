@@ -10,7 +10,7 @@
 <head>
     <title>Publish TA Job</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 0 20px;}
+        body {font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 0 20px; background: #f8fafc; color: #1f2937;}
         .form-item {margin: 15px 0;}
         input, textarea {width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;}
         button {width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
@@ -19,12 +19,16 @@
         .success {background: #dcfce7; color: #166534;}
         .fail {background: #fee2e2; color: #991b1b;}
         .current-mo {background: #dbeafe; color: #1e3a8a;}
-        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.10); transform: translateX(-50%);}
+        
+
+        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border-radius: 8px; transform: translateX(-50%);}
         .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
         .nav a:hover {background: #dbeafe; text-decoration: none;}
-        .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
-        .logout-btn {width: 100%; padding: 12px; background: #64748b; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
-        .logout-btn:hover {background: #475569;}
+
+
+        .logout-form {margin: 28px auto 0; width: 100%;}
+        .logout-btn {width: 100%; padding: 12px; background: #94a3b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .logout-btn:hover {background: #7c8da3;}
     </style>
 </head>
 <body>

@@ -8,6 +8,17 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+<<<<<<< Updated upstream
+=======
+/**
+ * TA Logout Servlet
+ * <p>Clears the current teaching assistant session and returns the user to the
+ * unified login page. GET requests reuse the same logout behavior as POST requests.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
+>>>>>>> Stashed changes
 @WebServlet("/ta/logout")
 public class TALogoutServlet extends HttpServlet {
 
@@ -15,7 +26,7 @@ public class TALogoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);
         if (session != null) session.invalidate();
-        resp.sendRedirect(req.getContextPath() + "/ta/login");
+        resp.sendRedirect(req.getContextPath() + "/jsp/login/login.jsp");
     }
 
     @Override
