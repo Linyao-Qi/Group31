@@ -1,5 +1,5 @@
 taId,name,email,skills,major,cvPath
-TA001,Alice Chen,alice@uni.edu,"Java,Data Structures,Python",Computer Science,
+TA001,Alice Chen,alice@uni.edu,"Java,Data Structures",Computer Science,cvs/TA001/EBU6304_GroupProjectHandout.pdf
 TA002,Bob Li,bob@uni.edu,"Linear Algebra,MATLAB,C++",Mathematics,
-TA003,,,,,
-TA004,,,,,
+TA003,Carol Wang,carol@uni.edu,"Python,Report Writing,Git,Software Testing",Physics,
+TA004,David Zhang,david@uni.edu,"Excel,Presentation,Arduino,C language",Electronics,

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>TA System Login</title>
+    <title>Teaching Assistant Recruitment Login</title>
     <style>
         * {box-sizing: border-box; margin: 0; padding: 0;}
         body {font-family: Arial, sans-serif; max-width: 450px; margin: 80px auto; padding: 0 20px; background: #f8fafc;}
@@ -25,7 +25,7 @@
 </head>
 <body>
     <div class="login-box">
-        <div class="title">TA System Login</div>
+        <div class="title">Teaching Assistant Recruitment Login</div>
 
         <select class="user-type-select" id="userType" onchange="changeUserType()">
             <option value="">-- Select User Type --</option>
@@ -49,8 +49,8 @@
         </div>
 
         <!-- 登录表单（和注册完全一样样式） -->
-        <div id="loginForm">
-            <form id="loginFormElement" action="${pageContext.request.contextPath}/login" method="post">
+        <div id="loginForm" class="hidden">
+            <form id="loginFormElement" action="${pageContext.request.contextPath}/login" method="post" onsubmit="return validateUserType()">
                 <input type="hidden" name="userType" id="loginUserType">
                 <div class="form-item">
                     <label id="loginIdLabel">User ID:</label>
@@ -66,7 +66,8 @@
 
         <!-- 注册表单 -->
         <div id="registerForm" class="hidden">
-            <form action="${pageContext.request.contextPath}/register" method="post">
+            <form action="${pageContext.request.contextPath}/login" method="post" onsubmit="return validateRegister()">
+                <input type="hidden" name="action" value="register">
                 <input type="hidden" name="userType" id="registerUserType">
                 <div class="form-item">
                     <label>User ID:</label>
@@ -121,8 +122,33 @@
             } else {
                 loginForm.style.display = 'none';
                 tabGroup.style.display = 'none';
-                registerForm.style.display = 'none';
+                registerForm.classList.add('hidden');
             }
+        }
+
+        function validateUserType() {
+            const userType = document.getElementById('userType').value;
+            if (!userType) {
+                alert('Please select a user type.');
+                return false;
+            }
+            return true;
+        }
+
+        function validateRegister() {
+            const userType = document.getElementById('userType').value;
+            const password = document.querySelector('#registerForm input[name="password"]').value;
+            const confirmPassword = document.querySelector('#registerForm input[name="confirmPassword"]').value;
+
+            if (userType !== 'TA') {
+                alert('Please select TA before registering.');
+                return false;
+            }
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return false;
+            }
+            return true;
         }
 
         function switchTab(type) {

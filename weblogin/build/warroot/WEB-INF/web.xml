@@ -5,15 +5,6 @@
          version="3.1">
 
     <servlet>
-        <servlet-name>adminLoginServlet</servlet-name>
-        <servlet-class>Admin.servlet.AdminLoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>adminLoginServlet</servlet-name>
-        <url-pattern>/admin/login</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>adminUnifiedLoginServlet</servlet-name>
         <servlet-class>Admin.servlet.AdminUnifiedLoginServlet</servlet-class>
     </servlet>
