@@ -35,7 +35,7 @@
     <div class="nav">
         <a href="${pageContext.request.contextPath}/jsp/MO_1/publishJob.jsp">Publish Job</a>
         <a href="${pageContext.request.contextPath}/jsp/MO_1/moApplicantList.jsp">Hire Applicant</a>
-        <a href="${pageContext.request.contextPath}/jsp/MO_1/appList.jsp">Application List</a>
+        <a href="${pageContext.request.contextPath}/jsp/MO_1/joblist.jsp">Job List</a>
         <a href="${pageContext.request.contextPath}/moApplicantReview">Skill Match Score</a>
     </div>
     <h2 align="center">Publish TA Job</h2>
