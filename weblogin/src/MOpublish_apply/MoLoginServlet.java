@@ -57,7 +57,12 @@ public class MoLoginServlet extends HttpServlet {
 
         String userId = request.getParameter("userId");
         String password = request.getParameter("password");
-        String userType = "MO";
+        String userType = request.getParameter("userType");
+        if (userType == null || userType.isBlank()) {
+            request.setAttribute("msg", "Please select a user type!");
+            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            return;
+        }
 
         System.out.println("Role: " + userType);
         System.out.println("User ID: " + userId);
@@ -67,6 +72,24 @@ public class MoLoginServlet extends HttpServlet {
             System.out.println("========== Error: Empty fields ==========");
             request.setAttribute("msg", "All fields are required!");
             request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            return;
+        }
+
+        if ("TA".equalsIgnoreCase(userType)) {
+            boolean ok = AuthUtil.authenticateTA(userId, password);
+            System.out.println("TA Authentication Result: " + ok);
+
+            if (ok) {
+                System.out.println("========== TA Login Success! Redirect to TA page ==========");
+                request.getSession().setAttribute("userType", "TA");
+                request.getSession().setAttribute("userId", userId);
+                request.getSession().setAttribute("taId", userId);
+                response.sendRedirect(request.getContextPath() + "/ta/home");
+            } else {
+                System.out.println("========== TA Login Failed! ==========");
+                request.setAttribute("msg", "Invalid ID or Password!");
+                request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            }
             return;
         }
 
