@@ -73,7 +73,7 @@
             font-size: 16px;
         }
         
-        
+        /* 完全统一：宽度、字体、样式 */
         .current-mo {
             width: 100%;
             box-sizing: border-box;
