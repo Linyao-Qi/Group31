@@ -43,6 +43,11 @@ public class MoLoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("========== Enter doGet ==========");
+        if ("checkTaId".equalsIgnoreCase(request.getParameter("action"))) {
+            handleCheckTaId(request, response);
+            return;
+        }
+        request.setAttribute("nextTaId", getNextTaId());
         request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
     }
 
@@ -63,8 +68,7 @@ public class MoLoginServlet extends HttpServlet {
         String userType = request.getParameter("userType");
         String action = request.getParameter("action");
         if (userType == null || userType.isBlank()) {
-            request.setAttribute("msg", "Please select a user type!");
-            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            forwardWithLoginState(request, response, "Please select a user type!", "", userId, action);
             return;
         }
 
@@ -79,8 +83,7 @@ public class MoLoginServlet extends HttpServlet {
 
         if (userId == null || userId.isBlank() || password == null || password.isBlank()) {
             System.out.println("========== Error: Empty fields ==========");
-            request.setAttribute("msg", "All fields are required!");
-            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            forwardWithLoginState(request, response, "All fields are required!", userType, userId, action);
             return;
         }
 
@@ -96,8 +99,7 @@ public class MoLoginServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/ta/home");
             } else {
                 System.out.println("========== TA Login Failed! ==========");
-                request.setAttribute("msg", "Invalid ID or Password!");
-                request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+                forwardWithLoginState(request, response, "Invalid ID or Password!", "TA", userId, "");
             }
             return;
         }
@@ -112,8 +114,7 @@ public class MoLoginServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/jsp/MO_1/publishJob.jsp");
         } else {
             System.out.println("========== MO Login Failed! ==========");
-            request.setAttribute("msg", "Invalid ID or Password!");
-            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            forwardWithLoginState(request, response, "Invalid ID or Password!", "MO", userId, "");
         }
     }
 
@@ -123,31 +124,25 @@ public class MoLoginServlet extends HttpServlet {
         String confirmPassword = request.getParameter("confirmPassword");
 
         if (!"TA".equalsIgnoreCase(userType)) {
-            request.setAttribute("msg", "Please select TA before registering.");
-            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            forwardWithLoginState(request, response, "Please select TA before registering.", userType, userId, "register");
             return;
         }
         if (userId == null || userId.isBlank()
                 || password == null || password.isBlank()
                 || confirmPassword == null || confirmPassword.isBlank()) {
-            request.setAttribute("msg", "All fields are required!");
-            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            forwardWithLoginState(request, response, "All fields are required!", userType, userId, "register");
             return;
         }
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("msg", "Passwords do not match!");
-            request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+            forwardWithLoginState(request, response, "Passwords do not match!", userType, userId, "register");
             return;
         }
 
         String authFilePath = getServletContext().getRealPath("data/auth.csv");
         List<AuthUtil.Auth> authList = CsvFileUtil.readAuthListFromCsv(authFilePath);
-        for (AuthUtil.Auth auth : authList) {
-            if (auth.getUserId() != null && auth.getUserId().equalsIgnoreCase(userId.trim())) {
-                request.setAttribute("msg", "User ID already exists!");
-                request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
-                return;
-            }
+        if (userIdExists(authList, userId)) {
+            forwardWithLoginState(request, response, "User ID already exists!", userType, userId, "register");
+            return;
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(authFilePath, true))) {
@@ -156,7 +151,74 @@ public class MoLoginServlet extends HttpServlet {
         }
         AuthUtil.init(getServletContext());
 
+        request.setAttribute("selectedUserType", "TA");
+        request.setAttribute("userIdValue", safe(userId));
+        request.setAttribute("nextTaId", getNextTaId());
         request.setAttribute("msg", "Register success! Please login.");
         request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+    }
+
+    private void handleCheckTaId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String userId = safe(request.getParameter("userId"));
+        response.setContentType("text/plain;charset=UTF-8");
+        if (userId.isEmpty()) {
+            response.getWriter().write("empty");
+            return;
+        }
+
+        String authFilePath = getServletContext().getRealPath("data/auth.csv");
+        List<AuthUtil.Auth> authList = CsvFileUtil.readAuthListFromCsv(authFilePath);
+        response.getWriter().write(userIdExists(authList, userId) ? "exists" : "available");
+    }
+
+    private void forwardWithLoginState(HttpServletRequest request, HttpServletResponse response,
+                                       String message, String userType, String userId, String action)
+            throws ServletException, IOException {
+        request.setAttribute("msg", message);
+        request.setAttribute("selectedUserType", safe(userType).toUpperCase());
+        request.setAttribute("userIdValue", safe(userId));
+        request.setAttribute("selectedAction", safe(action).toLowerCase());
+        request.setAttribute("nextTaId", getNextTaId());
+        if ("register".equalsIgnoreCase(action)) {
+            request.setAttribute("registerUserIdValue", safe(userId));
+        }
+        request.getRequestDispatcher("/jsp/login/login.jsp").forward(request, response);
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private boolean userIdExists(List<AuthUtil.Auth> authList, String userId) {
+        String target = safe(userId);
+        for (AuthUtil.Auth auth : authList) {
+            if (auth.getUserId() != null && auth.getUserId().equalsIgnoreCase(target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getNextTaId() {
+        String authFilePath = getServletContext().getRealPath("data/auth.csv");
+        List<AuthUtil.Auth> authList = CsvFileUtil.readAuthListFromCsv(authFilePath);
+        int maxNumber = 0;
+        int width = 3;
+        for (AuthUtil.Auth auth : authList) {
+            if (auth.getUserType() == null || !"TA".equalsIgnoreCase(auth.getUserType())) {
+                continue;
+            }
+            String userId = safe(auth.getUserId()).toUpperCase();
+            if (!userId.matches("TA\\d+")) {
+                continue;
+            }
+            String numberPart = userId.substring(2);
+            int number = Integer.parseInt(numberPart);
+            if (number > maxNumber) {
+                maxNumber = number;
+                width = Math.max(3, numberPart.length());
+            }
+        }
+        return "TA" + String.format("%0" + width + "d", maxNumber + 1);
     }
 }

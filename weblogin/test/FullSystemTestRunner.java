@@ -6,6 +6,7 @@ import Admin.AdminRecruitmentReportService;
 import Admin.AdminService;
 import Admin.AdminWorkload;
 import Admin.AdminWorkloadDomainService;
+import Admin.servlet.AdminUnifiedLoginServlet;
 import TA.ResumeSuggestion;
 import TA.ResumeSuggestionService;
 import TA.TAApplicationService;
@@ -34,6 +35,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -101,6 +104,26 @@ public class FullSystemTestRunner {
         assertTrue(adminAuthService.validateCredentials("admin001", "Admin@123456"), "AdminAuthService should accept admin");
         assertFalse(adminAuthService.validateCredentials("admin001", "bad"), "AdminAuthService should reject bad password");
         assertFalse(adminAuthService.validateCredentials("", "Admin@123456"), "Blank username should fail");
+
+        MockWebExchange taFailure = submitLogin("TA", "TA001", "wrong");
+        assertEquals("Invalid ID or Password!", taFailure.getAttribute("msg"),
+                "TA login failure should show an error message");
+        assertEquals("TA", taFailure.getAttribute("selectedUserType"),
+                "TA login failure should preserve selected role");
+        assertEquals("TA001", taFailure.getAttribute("userIdValue"),
+                "TA login failure should preserve entered user ID");
+
+        MockWebExchange moFailure = submitLogin("MO", "mo001", "wrong");
+        assertEquals("MO", moFailure.getAttribute("selectedUserType"),
+                "MO login failure should preserve selected role");
+        assertEquals("mo001", moFailure.getAttribute("userIdValue"),
+                "MO login failure should preserve entered user ID");
+
+        MockWebExchange adminFailure = submitAdminLogin("admin001", "wrong");
+        assertEquals("ADMIN", adminFailure.getAttribute("selectedUserType"),
+                "Admin login failure should preserve selected role");
+        assertEquals("admin001", adminFailure.getAttribute("userIdValue"),
+                "Admin login failure should preserve entered user ID");
     }
 
     private static void testCsvUtilities() throws Exception {
@@ -141,9 +164,19 @@ public class FullSystemTestRunner {
         Path authFile = TEST_DATA_DIR.resolve("auth.csv");
         long initialRows = countNonBlankRows(authFile);
 
+        MockWebExchange loginPage = requestLoginPage();
+        assertEquals("TA006", loginPage.getAttribute("nextTaId"),
+                "Register form should suggest the next available TA ID");
+        assertEquals("exists", checkTaId("TA001").getResponseBody(),
+                "TA ID availability check should report an existing ID");
+        assertEquals("available", checkTaId("TA006").getResponseBody(),
+                "TA ID availability check should report the next TA ID as available");
+
         MockWebExchange mismatch = submitTaRegistration("TA", "TA900", "Ta@900000", "different");
         assertEquals("Passwords do not match!", mismatch.getAttribute("msg"),
                 "Registration should reject mismatched passwords");
+        assertEquals("TA900", mismatch.getAttribute("registerUserIdValue"),
+                "Failed registration should keep the attempted register ID");
         assertFalse(fileContains(authFile, "TA,TA900,Ta@900000"),
                 "Mismatched password registration must not write auth.csv");
 
@@ -550,8 +583,82 @@ public class FullSystemTestRunner {
         return exchange;
     }
 
+    private static MockWebExchange requestLoginPage() throws Exception {
+        MoLoginServlet servlet = new MoLoginServlet();
+        servlet.init(createServletConfig());
+
+        MockWebExchange exchange = new MockWebExchange();
+        Method doGet = MoLoginServlet.class.getDeclaredMethod(
+                "doGet", HttpServletRequest.class, HttpServletResponse.class);
+        doGet.setAccessible(true);
+        doGet.invoke(servlet, exchange.createRequest(), exchange.createResponse());
+        return exchange;
+    }
+
+    private static MockWebExchange checkTaId(String userId) throws Exception {
+        MoLoginServlet servlet = new MoLoginServlet();
+        servlet.init(createServletConfig());
+
+        MockWebExchange exchange = new MockWebExchange();
+        exchange.parameters.put("action", "checkTaId");
+        exchange.parameters.put("userId", userId);
+
+        Method doGet = MoLoginServlet.class.getDeclaredMethod(
+                "doGet", HttpServletRequest.class, HttpServletResponse.class);
+        doGet.setAccessible(true);
+        doGet.invoke(servlet, exchange.createRequest(), exchange.createResponse());
+        return exchange;
+    }
+
+    private static MockWebExchange submitLogin(String userType, String userId, String password) throws Exception {
+        MoLoginServlet servlet = new MoLoginServlet();
+        servlet.init(createServletConfig());
+
+        MockWebExchange exchange = new MockWebExchange();
+        exchange.parameters.put("userType", userType);
+        exchange.parameters.put("userId", userId);
+        exchange.parameters.put("password", password);
+
+        Method doPost = MoLoginServlet.class.getDeclaredMethod(
+                "doPost", HttpServletRequest.class, HttpServletResponse.class);
+        doPost.setAccessible(true);
+        doPost.invoke(servlet, exchange.createRequest(), exchange.createResponse());
+        return exchange;
+    }
+
+    private static MockWebExchange submitAdminLogin(String userId, String password) throws Exception {
+        AdminUnifiedLoginServlet servlet = new AdminUnifiedLoginServlet();
+
+        MockWebExchange exchange = new MockWebExchange();
+        exchange.parameters.put("userId", userId);
+        exchange.parameters.put("password", password);
+
+        Method doPost = AdminUnifiedLoginServlet.class.getDeclaredMethod(
+                "doPost", HttpServletRequest.class, HttpServletResponse.class);
+        doPost.setAccessible(true);
+        doPost.invoke(servlet, exchange.createRequest(), exchange.createResponse());
+        return exchange;
+    }
+
     private static ServletConfig createServletConfig() {
-        ServletContext context = (ServletContext) Proxy.newProxyInstance(
+        ServletContext context = createServletContext();
+
+        return (ServletConfig) Proxy.newProxyInstance(
+                ServletConfig.class.getClassLoader(),
+                new Class<?>[]{ServletConfig.class},
+                (proxy, method, args) -> {
+                    if ("getServletContext".equals(method.getName())) {
+                        return context;
+                    }
+                    if ("getServletName".equals(method.getName())) {
+                        return "MoLoginServlet";
+                    }
+                    return defaultValue(method.getReturnType());
+                });
+    }
+
+    private static ServletContext createServletContext() {
+        return (ServletContext) Proxy.newProxyInstance(
                 ServletContext.class.getClassLoader(),
                 new Class<?>[]{ServletContext.class},
                 (proxy, method, args) -> {
@@ -564,19 +671,6 @@ public class FullSystemTestRunner {
                             return TEST_DATA_DIR.resolve(path.substring("data/".length())).toString();
                         }
                         return PROJECT_ROOT.resolve(path).toString();
-                    }
-                    return defaultValue(method.getReturnType());
-                });
-
-        return (ServletConfig) Proxy.newProxyInstance(
-                ServletConfig.class.getClassLoader(),
-                new Class<?>[]{ServletConfig.class},
-                (proxy, method, args) -> {
-                    if ("getServletContext".equals(method.getName())) {
-                        return context;
-                    }
-                    if ("getServletName".equals(method.getName())) {
-                        return "MoLoginServlet";
                     }
                     return defaultValue(method.getReturnType());
                 });
@@ -729,10 +823,15 @@ public class FullSystemTestRunner {
     private static class MockWebExchange {
         private final Map<String, String> parameters = new LinkedHashMap<>();
         private final Map<String, Object> attributes = new LinkedHashMap<>();
+        private final StringWriter responseBody = new StringWriter();
         private boolean forwarded;
 
         private Object getAttribute(String name) {
             return attributes.get(name);
+        }
+
+        private String getResponseBody() {
+            return responseBody.toString();
         }
 
         private HttpServletRequest createRequest() {
@@ -764,6 +863,9 @@ public class FullSystemTestRunner {
                 if ("getContextPath".equals(methodName)) {
                     return "/weblogin";
                 }
+                if ("getServletContext".equals(methodName)) {
+                    return createServletContext();
+                }
                 return defaultValue(method.getReturnType());
             };
 
@@ -777,7 +879,12 @@ public class FullSystemTestRunner {
             return (HttpServletResponse) Proxy.newProxyInstance(
                     HttpServletResponse.class.getClassLoader(),
                     new Class<?>[]{HttpServletResponse.class},
-                    (proxy, method, args) -> defaultValue(method.getReturnType()));
+                    (proxy, method, args) -> {
+                        if ("getWriter".equals(method.getName())) {
+                            return new PrintWriter(responseBody, true);
+                        }
+                        return defaultValue(method.getReturnType());
+                    });
         }
     }
 

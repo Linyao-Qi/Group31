@@ -20,6 +20,9 @@
         .msg {margin: 20px 0; padding: 10px; border-radius: 5px; text-align: center; font-size: 14px;}
         .success {background: #dcfce7; color: #166534;}
         .fail {background: #fee2e2; color: #991b1b;}
+        .field-hint {display: none; margin-top: 8px; font-size: 13px;}
+        .field-hint.fail-text {display: block; color: #991b1b;}
+        .field-hint.success-text {display: block; color: #166534;}
         .hidden {display: none;}
     </style>
 </head>
@@ -27,11 +30,53 @@
     <div class="login-box">
         <div class="title">Teaching Assistant Recruitment Login</div>
 
+        <%
+            String selectedUserType = request.getAttribute("selectedUserType") == null
+                    ? request.getParameter("userType")
+                    : String.valueOf(request.getAttribute("selectedUserType"));
+            if (selectedUserType == null) {
+                selectedUserType = "";
+            }
+            selectedUserType = selectedUserType.trim().toUpperCase();
+
+            String selectedAction = request.getAttribute("selectedAction") == null
+                    ? request.getParameter("action")
+                    : String.valueOf(request.getAttribute("selectedAction"));
+            if (selectedAction == null) {
+                selectedAction = "";
+            }
+            selectedAction = selectedAction.trim().toLowerCase();
+
+            String userIdValue = request.getAttribute("userIdValue") == null
+                    ? request.getParameter("userId")
+                    : String.valueOf(request.getAttribute("userIdValue"));
+            if (userIdValue == null) {
+                userIdValue = "";
+            }
+            userIdValue = userIdValue
+                    .replace("&", "&amp;")
+                    .replace("\"", "&quot;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;");
+
+            String registerUserIdValue = request.getAttribute("registerUserIdValue") == null
+                    ? String.valueOf(request.getAttribute("nextTaId"))
+                    : String.valueOf(request.getAttribute("registerUserIdValue"));
+            if (registerUserIdValue == null || "null".equals(registerUserIdValue)) {
+                registerUserIdValue = "";
+            }
+            registerUserIdValue = registerUserIdValue
+                    .replace("&", "&amp;")
+                    .replace("\"", "&quot;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;");
+        %>
+
         <select class="user-type-select" id="userType" onchange="changeUserType()">
             <option value="">-- Select User Type --</option>
-            <option value="MO">MO</option>
-            <option value="TA">TA</option>
-            <option value="ADMIN">ADMIN</option>
+            <option value="MO" <%= "MO".equals(selectedUserType) ? "selected" : "" %>>MO</option>
+            <option value="TA" <%= "TA".equals(selectedUserType) ? "selected" : "" %>>TA</option>
+            <option value="ADMIN" <%= "ADMIN".equals(selectedUserType) ? "selected" : "" %>>ADMIN</option>
         </select>
 
         <%
@@ -42,19 +87,18 @@
             }
         %>
 
-        <!-- 登录/注册 标签栏 -->
         <div class="tab-group" id="tabGroup">
             <div class="tab active" onclick="switchTab('login')">Login</div>
             <div class="tab" onclick="switchTab('register')">Register</div>
         </div>
 
-        <!-- 登录表单（和注册完全一样样式） -->
-        <div id="loginForm" class="hidden">
+        <div id="loginForm" class="<%= selectedUserType.isEmpty() || "register".equals(selectedAction) ? "hidden" : "" %>">
             <form id="loginFormElement" action="${pageContext.request.contextPath}/login" method="post" onsubmit="return validateUserType()">
                 <input type="hidden" name="userType" id="loginUserType">
                 <div class="form-item">
                     <label id="loginIdLabel">User ID:</label>
-                    <input type="text" name="userId" required placeholder="Enter your ID">
+                    <input type="text" name="userId" required placeholder="Enter your ID"
+                           value="<%= userIdValue %>">
                 </div>
                 <div class="form-item">
                     <label>Password:</label>
@@ -64,14 +108,16 @@
             </form>
         </div>
 
-        <!-- 注册表单 -->
-        <div id="registerForm" class="hidden">
+        <div id="registerForm" class="<%= "register".equals(selectedAction) ? "" : "hidden" %>">
             <form action="${pageContext.request.contextPath}/login" method="post" onsubmit="return validateRegister()">
                 <input type="hidden" name="action" value="register">
                 <input type="hidden" name="userType" id="registerUserType">
                 <div class="form-item">
                     <label>User ID:</label>
-                    <input type="text" name="userId" required placeholder="Enter your ID">
+                    <input type="text" name="userId" id="registerUserIdInput" required placeholder="Enter your ID"
+                           oninput="scheduleRegisterUserIdCheck()" onblur="checkRegisterUserId()"
+                           value="<%= registerUserIdValue %>">
+                    <div id="registerUserIdHint" class="field-hint"></div>
                 </div>
                 <div class="form-item">
                     <label>Password:</label>
@@ -87,8 +133,11 @@
     </div>
 
     <script>
+        let registerIdTimer = null;
+
         function changeUserType() {
             const userType = document.getElementById('userType').value;
+            const selectedAction = '<%= selectedAction %>';
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
             const tabGroup = document.getElementById('tabGroup');
@@ -112,7 +161,14 @@
                 loginForm.style.display = 'block';
                 registerForm.classList.add('hidden');
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab')[0].classList.add('active');
+                if (selectedAction === 'register') {
+                    document.querySelectorAll('.tab')[1].classList.add('active');
+                    loginForm.style.display = 'none';
+                    registerForm.classList.remove('hidden');
+                    checkRegisterUserId();
+                } else {
+                    document.querySelectorAll('.tab')[0].classList.add('active');
+                }
             } else if (userType === 'ADMIN') {
                 loginIdLabel.innerText = 'Admin ID:';
                 loginFormElement.action = '${pageContext.request.contextPath}/admin/unified-login';
@@ -139,9 +195,14 @@
             const userType = document.getElementById('userType').value;
             const password = document.querySelector('#registerForm input[name="password"]').value;
             const confirmPassword = document.querySelector('#registerForm input[name="confirmPassword"]').value;
+            const hint = document.getElementById('registerUserIdHint');
 
             if (userType !== 'TA') {
                 alert('Please select TA before registering.');
+                return false;
+            }
+            if (hint.dataset.status === 'exists') {
+                alert('User ID already exists!');
                 return false;
             }
             if (password !== confirmPassword) {
@@ -149,6 +210,48 @@
                 return false;
             }
             return true;
+        }
+
+        function scheduleRegisterUserIdCheck() {
+            clearTimeout(registerIdTimer);
+            registerIdTimer = setTimeout(checkRegisterUserId, 300);
+        }
+
+        function checkRegisterUserId() {
+            const userType = document.getElementById('userType').value;
+            const input = document.getElementById('registerUserIdInput');
+            const hint = document.getElementById('registerUserIdHint');
+            const userId = input.value.trim();
+
+            hint.dataset.status = '';
+            hint.textContent = '';
+            hint.className = 'field-hint';
+
+            if (userType !== 'TA' || !userId) {
+                return;
+            }
+
+            fetch('${pageContext.request.contextPath}/login?action=checkTaId&userId=' + encodeURIComponent(userId))
+                .then(response => response.text())
+                .then(status => {
+                    if (input.value.trim() !== userId) {
+                        return;
+                    }
+                    if (status === 'exists') {
+                        hint.dataset.status = 'exists';
+                        hint.textContent = 'User ID already exists!';
+                        hint.className = 'field-hint fail-text';
+                    } else if (status === 'available') {
+                        hint.dataset.status = 'available';
+                        hint.textContent = 'User ID is available.';
+                        hint.className = 'field-hint success-text';
+                    }
+                })
+                .catch(() => {
+                    hint.dataset.status = '';
+                    hint.textContent = '';
+                    hint.className = 'field-hint';
+                });
         }
 
         function switchTab(type) {
@@ -167,6 +270,8 @@
                 registerForm.classList.remove('hidden');
             }
         }
+
+        changeUserType();
     </script>
 </body>
 </html>

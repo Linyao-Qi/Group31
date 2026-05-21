@@ -1,6 +1,8 @@
 package Admin.servlet;
 
 import Admin.AdminAuthService;
+import com.AuthUtil;
+import com.CsvFileUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Authenticates administrators from the shared system login page.
@@ -35,14 +38,12 @@ public class AdminUnifiedLoginServlet extends HttpServlet {
         }
 
         if (username.isEmpty() || password.isEmpty()) {
-            req.setAttribute("msg", "All fields are required!");
-            req.getRequestDispatcher("/jsp/login/login.jsp").forward(req, resp);
+            forwardWithAdminState(req, resp, "All fields are required!", username);
             return;
         }
 
         if (!authService.validateCredentials(username, password)) {
-            req.setAttribute("msg", "Invalid ID or Password!");
-            req.getRequestDispatcher("/jsp/login/login.jsp").forward(req, resp);
+            forwardWithAdminState(req, resp, "Invalid ID or Password!", username);
             return;
         }
 
@@ -55,5 +56,37 @@ public class AdminUnifiedLoginServlet extends HttpServlet {
 
     private String safe(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private void forwardWithAdminState(HttpServletRequest req, HttpServletResponse resp,
+                                       String message, String username) throws ServletException, IOException {
+        req.setAttribute("msg", message);
+        req.setAttribute("selectedUserType", "ADMIN");
+        req.setAttribute("userIdValue", username);
+        req.setAttribute("nextTaId", getNextTaId(req));
+        req.getRequestDispatcher("/jsp/login/login.jsp").forward(req, resp);
+    }
+
+    private String getNextTaId(HttpServletRequest req) {
+        String authFilePath = req.getServletContext().getRealPath("data/auth.csv");
+        List<AuthUtil.Auth> authList = CsvFileUtil.readAuthListFromCsv(authFilePath);
+        int maxNumber = 0;
+        int width = 3;
+        for (AuthUtil.Auth auth : authList) {
+            if (auth.getUserType() == null || !"TA".equalsIgnoreCase(auth.getUserType())) {
+                continue;
+            }
+            String userId = safe(auth.getUserId()).toUpperCase();
+            if (!userId.matches("TA\\d+")) {
+                continue;
+            }
+            String numberPart = userId.substring(2);
+            int number = Integer.parseInt(numberPart);
+            if (number > maxNumber) {
+                maxNumber = number;
+                width = Math.max(3, numberPart.length());
+            }
+        }
+        return "TA" + String.format("%0" + width + "d", maxNumber + 1);
     }
 }
