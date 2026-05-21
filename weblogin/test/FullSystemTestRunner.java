@@ -20,13 +20,21 @@ import com.AuthUtil;
 import com.CsvFileUtil;
 import com.Job;
 import com.MoApplicantReviewService;
+import com.MoLoginServlet;
 import com.MoService;
 import com.SkillMatchUtil;
 import com.TaCsvUtil;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,6 +65,7 @@ public class FullSystemTestRunner {
         Map<String, TestCase> tests = new LinkedHashMap<>();
         tests.put("Authentication accepts only correct role credentials", FullSystemTestRunner::testAuthentication);
         tests.put("CSV utilities preserve quoted fields and ignore invalid rows", FullSystemTestRunner::testCsvUtilities);
+        tests.put("TA registration validates input and updates authentication data", FullSystemTestRunner::testTaRegistration);
         tests.put("MO can publish jobs and invalid credentials are rejected", FullSystemTestRunner::testMoPublishJob);
         tests.put("TA application flow prevents duplicates and supports withdrawal", FullSystemTestRunner::testTaApplicationFlow);
         tests.put("MO applicant decisions honor status and max-hire rules", FullSystemTestRunner::testMoApplicantDecisionFlow);
@@ -126,6 +135,38 @@ public class FullSystemTestRunner {
                 StandardCharsets.UTF_8);
         assertEquals(1, CsvFileUtil.readAppListFromCsv(appFile.toString()).size(),
                 "Malformed application rows should be skipped");
+    }
+
+    private static void testTaRegistration() throws Exception {
+        Path authFile = TEST_DATA_DIR.resolve("auth.csv");
+        long initialRows = countNonBlankRows(authFile);
+
+        MockWebExchange mismatch = submitTaRegistration("TA", "TA900", "Ta@900000", "different");
+        assertEquals("Passwords do not match!", mismatch.getAttribute("msg"),
+                "Registration should reject mismatched passwords");
+        assertFalse(fileContains(authFile, "TA,TA900,Ta@900000"),
+                "Mismatched password registration must not write auth.csv");
+
+        MockWebExchange nonTa = submitTaRegistration("MO", "TA901", "Ta@901000", "Ta@901000");
+        assertEquals("Please select TA before registering.", nonTa.getAttribute("msg"),
+                "Only TA users should be allowed to register");
+        assertFalse(fileContains(authFile, "TA,TA901,Ta@901000"),
+                "Non-TA registration must not write auth.csv");
+
+        MockWebExchange duplicate = submitTaRegistration("TA", "TA001", "Ta@123456", "Ta@123456");
+        assertEquals("User ID already exists!", duplicate.getAttribute("msg"),
+                "Registration should reject an existing TA ID");
+
+        MockWebExchange created = submitTaRegistration("TA", "TA901", "Ta@901000", "Ta@901000");
+        assertEquals("Register success! Please login.", created.getAttribute("msg"),
+                "Valid TA registration should return success message");
+        assertTrue(created.forwarded, "Registration should forward back to the login page");
+        assertTrue(fileContains(authFile, "TA,TA901,Ta@901000"),
+                "Successful registration should append the new TA credential");
+        assertEquals(initialRows + 1, countNonBlankRows(authFile),
+                "Only the successful registration should append one non-blank auth row");
+        assertTrue(AuthUtil.authenticateTA("TA901", "Ta@901000"),
+                "Newly registered TA should authenticate after AuthUtil reloads");
     }
 
     private static void testMoPublishJob() {
@@ -382,6 +423,8 @@ public class FullSystemTestRunner {
         assertSourceContains("src/MOpublish_apply/GetAllAppsServlet.java", "/getAllApps");
         assertSourceContains("src/MOpublish_apply/HireApplicantServlet.java", "@WebServlet(\"/hireApplicant\")");
         assertSourceContains("src/MOpublish_apply/MoLogoutServlet.java", "@WebServlet(\"/mo/logout\")");
+        assertSourceContains("src/MOpublish_apply/MoLoginServlet.java", "handleRegister");
+        assertSourceContains("src/MOpublish_apply/MoLoginServlet.java", "Register success! Please login.");
 
         List<Path> requiredPages = Arrays.asList(
                 Paths.get("jsp/login/login.jsp"),
@@ -404,6 +447,14 @@ public class FullSystemTestRunner {
         for (Path page : requiredPages) {
             assertTrue(Files.exists(PROJECT_ROOT.resolve(page)), "JSP page should exist: " + page);
         }
+
+        String loginPage = Files.readString(PROJECT_ROOT.resolve("jsp/login/login.jsp"), StandardCharsets.UTF_8);
+        assertContains(loginPage, "Teaching Assistant Recruitment Login",
+                "Unified login page should use the latest page title");
+        assertContains(loginPage, "Register", "Unified login page should expose TA registration tab");
+        assertContains(loginPage, "name=\"action\" value=\"register\"",
+                "TA register form should post the register action");
+        assertContains(loginPage, "validateRegister()", "TA register form should validate password confirmation");
     }
 
     private static void resetDataAndServices() throws Exception {
@@ -478,6 +529,67 @@ public class FullSystemTestRunner {
                         + "Amy,mo001,TA002,Bob,Algorithms,CS102,10.0,0.0,Normal\n"
                         + "Brian,mo002,TA003,Carol,Databases,CS103,5.0,0.0,Normal\n",
                 StandardCharsets.UTF_8);
+    }
+
+    private static MockWebExchange submitTaRegistration(String userType, String userId,
+                                                        String password, String confirmPassword) throws Exception {
+        MoLoginServlet servlet = new MoLoginServlet();
+        servlet.init(createServletConfig());
+
+        MockWebExchange exchange = new MockWebExchange();
+        exchange.parameters.put("action", "register");
+        exchange.parameters.put("userType", userType);
+        exchange.parameters.put("userId", userId);
+        exchange.parameters.put("password", password);
+        exchange.parameters.put("confirmPassword", confirmPassword);
+
+        Method doPost = MoLoginServlet.class.getDeclaredMethod(
+                "doPost", HttpServletRequest.class, HttpServletResponse.class);
+        doPost.setAccessible(true);
+        doPost.invoke(servlet, exchange.createRequest(), exchange.createResponse());
+        return exchange;
+    }
+
+    private static ServletConfig createServletConfig() {
+        ServletContext context = (ServletContext) Proxy.newProxyInstance(
+                ServletContext.class.getClassLoader(),
+                new Class<?>[]{ServletContext.class},
+                (proxy, method, args) -> {
+                    if ("getRealPath".equals(method.getName())) {
+                        String path = args == null || args.length == 0 ? "" : String.valueOf(args[0]);
+                        if ("data/auth.csv".equals(path)) {
+                            return TEST_DATA_DIR.resolve("auth.csv").toString();
+                        }
+                        if (path.startsWith("data/")) {
+                            return TEST_DATA_DIR.resolve(path.substring("data/".length())).toString();
+                        }
+                        return PROJECT_ROOT.resolve(path).toString();
+                    }
+                    return defaultValue(method.getReturnType());
+                });
+
+        return (ServletConfig) Proxy.newProxyInstance(
+                ServletConfig.class.getClassLoader(),
+                new Class<?>[]{ServletConfig.class},
+                (proxy, method, args) -> {
+                    if ("getServletContext".equals(method.getName())) {
+                        return context;
+                    }
+                    if ("getServletName".equals(method.getName())) {
+                        return "MoLoginServlet";
+                    }
+                    return defaultValue(method.getReturnType());
+                });
+    }
+
+    private static boolean fileContains(Path path, String text) throws IOException {
+        return Files.readString(path, StandardCharsets.UTF_8).contains(text);
+    }
+
+    private static long countNonBlankRows(Path path) throws IOException {
+        return Files.readAllLines(path, StandardCharsets.UTF_8).stream()
+                .filter(line -> !line.isBlank())
+                .count();
     }
 
     private static Application findApplication(String appId) {
@@ -579,8 +691,94 @@ public class FullSystemTestRunner {
         }
     }
 
+    private static Object defaultValue(Class<?> returnType) {
+        if (!returnType.isPrimitive()) {
+            return null;
+        }
+        if (returnType == Boolean.TYPE) {
+            return false;
+        }
+        if (returnType == Character.TYPE) {
+            return '\0';
+        }
+        if (returnType == Byte.TYPE) {
+            return (byte) 0;
+        }
+        if (returnType == Short.TYPE) {
+            return (short) 0;
+        }
+        if (returnType == Integer.TYPE) {
+            return 0;
+        }
+        if (returnType == Long.TYPE) {
+            return 0L;
+        }
+        if (returnType == Float.TYPE) {
+            return 0f;
+        }
+        if (returnType == Double.TYPE) {
+            return 0d;
+        }
+        return null;
+    }
+
     private interface TestCase {
         void run() throws Exception;
+    }
+
+    private static class MockWebExchange {
+        private final Map<String, String> parameters = new LinkedHashMap<>();
+        private final Map<String, Object> attributes = new LinkedHashMap<>();
+        private boolean forwarded;
+
+        private Object getAttribute(String name) {
+            return attributes.get(name);
+        }
+
+        private HttpServletRequest createRequest() {
+            RequestDispatcher dispatcher = (RequestDispatcher) Proxy.newProxyInstance(
+                    RequestDispatcher.class.getClassLoader(),
+                    new Class<?>[]{RequestDispatcher.class},
+                    (proxy, method, args) -> {
+                        if ("forward".equals(method.getName())) {
+                            forwarded = true;
+                        }
+                        return defaultValue(method.getReturnType());
+                    });
+
+            InvocationHandler handler = (proxy, method, args) -> {
+                String methodName = method.getName();
+                if ("getParameter".equals(methodName)) {
+                    return parameters.get(String.valueOf(args[0]));
+                }
+                if ("setAttribute".equals(methodName)) {
+                    attributes.put(String.valueOf(args[0]), args[1]);
+                    return null;
+                }
+                if ("getAttribute".equals(methodName)) {
+                    return attributes.get(String.valueOf(args[0]));
+                }
+                if ("getRequestDispatcher".equals(methodName)) {
+                    return dispatcher;
+                }
+                if ("getContextPath".equals(methodName)) {
+                    return "/weblogin";
+                }
+                return defaultValue(method.getReturnType());
+            };
+
+            return (HttpServletRequest) Proxy.newProxyInstance(
+                    HttpServletRequest.class.getClassLoader(),
+                    new Class<?>[]{HttpServletRequest.class},
+                    handler);
+        }
+
+        private HttpServletResponse createResponse() {
+            return (HttpServletResponse) Proxy.newProxyInstance(
+                    HttpServletResponse.class.getClassLoader(),
+                    new Class<?>[]{HttpServletResponse.class},
+                    (proxy, method, args) -> defaultValue(method.getReturnType()));
+        }
     }
 
     private static class TestResult {

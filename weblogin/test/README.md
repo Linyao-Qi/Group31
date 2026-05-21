@@ -34,7 +34,7 @@ A successful run should end with:
 
 ```text
 ==== weblogin full system test summary ====
-Total: 11, Passed: 11, Failed: 0
+Total: 12, Passed: 12, Failed: 0
 ```
 
 If any test fails, the script exits with code `1` and prints the failing test name and error message.
@@ -52,7 +52,18 @@ Checks role-based login logic for:
 - blank input
 - cross-role login rejection
 
-### 2. CSV Data Handling
+### 2. TA Registration
+
+Checks:
+
+- successful TA account registration
+- duplicate TA ID rejection
+- password confirmation validation
+- non-TA registration rejection
+- authentication with the newly registered TA account
+- registration writes only to isolated test `auth.csv`
+
+### 3. CSV Data Handling
 
 Checks:
 
@@ -62,7 +73,7 @@ Checks:
 - malformed CSV rows
 - UTF-8 file handling
 
-### 3. MO Functions
+### 4. MO Functions
 
 Checks:
 
@@ -76,7 +87,7 @@ Checks:
 - enforcing `maxHire`
 - changing job status between `OPEN` and `FILLED`
 
-### 4. TA Functions
+### 5. TA Functions
 
 Checks:
 
@@ -90,7 +101,7 @@ Checks:
 - generating job recommendations
 - generating resume improvement suggestions
 
-### 5. Admin Functions
+### 6. Admin Functions
 
 Checks:
 
@@ -106,7 +117,7 @@ Checks:
 - generating recruitment report summaries
 - exporting recruitment report CSV text
 
-### 6. Web Entry Points
+### 7. Web Entry Points
 
 Checks that important routes and JSP pages exist, including:
 
