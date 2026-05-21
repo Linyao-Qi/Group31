@@ -14,11 +14,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TA Job List Servlet
+ * <p>Displays all open TA job postings to logged-in teaching assistants.
+ * Supports filtering by subject, work type, and keyword before forwarding
+ * the result list to the TA job list page.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 @WebServlet("/ta/jobs")
 public class TAJobListServlet extends HttpServlet {
 
+    /** Service used to load job postings from the shared job CSV file */
     private final MoService moService = new MoService();
 
+    /**
+     * Initializes authentication and job services with servlet context paths.
+     * @throws ServletException if servlet initialization fails
+     */
     @Override
     public void init() throws ServletException {
         super.init();
@@ -26,6 +40,13 @@ public class TAJobListServlet extends HttpServlet {
         MoService.init(getServletContext());
     }
 
+    /**
+     * Handles job-list browsing and filtering for logged-in TA users.
+     * @param req HTTP request containing optional filter parameters
+     * @param resp HTTP response used for redirecting or forwarding
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if redirecting or forwarding fails
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

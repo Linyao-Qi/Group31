@@ -16,11 +16,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TA Application Status Servlet
+ * <p>Displays all applications submitted by the logged-in teaching assistant.
+ * It also loads related job data so the JSP can show job details beside each
+ * application status.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 @WebServlet("/ta/status")
 public class TAApplicationStatusServlet extends HttpServlet {
 
+    /** Service used to load job details for application display */
     private final MoService moService = new MoService();
 
+    /**
+     * Initializes authentication, job, and application services.
+     * @throws ServletException if servlet initialization fails
+     */
     @Override
     public void init() throws ServletException {
         super.init();
@@ -29,6 +43,13 @@ public class TAApplicationStatusServlet extends HttpServlet {
         TAApplicationService.init(getServletContext());
     }
 
+    /**
+     * Loads the current TA's application records and forwards them to the status page.
+     * @param req HTTP request containing the TA session and optional message parameters
+     * @param resp HTTP response used for redirecting or forwarding
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if redirecting or forwarding fails
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -42,7 +63,7 @@ public class TAApplicationStatusServlet extends HttpServlet {
         List<Application> apps = TAApplicationService.getApplicationsByTA(taId);
         req.setAttribute("apps", apps);
 
-        // build jobId -> Job map for display
+        // Build jobId -> Job map for display.
         Map<String, Job> jobMap = new HashMap<>();
         for (Job job : moService.getAllJobs()) {
             jobMap.put(job.getJobId(), job);

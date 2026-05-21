@@ -1,18 +1,39 @@
 package com;
+
 import jakarta.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Business Service Class for Module Organizer (MO)
+ * <p>Core service layer for MO operations including job publishing,
+ * application review, hiring, rejection, status management, and data queries.
+ * Integrates with CSV utilities and authentication for secure business logic processing.</p>
+ * @author Group31
+ * @version 1.0
+ * @since 2026-05-20
+ */
 public class MoService {
+
+    /** File path for job data CSV */
     public static String JOB_FILE_PATH;
+
+    /** File path for application data CSV */
     public static String APP_FILE_PATH;
 
+    /**
+     * Initialize CSV file paths using servlet context
+     * @param context ServletContext for retrieving real file paths
+     */
     public static void init(ServletContext context) {
         JOB_FILE_PATH = context.getRealPath("data/job.csv");
         APP_FILE_PATH = context.getRealPath("data/application.csv");
     }
 
-    // 获取所有岗位（修复空指针）
+    /**
+     * Retrieve all available job positions
+     * @return list of Job entities
+     */
     public List<Job> getAllJobs() {
         if (JOB_FILE_PATH == null || JOB_FILE_PATH.isEmpty()) {
             return new ArrayList<>();
@@ -20,16 +41,40 @@ public class MoService {
         return CsvFileUtil.readJobListFromCsv(JOB_FILE_PATH);
     }
 
-    // 发布岗位（新增 maxHire 参数）
+    /**
+     * Publish a new TA position with max hire limit
+     * @param moId MO user ID
+     * @param password MO password
+     * @param subject course name
+     * @param workType type of work
+     * @param description job details
+     * @param skillRequirement required skills
+     * @param hoursPerWeek weekly working hours
+     * @param compensation salary info
+     * @param maxHire maximum allowed hires
+     * @return created Job object or null if failed
+     */
     public Job publishJob(String moId, String password, String subject, String workType,
-                          String description, String skillRequirement, int hoursPerWeek, 
-                          String compensation, int maxHire) { // 新增maxHire参数
+                          String description, String skillRequirement, int hoursPerWeek,
+                          String compensation, int maxHire) {
         if (JOB_FILE_PATH == null) return null;
         if (!AuthUtil.authenticateMO(moId, password)) return null;
         return publishJobForMo(moId, subject, workType, description, skillRequirement,
                 hoursPerWeek, compensation, maxHire);
     }
 
+    /**
+     * Internal method to create and save a new job
+     * @param moId MO user ID
+     * @param subject course name
+     * @param workType work type
+     * @param description job description
+     * @param skillRequirement required skills
+     * @param hoursPerWeek weekly hours
+     * @param compensation salary
+     * @param maxHire max hiring quota
+     * @return created Job or null
+     */
     public Job publishJobForMo(String moId, String subject, String workType,
                                String description, String skillRequirement, int hoursPerWeek,
                                String compensation, int maxHire) {
@@ -37,14 +82,13 @@ public class MoService {
         if (moId == null || moId.isBlank() || subject == null || subject.isBlank()
                 || workType == null || workType.isBlank() || description == null || description.isBlank()
                 || skillRequirement == null || skillRequirement.isBlank() || compensation == null || compensation.isBlank()
-                || maxHire <= 0) { // 校验最大录用人数为正数
+                || maxHire <= 0) {
             return null;
         }
 
         String randomCode = generateRandomCode(6);
         String jobId = moId + randomCode;
 
-        // 使用包含maxHire的构造器创建岗位
         Job newJob = new Job(
                 jobId, moId, subject, workType, description,
                 skillRequirement, hoursPerWeek, compensation, "OPEN", maxHire
@@ -56,23 +100,28 @@ public class MoService {
         return newJob;
     }
 
-    // 兼容旧版发布岗位接口（默认maxHire=1）
+    /**
+     * Overloaded publish method with default maxHire = 1
+     */
     public Job publishJob(String moId, String password, String subject, String workType,
                           String description, String skillRequirement, int hoursPerWeek, String compensation) {
         return publishJob(moId, password, subject, workType, description, skillRequirement,
                 hoursPerWeek, compensation, 1);
     }
 
-    // ==============================================
-    // 录用申请者（增加最大录用人数校验）
-    // ==============================================
+    /**
+     * Accept and hire a qualified applicant
+     * Checks max hire limit before approval
+     * @param moId MO user ID
+     * @param appId application ID
+     * @return updated Application or null if failed
+     */
     public Application acceptApplicant(String moId, String appId) {
         if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) return null;
 
         List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
         List<Job> jobList = getAllJobs();
 
-        // 1. 找到目标申请
         Application targetApp = null;
         for (Application app : appList) {
             if (appId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
@@ -83,7 +132,6 @@ public class MoService {
         if (targetApp == null) return null;
         if (!"PENDING".equals(targetApp.getAppStatus())) return null;
 
-        // 2. 找到对应岗位
         Job targetJob = null;
         for (Job job : jobList) {
             if (targetApp.getJobId().equals(job.getJobId())) {
@@ -93,26 +141,21 @@ public class MoService {
         }
         if (targetJob == null) return null;
 
-        // 3. 统计该岗位已录用的人数
         int acceptedCount = 0;
         for (Application app : appList) {
-            if (targetApp.getJobId().equals(app.getJobId()) 
+            if (targetApp.getJobId().equals(app.getJobId())
                     && "ACCEPTED".equals(app.getAppStatus())) {
                 acceptedCount++;
             }
         }
 
-        // 4. 校验是否超过最大录用人数
         if (acceptedCount >= targetJob.getMaxHire()) {
-            // 超过限制，返回null（前端据此提示）
             return null;
         }
 
-        // 5. 正常录用流程
         targetApp.setAppStatus("ACCEPTED");
         CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
 
-        // 6. 更新岗位状态：仅当录用后达到最大人数时才设为FILLED
         if (acceptedCount + 1 >= targetJob.getMaxHire()) {
             targetJob.setStatus("FILLED");
         }
@@ -121,7 +164,13 @@ public class MoService {
         return targetApp;
     }
 
-    // 取消录用（同步调整岗位状态逻辑）
+    /**
+     * Cancel a previously accepted application
+     * Updates job status back to OPEN if applicable
+     * @param moId MO user ID
+     * @param cancelAppId application ID
+     * @return true if successful
+     */
     public boolean cancelApplicant(String moId, String cancelAppId) {
         if (moId == null || moId.isBlank() || cancelAppId == null || cancelAppId.isBlank()) return false;
 
@@ -138,19 +187,16 @@ public class MoService {
         if (targetApp == null) return false;
         if (!"ACCEPTED".equals(targetApp.getAppStatus())) return false;
 
-        // 取消录用，恢复为待处理
         targetApp.setAppStatus("PENDING");
         CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
 
-        // 重新计算该岗位已录用人数，判断是否恢复为OPEN
         Job targetJob = null;
         int acceptedCount = 0;
         for (Job job : jobList) {
             if (targetApp.getJobId().equals(job.getJobId())) {
                 targetJob = job;
-                // 统计当前已录用人数
                 for (Application app : appList) {
-                    if (job.getJobId().equals(app.getJobId()) 
+                    if (job.getJobId().equals(app.getJobId())
                             && "ACCEPTED".equals(app.getAppStatus())) {
                         acceptedCount++;
                     }
@@ -159,7 +205,6 @@ public class MoService {
             }
         }
 
-        // 若取消后未达最大录用人数，恢复岗位为OPEN
         if (targetJob != null && acceptedCount < targetJob.getMaxHire()) {
             targetJob.setStatus("OPEN");
             CsvFileUtil.writeJobListToCsv(JOB_FILE_PATH, jobList);
@@ -168,15 +213,17 @@ public class MoService {
         return true;
     }
 
-    // ==============================================
-    // 新增：拒绝申请者
-    // ==============================================
+    /**
+     * Reject a pending application
+     * @param moId MO user ID
+     * @param appId application ID
+     * @return updated Application or null
+     */
     public Application rejectApplicant(String moId, String appId) {
         if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) return null;
 
         List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
 
-        // 1. 找到目标申请
         Application targetApp = null;
         for (Application app : appList) {
             if (appId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
@@ -185,26 +232,25 @@ public class MoService {
             }
         }
         if (targetApp == null) return null;
-        // 仅允许拒绝「待处理(PENDING)」状态的申请
         if (!"PENDING".equals(targetApp.getAppStatus())) return null;
 
-        // 2. 执行拒绝：状态改为REJECTED
         targetApp.setAppStatus("REJECTED");
         CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
 
-        // 拒绝不影响岗位最大录用人数，无需修改岗位状态
         return targetApp;
     }
 
-    // ==============================================
-    // 新增：取消拒绝（恢复为PENDING）
-    // ==============================================
+    /**
+     * Cancel rejection and restore application to PENDING status
+     * @param moId MO user ID
+     * @param appId application ID
+     * @return updated Application or null
+     */
     public Application cancelRejectApplicant(String moId, String appId) {
         if (moId == null || moId.isBlank() || appId == null || appId.isBlank()) return null;
 
         List<Application> appList = CsvFileUtil.readAppListFromCsv(APP_FILE_PATH);
 
-        // 1. 找到目标申请
         Application targetApp = null;
         for (Application app : appList) {
             if (appId.equals(app.getAppId()) && moId.equals(app.getMoId())) {
@@ -213,23 +259,31 @@ public class MoService {
             }
         }
         if (targetApp == null) return null;
-        // 仅允许取消「已拒绝(REJECTED)」状态的申请
         if (!"REJECTED".equals(targetApp.getAppStatus())) return null;
 
-        // 2. 取消拒绝：状态恢复为PENDING
         targetApp.setAppStatus("PENDING");
         CsvFileUtil.writeAppListToCsv(APP_FILE_PATH, appList);
 
         return targetApp;
     }
 
-    // 获取当前 MO 的所有申请（完整信息）
+    /**
+     * Get all applications belonging to the current MO
+     * @param moId MO user ID
+     * @param password MO password
+     * @param isAdmin admin flag
+     * @return list of applications
+     */
     public List<Application> getAllApps(String moId, String password, boolean isAdmin) {
         if (!AuthUtil.authenticateMO(moId, password)) return null;
-
         return getAllAppsForMo(moId);
     }
 
+    /**
+     * Internal method to filter applications by MO ID
+     * @param moId MO user ID
+     * @return filtered application list
+     */
     public List<Application> getAllAppsForMo(String moId) {
         if (moId == null || moId.isBlank()) return new ArrayList<>();
 
@@ -243,6 +297,11 @@ public class MoService {
         return result;
     }
 
+    /**
+     * Generate a random alphanumeric code for job ID
+     * @param length code length
+     * @return random string
+     */
     private String generateRandomCode(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="lib5">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/HanHan/v2.1/src/lib/servlet-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/HanHan/v2.1/src/lib/gson-2.10.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

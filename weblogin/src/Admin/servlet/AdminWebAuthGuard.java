@@ -7,16 +7,22 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * 登录拦截工具。
- * 未登录访问受保护页面时，统一跳转到登录页。
+ * Utility that protects administrator web pages from unauthenticated access.
+ *
+ * @author Yutong Yao
+ * @version 2.0
  */
 public final class AdminWebAuthGuard {
     private AdminWebAuthGuard() {
     }
 
     /**
-     * 校验当前请求是否已登录。
-     * @return 已登录返回 true；未登录时会重定向并返回 false
+     * Ensures the current request belongs to an authenticated admin session.
+     *
+     * @param req current HTTP request
+     * @param resp current HTTP response
+     * @return true when the user is authenticated; false after redirecting to login
+     * @throws IOException if the redirect cannot be written
      */
     public static boolean ensureAuthenticated(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession(false);

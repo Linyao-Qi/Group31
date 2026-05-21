@@ -10,6 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Loads and saves administrator data stored in CSV files.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminDataManagement {
     private static final File WORKLOAD_FILE =
             DataFileLocator.resolveDataFile("workloads.csv", AdminDataManagement.class);
@@ -20,6 +26,12 @@ public class AdminDataManagement {
     private static final File AUTH_FILE =
             DataFileLocator.resolveDataFile("auth.csv", AdminDataManagement.class);
 
+    /**
+     * Loads workload assignments from workloads.csv, creating defaults when the file is missing.
+     *
+     * @return workload assignments for admin display and editing
+     * @throws IOException if the CSV file cannot be read or created
+     */
     public List<AdminWorkload> loadWorkloads() throws IOException {
         ensureWorkloadCsvExists();
         List<AdminWorkload> workloads = new ArrayList<>();
@@ -77,6 +89,12 @@ public class AdminDataManagement {
         return workloads;
     }
 
+    /**
+     * Persists workload assignments to workloads.csv.
+     *
+     * @param workloads workload assignments to save
+     * @throws IOException if the CSV file cannot be written
+     */
     public void saveWorkloads(List<AdminWorkload> workloads) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(WORKLOAD_FILE, false))) {
             writer.write("moName,moId,taId,taName,moduleName,moduleCode,courseWorkHour,taTotalWorkHour,status");
@@ -98,6 +116,12 @@ public class AdminDataManagement {
     }
 
 
+    /**
+     * Loads recruitment posts from job.csv, creating default posts when the file is missing.
+     *
+     * @return recruitment posts
+     * @throws IOException if the CSV file cannot be read or created
+     */
     public List<AdminRecruitment> loadPosts() throws IOException {
         ensureJobCsvExists();
         List<AdminRecruitment> posts = new ArrayList<>();
@@ -152,6 +176,12 @@ public class AdminDataManagement {
     }
 
 
+    /**
+     * Persists recruitment posts to job.csv.
+     *
+     * @param posts recruitment posts to save
+     * @throws IOException if the CSV file cannot be written
+     */
     public void savePosts(List<AdminRecruitment> posts) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(JOB_FILE, false))) {
             writer.write("jobId,moId,subject,workType,description,skillRequirement,hoursPerWeek,compensation,status,maxHire");
@@ -174,6 +204,12 @@ public class AdminDataManagement {
         }
     }
 
+    /**
+     * Loads TA applications from application.csv, creating an empty file when needed.
+     *
+     * @return application records
+     * @throws IOException if the CSV file cannot be read or created
+     */
     public List<AdminApplicationRecord> loadApplications() throws IOException {
         ensureApplicationCsvExists();
         List<AdminApplicationRecord> applications = new ArrayList<>();
@@ -214,6 +250,12 @@ public class AdminDataManagement {
         return applications;
     }
 
+    /**
+     * Persists TA application records to application.csv.
+     *
+     * @param applications application records to save
+     * @throws IOException if the CSV file cannot be written
+     */
     public void saveApplications(List<AdminApplicationRecord> applications) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(APPLICATION_FILE, false))) {
             writer.write("appId,name,jobId,moId,taId,major,intro,skills,email,CVpath,appStatus");
@@ -236,6 +278,14 @@ public class AdminDataManagement {
         }
     }
 
+    /**
+     * Checks admin credentials against auth.csv.
+     *
+     * @param username administrator username
+     * @param password administrator password
+     * @return true when a matching ADMIN row exists; false otherwise
+     * @throws IOException if auth.csv cannot be read
+     */
     public boolean validateAdminCredentials(String username, String password) throws IOException {
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             return false;

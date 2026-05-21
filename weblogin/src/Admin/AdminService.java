@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.util.*;
 
 
+/**
+ * Coordinates administrator workload and recruitment operations.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminService {
     private static final double OVERLOAD_THRESHOLD = 15.0;
     private static final String STATUS_NORMAL = "Normal";
@@ -13,12 +19,20 @@ public class AdminService {
     private final AdminDataManagement dataManagement;
     private final AdminWorkloadApplicationSyncService workloadApplicationSyncService;
 
+    /**
+     * Creates the service with CSV-backed data management.
+     */
     public AdminService() {
         this.dataManagement = new AdminDataManagement();
         this.workloadApplicationSyncService = new AdminWorkloadApplicationSyncService(this.dataManagement);
     }
 
 
+    /**
+     * Loads all workloads, merges accepted applications, and normalizes totals and statuses.
+     *
+     * @return current workload list, or fallback data if loading fails
+     */
     public List<AdminWorkload> getAllWorkloads() {
         try {
             List<AdminWorkload> workloads = dataManagement.loadWorkloads();
@@ -32,6 +46,12 @@ public class AdminService {
     }
 
 
+    /**
+     * Saves workload changes and propagates cancelled workloads back to applications.
+     *
+     * @param workloads workloads to persist
+     * @return true when the save succeeds; false otherwise
+     */
     public boolean saveAllWorkloads(List<AdminWorkload> workloads) {
         normalizeTotalsAndStatuses(workloads, false);
         try {
@@ -44,14 +64,31 @@ public class AdminService {
     }
 
 
+    /**
+     * Recalculates workload totals and overload statuses without saving them.
+     *
+     * @param workloads workloads to update in memory
+     */
     public void recalculateTotalsAndStatusesInMemory(List<AdminWorkload> workloads) {
         normalizeTotalsAndStatuses(workloads, false);
     }
 
+    /**
+     * Marks the matching application as cancelled after an admin cancels a workload.
+     *
+     * @param taId teaching assistant identifier
+     * @param moduleCode module or job code
+     * @param moId module organizer identifier
+     */
     public void rejectApplicationForCancelledWorkload(String taId, String moduleCode, String moId) {
         workloadApplicationSyncService.rejectApplicationForCancelledWorkload(taId, moduleCode, moId);
     }
 
+    /**
+     * Synchronizes every cancelled workload in the list to the matching application status.
+     *
+     * @param workloads workloads to inspect
+     */
     public void syncCancelledWorkloadsToApplications(List<AdminWorkload> workloads) {
         if (workloads == null || workloads.isEmpty()) {
             return;
@@ -69,6 +106,12 @@ public class AdminService {
     }
 
 
+    /**
+     * Counts distinct teaching assistants represented in the workload list.
+     *
+     * @param workloads workloads to inspect
+     * @return number of distinct TA identifiers
+     */
     public int getTotalActiveTAs(List<AdminWorkload> workloads) {
         Set<String> taIds = new HashSet<>();
         for (AdminWorkload workload : workloads) {
@@ -78,6 +121,12 @@ public class AdminService {
     }
 
 
+    /**
+     * Counts distinct TAs whose total workload exceeds the overload threshold.
+     *
+     * @param workloads workloads to inspect
+     * @return number of overloaded TAs
+     */
     public int getOverloadedCount(List<AdminWorkload> workloads) {
         Set<String> overloadedTaIds = new HashSet<>();
         for (AdminWorkload workload : workloads) {
@@ -88,15 +137,32 @@ public class AdminService {
         return overloadedTaIds.size();
     }
 
+    /**
+     * Counts assigned workload rows.
+     *
+     * @param workloads workloads to inspect
+     * @return number of assigned modules
+     */
     public int getTotalAssignedModules(List<AdminWorkload> workloads) {
         return workloads.size();
     }
 
+    /**
+     * Determines whether a workload row belongs to an overloaded TA.
+     *
+     * @param workload workload to check
+     * @return true when total TA hours are above the threshold
+     */
     public boolean isOverloaded(AdminWorkload workload) {
         return workload.getTaTotalWorkHour() > OVERLOAD_THRESHOLD;
     }
 
 
+    /**
+     * Loads all recruitment posts.
+     *
+     * @return recruitment posts, or fallback data if loading fails
+     */
     public List<AdminRecruitment> getAllPosts() {
         try {
             return dataManagement.loadPosts();
@@ -106,6 +172,12 @@ public class AdminService {
     }
 
 
+    /**
+     * Saves recruitment posts after copying the supplied list.
+     *
+     * @param latestPosts posts to persist
+     * @return true when the save succeeds; false otherwise
+     */
     public boolean saveAllPosts(List<AdminRecruitment> latestPosts) {
         try {
             dataManagement.savePosts(deepCopyPosts(latestPosts));
@@ -116,6 +188,12 @@ public class AdminService {
     }
 
 
+    /**
+     * Counts posts that are currently open.
+     *
+     * @param posts posts to inspect
+     * @return number of open posts
+     */
     public int countOpenPosts(List<AdminRecruitment> posts) {
         int count = 0;
         for (AdminRecruitment post : posts) {

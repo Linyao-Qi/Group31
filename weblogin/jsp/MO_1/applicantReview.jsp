@@ -19,47 +19,34 @@
             background: #f8fafc;
             color: #1f2937;
         }
-        .nav {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 0 auto 30px;
-            padding: 10px;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 8px;
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.10);
-        }
-        .nav a {
-            padding: 9px 14px;
-            color: #1d4ed8;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 6px;
-        }
-        .nav a:hover {
-            background: #dbeafe;
-            text-decoration: none;
-        }
+        
+
+        .nav {display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; width: min(980px, calc(100vw - 40px)); margin: 0 0 30px 50%; padding: 10px; background: #eff6ff; border-radius: 8px; transform: translateX(-50%);}
+        .nav a {padding: 9px 14px; color: #1d4ed8; text-decoration: none; font-weight: bold; border-radius: 6px;}
+        .nav a:hover {background: #dbeafe; text-decoration: none;}
+
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
             background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
         }
         th, td {
-            border-bottom: 1px solid #e5e7eb;
+            border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
         }
         th {
-            background-color: #eff6ff;
-            color: #1e3a8a;
+            background-color: #f8fafc;
+            color: #000;
             font-size: 14px;
+            font-weight: bold;
+        }
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 24px;
         }
         .success { color: green; font-weight: bold; text-align: center; }
         .error { color: red; font-weight: bold; text-align: center; }
@@ -128,6 +115,9 @@
         .logout-form {margin: 28px auto 0; width: min(560px, 100%);}
         .logout-btn {width: 100%; padding: 12px; background: #94a3b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
         .logout-btn:hover {background: #7c8da3;}
+        .status-accepted {color:#16a34a; font-weight:bold;}
+        .status-rejected {color:#dc2626; font-weight:bold;}
+        .status-pending {color:#f59e0b; font-weight:bold;}
     </style>
     <script>
         function toggleDetails(id) {
@@ -177,12 +167,16 @@
                 Application app = apps.get(i);
                 SkillMatchUtil.MatchResult result = matchResults.get(i);
                 String detailId = "skillDetail" + i;
+                String statusClass = "";
+                if("ACCEPTED".equals(app.getAppStatus())) statusClass="status-accepted";
+                else if("REJECTED".equals(app.getAppStatus())) statusClass="status-rejected";
+                else if("PENDING".equals(app.getAppStatus())) statusClass="status-pending";
         %>
         <tr>
             <td><%= app.getAppId() %></td>
             <td><%= app.getJobId() %></td>
             <td><%= app.getTaId() %></td>
-            <td><%= app.getAppStatus() %></td>
+            <td class="<%=statusClass%>"><%= app.getAppStatus() %></td>
             <td>
                 <span class="score-pill"><%= result.getScore() %> pts</span>
                 <button class="details-btn" type="button" onclick="toggleDetails('<%= detailId %>')">Details</button>

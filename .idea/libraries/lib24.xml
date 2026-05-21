@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="lib24">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/web/src/MOpublish_apply/lib/gson-2.10.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/web/src/MOpublish_apply/lib/servlet-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

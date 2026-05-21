@@ -9,11 +9,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Servlet for the TA smart job recommendation page.
+ * <p>
+ * The servlet always uses the logged-in TA ID stored in the session, so users
+ * cannot request recommendations for another TA by editing query parameters.
+ *
+ * @author Linyao Qi
+ * @version 3
+ */
 @WebServlet({"/ta/recommendations", "/taJobRecommendations"})
 public class JobRecommendationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private transient JobRecommendationService recommendationService;
 
+    /**
+     * Initialises the recommendation service with deployed CSV file locations.
+     *
+     * @throws ServletException if servlet initialisation fails
+     */
     @Override
     public void init() throws ServletException {
         String jobPath = getServletContext().getRealPath("/data/job.csv");
@@ -21,6 +35,14 @@ public class JobRecommendationServlet extends HttpServlet {
         recommendationService = new JobRecommendationService(jobPath, profilePath);
     }
 
+    /**
+     * Handles recommendation page requests for the current logged-in TA.
+     *
+     * @param request HTTP request
+     * @param response HTTP response
+     * @throws ServletException if request forwarding fails
+     * @throws IOException if request or response processing fails
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -41,6 +63,12 @@ public class JobRecommendationServlet extends HttpServlet {
         request.getRequestDispatcher("/jsp/Ta_Job/recommendations.jsp").forward(request, response);
     }
 
+    /**
+     * Reads the current TA identifier from the HTTP session.
+     *
+     * @param request HTTP request containing the session
+     * @return logged-in TA ID, or an empty string when no TA is logged in
+     */
     private String getLoggedInTaId(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("taId") != null) {

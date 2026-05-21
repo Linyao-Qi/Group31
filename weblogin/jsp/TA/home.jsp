@@ -34,7 +34,6 @@
     <div class="nav">
         <a href="${pageContext.request.contextPath}/ta/home">Home</a>
         <a href="${pageContext.request.contextPath}/ta/jobs">Job List</a>
-        <a href="${pageContext.request.contextPath}/taJobList">Job Browser</a>
         <a href="${pageContext.request.contextPath}/ta/status">My Applications</a>
         <a href="${pageContext.request.contextPath}/ta/profile">Profile</a>
         <form method="post" action="${pageContext.request.contextPath}/ta/logout">
@@ -57,6 +56,10 @@
         <a href="${pageContext.request.contextPath}/ta/profile" class="card">
             <div class="icon">&#128100;</div>
             <div class="label">My Profile</div>
+        </a>
+        <a href="${pageContext.request.contextPath}/ta/resumeSuggestion" class="card">
+            <div class="icon">&#128221;</div>
+            <div class="label">Resume Suggestion</div>
         </a>
     </div>
 </body>

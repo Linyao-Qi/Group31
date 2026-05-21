@@ -1,6 +1,12 @@
 package Admin;
 
 
+/**
+ * Represents one TA workload assignment shown and edited by administrators.
+ *
+ * @author Yutong Yao
+ * @version 1.0
+ */
 public class AdminWorkload {
     private String moName;
     private String moId;
@@ -12,6 +18,18 @@ public class AdminWorkload {
     private double taTotalWorkHour;
     private String status;
 
+    /**
+     * Creates a workload assignment with Normal status by default.
+     *
+     * @param moName module organizer name
+     * @param moId module organizer identifier
+     * @param taId teaching assistant identifier
+     * @param taName teaching assistant name
+     * @param moduleName module name
+     * @param moduleCode module or job code
+     * @param courseWorkHour workload hours for this module
+     * @param taTotalWorkHour total assigned hours for the TA
+     */
     public AdminWorkload(
             String moName,
             String moId,
