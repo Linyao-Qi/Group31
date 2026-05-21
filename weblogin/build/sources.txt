@@ -11,7 +11,6 @@ C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\AdminWorkloadApplicat
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\AdminWorkloadDomainService.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\DataFileLocator.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\servlet\AdminClosePostServlet.java
-C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\servlet\AdminLoginServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\servlet\AdminLogoutServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\servlet\AdminRecruitmentReportServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\Admin\servlet\AdminUnifiedLoginServlet.java
@@ -33,6 +32,9 @@ C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\MoService.j
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\PublishJobServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\SkillMatchUtil.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\MOpublish_apply\TaCsvUtil.java
+C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\ResumeSuggestion.java
+C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\ResumeSuggestionService.java
+C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\ResumeSuggestionServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAApplicationService.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAApplicationStatusServlet.java
 C:\Users\27182\Documents\GitHub\Group31\weblogin\src\TA\TAApplyServlet.java

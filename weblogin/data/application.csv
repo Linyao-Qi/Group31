@@ -3,3 +3,9 @@ APP001,Alice Chen,mo001tFUjgE,mo001,TA001,Computer Science,Experienced in Java t
 APP002,Bob Li,mo001JNC3JH,mo001,TA002,Mathematics,Good at explaining math concepts,"Linear Algebra,MATLAB,C++",bob@uni.edu,,ACCEPTED
 APP003,Carol Wang,mo001JNC3JH,mo001,TA003,Physics,Familiar with lab operations,"Physics Lab,Python,Report Writing",carol@uni.edu,,ACCEPTED
 APP004,David Zhang,mo001JNC3JH,mo001,TA004,Economics,Skilled in data analysis,"Economics,Excel,Presentation",david@uni.edu,,PENDING
+APP005,Alice Chen,mo002DA2026,mo002,TA001,Computer Science,Interested in analytics teaching support,"Java,Data Structures,Python",alice@uni.edu,,PENDING
+APP006,Bob Li,mo002DA2026,mo002,TA002,Mathematics,Comfortable with numerical analysis and lab support,"Linear Algebra,MATLAB,C++",bob@uni.edu,,PENDING
+APP007,Carol Wang,mo003ST2026,mo003,TA003,Physics,Can guide testing logs and practical lab reports,"Python,Report Writing,Git,Software Testing",carol@uni.edu,,PENDING
+APP008,Alice Chen,mo003ST2026,mo003,TA001,Computer Science,Experienced with Java programming support,"Java,Data Structures,Python",alice@uni.edu,,PENDING
+APP009,David Zhang,mo004ES2026,mo004,TA004,Electronics,Has hands-on Arduino and presentation experience,"Excel,Presentation,Arduino,C language",david@uni.edu,,PENDING
+APP010,Bob Li,mo004ES2026,mo004,TA002,Mathematics,Interested in embedded programming support,"Linear Algebra,MATLAB,C++",bob@uni.edu,,PENDING

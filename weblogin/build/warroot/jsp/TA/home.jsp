@@ -57,6 +57,10 @@
             <div class="icon">&#128100;</div>
             <div class="label">My Profile</div>
         </a>
+        <a href="${pageContext.request.contextPath}/ta/resumeSuggestion" class="card">
+            <div class="icon">&#128221;</div>
+            <div class="label">Resume Suggestion</div>
+        </a>
     </div>
 </body>
 </html>
