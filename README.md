@@ -13,6 +13,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ## Core Implemented Features
 
 ### 1. TA Portal - Job Browsing and Intelligent Filtering
+
 **Features:**
 1. **Job List View**: After logging in, TAs can view all available positions, with core fields such as subject, work type, skill requirements, weekly working hours, and compensation displayed in a table.
 2. **Multi-condition Filtering**: Supports combined filtering by subject and work type, with stackable filter conditions.
@@ -31,6 +32,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ---
 
 ### 2. TA Portal - Job Application and Status Management
+
 **Features:**
 1. **Job Application**: After logging in, TAs select open positions, pre-fill application information based on personal profiles, and upload resume files to submit applications. The server forcibly verifies resume upload; upon approval, an application record with an initial status of PENDING is generated and written into application.csv.
 2. **Anti-duplicate Submission**: Before submission, the system checks whether a valid application (PENDING / ACCEPTED / REJECTED) already exists for the same TA and the same position; if so, submission is blocked with a prompt.
@@ -47,6 +49,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ---
 
 ### 3. TA Portal - Personal Profile Management
+
 **Features:**
 1. **Profile Creation and Editing**: Fill in name, ID, email, skills, and major when creating a profile. ID is unique and unchangeable during editing; existing information can be modified, uploaded resumes can be reused, and data is synchronized to TAprofile.csv in real time after operations.
 2. **Resume Upload**: Supports PDF resume upload; files are saved to the server directory, with resume paths bound and stored in one-to-one correspondence with profile information.
@@ -62,6 +65,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ---
 
 ### 4. MO Portal - Job Posting and Hiring
+
 **Features:**
 1. **Job Posting Management**: MO users can post positions by entering required information (subject, work type, description, skill requirements, weekly working hours, compensation, max hire count) after identity authentication. A unique position ID is automatically generated using the MO ID plus a 6‑digit alphanumeric string. Position data is persisted to `job.csv` in real time, with the default status set to “OPEN”.
 2. **Application Review Management**: View all TA applications belonging to the current MO. Supports hiring applicants (change application status to ACCEPTED and update job status to FILLED if max hire is reached), canceling hire (change application back to PENDING and restore job to OPEN), rejecting applicants (set to REJECTED), and canceling rejection (restore to PENDING). All operations are synchronized to `application.csv` and `job.csv` in real time.
@@ -76,6 +80,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ---
 
 ### 5. MO Portal - Application Review and Skill Matching
+
 **Features:**
 1. **MO Authentication**: Verifies the validity of MO via ID and password; unauthorized users cannot access application data. Each MO account can only view applications for positions posted by itself.
 2. **Application List Display**: Automatically filters all positions posted by the current MO by account. MOs can view applicant ID, position ID, application status, and skill match score in a clear and user-friendly interface.
@@ -89,6 +94,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 ---
 
 ### 6. Admin Portal - Position Status Management and Workload Review
+
 **Features:**
 1. **Admin Login Authentication**: Admins log in to the system with username and password; unauthorized users cannot access backend pages.
 2. **Position Status Management**: Admins can view all position information and perform Open / Close operations, with updates synchronized to job.csv after saving.
