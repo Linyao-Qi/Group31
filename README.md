@@ -114,7 +114,7 @@ Designed for **MO (Recruiters)**, **TA (Job Applicants)** and **Admin (System Ad
 
 ## 📂 Project Structure
 ```
-web/
+weblogin/
 ├── .idea/                 # IDE configuration files
 ├── META‑INF/              # Web metadata
 ├── WEB‑INF/               # Web application configuration
