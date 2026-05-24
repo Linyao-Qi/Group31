@@ -109,6 +109,48 @@ public class MoService {
                 hoursPerWeek, compensation, 1);
     }
 
+    public void updateJobInfo(String jobId, String subject, String workType,
+                              String description, String skillRequirement,
+                              String hoursPerWeekStr, String compensation, String maxHireStr) {
+        if (jobId == null || jobId.isBlank()) return;
+
+        List<Job> jobList = getAllJobs();
+        for (Job job : jobList) {
+            if (jobId.equals(job.getJobId())) {
+                try {
+                    int hoursPerWeek = Integer.parseInt(hoursPerWeekStr);
+                    int maxHire = Integer.parseInt(maxHireStr);
+
+                    job.setSubject(subject);
+                    job.setWorkType(workType);
+                    job.setDescription(description);
+                    job.setSkillRequirement(skillRequirement);
+                    job.setHoursPerWeek(hoursPerWeek);
+                    job.setCompensation(compensation);
+                    job.setMaxHire(maxHire);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+        CsvFileUtil.writeJobListToCsv(JOB_FILE_PATH, jobList);
+    }
+
+
+    public void updateJobStatus(String jobId, String status) {
+        if (jobId == null || jobId.isBlank() || status == null) return;
+
+        List<Job> jobList = getAllJobs();
+        for (Job job : jobList) {
+            if (jobId.equals(job.getJobId())) {
+                job.setStatus(status.toUpperCase());
+                break;
+            }
+        }
+        CsvFileUtil.writeJobListToCsv(JOB_FILE_PATH, jobList);
+    }
+
     /**
      * Accept and hire a qualified applicant
      * Checks max hire limit before approval
